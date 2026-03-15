@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Ambiente (não versionar segredos)
+.env
+.env.local
+.env.*.local
+
+# Logs e cache
+*.log
+.npm
+npm-debug.log*
+
+# IDE / SO
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.rpo
