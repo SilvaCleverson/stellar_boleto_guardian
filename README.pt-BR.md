@@ -2,7 +2,7 @@
 
 # Stellar Boleto Guardian
 
-### Autenticacao de boletos bancarios via blockchain Stellar
+### Autenticacao imutavel de boletos via blockchain Stellar
 
 [![Stellar](https://img.shields.io/badge/Blockchain-Stellar-blue?logo=stellar&logoColor=white)](https://stellar.org/)
 [![Node.js](https://img.shields.io/badge/API-Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -17,69 +17,71 @@
 
 ## Entenda o projeto
 
-> **Cada boleto vira um registro imutavel na Stellar.**
+> **O usuario so tem o boleto. E so o que ele precisa.**
 
-Imagine o seguinte problema: um boleto e gerado, e alguem no meio do caminho altera o codigo de barras ou o valor. O pagador paga, mas o dinheiro vai para outro lugar. Fraude classica.
+Imagine a empresa **DS2U**. Ela usa Protheus, emite centenas de boletos por dia para seus clientes. Um dia, um boleto e interceptado e o codigo de barras e adulterado. O pagador paga, mas o dinheiro vai para outro lugar. Fraude classica.
 
-**O Stellar Boleto Guardian resolve isso em 3 passos:**
+**O Stellar Boleto Guardian resolve isso de forma simples:**
+
+Quando a DS2U emite um boleto, o **codigo de barras** (linha digitavel, 47 digitos) e gravado na blockchain Stellar. Qualquer pessoa que receber o boleto pode digitar esses numeros e verificar na hora se o boleto e autentico.
 
 ```
-                        +------------------+
-                        |   1. PROTHEUS    |
-                        |                  |
-                        |  Emite o boleto  |
-                        |  Gera hash SHA1  |
-                        |  do boleto       |
-                        +--------+---------+
-                                 |
-                                 | POST hash + account + secret
-                                 v
-                        +------------------+
-                        |   2. API NODE    |
-                        |                  |
-                        |  Assina uma      |
-                        |  transacao       |
-                        |  Stellar         |
-                        |  (Manage Data)   |
-                        +--------+---------+
-                                 |
-                                 | Envia ao Horizon
-                                 v
-                        +------------------+
-                        |   3. STELLAR     |
-                        |                  |
-                        |  Grava o hash    |
-                        |  na conta do     |
-                        |  cliente         |
-                        |  PARA SEMPRE     |
-                        +--------+---------+
-                                 |
-                                 v
-            +--------------------------------------------+
-            |          VALIDACAO PUBLICA                  |
-            |                                            |
-            |  Qualquer pessoa informa Account ID +      |
-            |  Hash e ve na hora se o boleto e autentico |
-            +--------------------------------------------+
+         DS2U emite boleto              API grava na Stellar
+         +------------------+           +------------------+
+         | Protheus gera    |           | Manage Data      |
+         | boleto com       |  POST     | key = codebar    |
+         | codebar          | --------> | value = dados    |
+         | 47 digitos       |           | do boleto        |
+         +------------------+           +--------+---------+
+                                                 |
+                                                 | Gravado para sempre
+                                                 v
+                                        +------------------+
+                                        | Blockchain       |
+                                        | Stellar          |
+                                        | (conta da DS2U)  |
+                                        +--------+---------+
+                                                 |
+                    +----------------------------+
+                    |
+                    v
+         +------------------+
+         | USUARIO          |
+         | Recebe boleto    |
+         | Digita os 47     |
+         | numeros          |
+         | VALIDA NA HORA   |
+         +------------------+
 ```
 
 ### Por que isso importa?
 
 | Problema | Sem o Guardian | Com o Guardian |
 |----------|---------------|----------------|
-| **Boleto adulterado** | Ninguem percebe ate o dinheiro sumir | Hash muda = fraude detectada |
-| **Quem valida?** | So o banco ou o ERP | Qualquer pessoa, pela blockchain |
-| **Rastreabilidade** | Logs internos que podem ser alterados | Transacao Stellar imutavel |
+| **Boleto adulterado** | Ninguem percebe ate o dinheiro sumir | Codebar nao existe na chain = fraude |
+| **Quem valida?** | So o banco ou o ERP | Qualquer pessoa, com os numeros do boleto |
+| **O que o usuario precisa?** | Hash, Account ID, dados tecnicos | **So os numeros do boleto** |
+| **Rastreabilidade** | Logs internos que podem ser alterados | Blockchain imutavel |
 | **Custo** | Sistemas antifraude caros | ~0,00001 XLM por boleto |
 
 ---
 
-## O que o projeto faz
+## Por que o codigo de barras como chave?
 
-- **Gera hash unico** de cada boleto no Protheus (SHA1)
-- **Registra na Stellar** usando a operacao Manage Data
-- **Valida publicamente** via pagina web (Account ID + hash)
-- **Gera QR Code** no boleto apontando para a validacao
+A Stellar permite gravar dados na blockchain usando a operacao **Manage Data**: uma chave (ate 64 bytes) e um valor (ate 64 bytes).
+
+A linha digitavel de um boleto bancario tem **47 digitos** -- cabe perfeitamente nos 64 bytes.
+
+| Abordagem | Chave | O que o usuario precisa | Experiencia |
+|-----------|-------|------------------------|-------------|
+| Antiga (hash) | SHA1 do boleto | Account ID + Hash | Ruim -- dados tecnicos |
+| **Nova (codebar)** | **Linha digitavel** | **So os numeros do boleto** | **Excelente** |
+
+O codigo de barras e:
+- **Unico** por boleto
+- **Impresso** no documento fisico
+- **Legivel** por scanner ou digitacao
+- **47 digitos** -- cabe nos 64 bytes do Manage Data
 
 ---
 
@@ -88,20 +90,22 @@ Imagine o seguinte problema: um boleto e gerado, e alguem no meio do caminho alt
 ```
 +------------------+        +--------------------+        +--------------------+
 |    PROTHEUS      |        |     API NODE.JS    |        |      STELLAR       |
-|    (ADVPL)       |        |     (Express)      |        |    (Blockchain)    |
+|    (DS2U)        |        |     (Express)      |        |    (Blockchain)    |
 +------------------+        +--------------------+        +--------------------+
 |                  |        |                    |        |                    |
-| BoletoHash       | POST   | /api/blockchain    | Horizon| Manage Data        |
-| Stellar.prw      |------->| Assina tx com      |------->| name = hash        |
-|                  |        | secret do cliente  |        | value = payload    |
-| ZXH.prw          |        |                    |        |                    |
-| (tabela contas)  | POST   | /api/wallet        | Friend | Cria conta         |
-|                  |------->| Keypair.random()   |--bot-->| Financia 10k XLM   |
+| Emite boleto     | POST   | /api/blockchain    | Horizon| Manage Data        |
+| codebar como     |------->| key = codebar      |------->| na CONTA DA DS2U   |
+| chave            |        | value = payload    |        | (conta unica)      |
 |                  |        |                    |        |                    |
-|                  | GET    | /api/validate/     | Horizon| GET account data   |
-|                  |------->| :accountId/:hash   |------->| Hash existe?       |
+| Setup inicial    | POST   | /api/wallet        | Friend | Cria conta         |
+| (uma vez)        |------->| Keypair.random()   |--bot-->| Financia           |
+|                  |        |                    |        |                    |
+|                  |        | /api/validate/     | Horizon| GET account data   |
+| Usuario valida   |------->| :codebar           |------->| Codebar existe?    |
 +------------------+        +--------------------+        +--------------------+
 ```
+
+**Ponto-chave:** a conta Stellar e da **empresa** (DS2U), nao de cada cliente. Todos os boletos ficam na mesma conta. O Account ID da DS2U e fixo e ja vem configurado na API -- o usuario final nunca precisa saber dele.
 
 ---
 
@@ -112,7 +116,7 @@ stellar_boleto_guardian/
 |
 |-- Protheus/                        # Fontes ADVPL
 |   |-- ZXH.prw                      # Criacao da tabela ZXH
-|   |-- BoletoHashStellar.prw        # Hash + envio + validacao + QR
+|   |-- BoletoHashStellar.prw        # Registro + validacao + QR
 |   +-- README.md
 |
 |-- Stellar/                         # API Node.js
@@ -125,8 +129,8 @@ stellar_boleto_guardian/
 |   +-- public/
 |       +-- validation.html          # Pagina de validacao publica
 |
-|-- README.md                        # Indice (este arquivo e o principal)
-|-- README.pt-BR.md                  # Documentacao em portugues
+|-- README.md                        # Indice
+|-- README.pt-BR.md                  # Documentacao em portugues (este)
 |-- README.en.md                     # Documentacao em ingles
 |-- README.es.md                     # Documentacao em espanhol
 +-- .gitignore
@@ -134,7 +138,7 @@ stellar_boleto_guardian/
 
 ---
 
-## Instalacao passo a passo
+## Cenario DS2U -- passo a passo
 
 ### Pre-requisitos
 
@@ -142,17 +146,9 @@ stellar_boleto_guardian/
 |-----------|--------|
 | TOTVS Protheus | 12.1.33+ |
 | Node.js | 18+ |
-| Funcoes ADVPL | `SHA1()`, `HTTPRequest()` |
+| Funcoes ADVPL | `SHA1()`, `FWRest` |
 
-### 1. Criar tabela ZXH no Protheus
-
-Compilar `ZXH.prw` e executar **uma unica vez:**
-
-```advpl
-U_ZXH()
-```
-
-### 2. Subir a API Stellar
+### 1. Subir a API Stellar
 
 ```bash
 cd Stellar
@@ -161,6 +157,15 @@ cp env.example .env      # Ajustar PORT se necessario
 npm start                # Sobe em http://localhost:3000
 ```
 
+### 2. Criar conta Stellar da empresa (uma unica vez)
+
+```advpl
+U_ZXH()            // Cria tabela ZXH
+U_CriWltSt()       // Cria conta Stellar da DS2U e grava na ZXH
+```
+
+A DS2U agora tem uma conta Stellar. O Account ID e gravado na ZXH e configurado na API.
+
 ### 3. Configurar parametros no Protheus
 
 | Parametro | Valor | Descricao |
@@ -168,74 +173,81 @@ npm start                # Sobe em http://localhost:3000
 | **MV_XURLST** | `http://localhost:3000` | URL da API Stellar |
 | **MV_XURLVL** | `http://localhost:3000` | URL da pagina de validacao |
 
-### 4. Criar conta Stellar para um cliente
+### 4. Emitir boleto com registro na Stellar
 
 ```advpl
-U_CriaWalletStellar("000001")
-// Grava automaticamente na ZXH: Account ID + chave secreta
+// Ao emitir um boleto para o cliente 000001:
+U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
+// O codebar e gravado na Stellar como chave do Manage Data
 ```
 
-### 5. Gerar boleto com hash
+### 5. Validar boleto (experiencia do usuario final)
 
-```advpl
-cHash := U_BoletoHashStellar("123456789012", 1235.40, CToD("05/08/2025"), "000001")
-// Hash e registrado na Stellar e QR Code e gerado
-```
+O cliente da DS2U recebe o boleto e quer saber se e autentico:
 
-### 6. Validar boleto
+1. Abre `http://ds2u.com/validar` (ou escaneia o QR Code do boleto)
+2. Digita os **47 numeros** do codigo de barras
+3. O sistema consulta a Stellar e mostra:
+   - Valor original
+   - Vencimento
+   - Nosso numero
+   - Status
 
-Abrir `http://localhost:3000/validation.html` e informar:
-- **Account ID** (da tabela ZXH)
-- **Hash** (impresso no boleto / QR Code)
+**Se os dados batem com o boleto impresso, e autentico. Se nao existe na chain, e fraude.**
 
 ---
 
-## API - Endpoints
+## API -- Endpoints
 
 | Metodo | Rota | O que faz |
 |--------|------|-----------|
 | `GET` | `/` | Status da API |
-| `POST` | `/api/wallet` | Cria conta Stellar (Friendbot) |
-| `POST` | `/api/blockchain` | Registra hash na conta (Manage Data) |
-| `GET` | `/api/account/:id/data` | Lista hashes da conta |
-| `GET` | `/api/validate/:id/:hash` | Valida se hash existe |
+| `POST` | `/api/wallet` | Cria conta Stellar da empresa |
+| `POST` | `/api/blockchain` | Registra boleto (key=codebar, value=payload) |
+| `GET` | `/api/validate/:codebar` | Valida boleto pelo codigo de barras |
+| `GET` | `/api/account/:id/data` | Lista todos os boletos registrados |
 
 ### Exemplo POST /api/blockchain
 
 ```json
 {
-  "hash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-  "nosso_numero": "123456789012",
-  "valor": "1235.40",
+  "codebar": "23793381286000000000300000004001184340000012050",
+  "nosso_numero": "000000040",
+  "valor": "120.50",
   "vencimento": "2025-08-05",
   "secret": "S..."
 }
 ```
 
+### Exemplo GET /api/validate/:codebar
+
+```
+GET /api/validate/23793381286000000000300000004001184340000012050
+```
+
+Resposta:
+```json
+{
+  "success": true,
+  "found": true,
+  "data": {
+    "codebar": "23793381286000000000300000004001184340000012050",
+    "nosso_numero": "000000040",
+    "valor": "120.50",
+    "vencimento": "2025-08-05",
+    "status": "pendente"
+  }
+}
+```
+
 ---
 
-## Tabela ZXH (Protheus)
+## Manage Data na Stellar
 
-| Campo | Tipo | Tam | Descricao |
-|-------|------|-----|-----------|
-| `ZXH_FILIAL` | C | 2 | Filial |
-| `ZXH_CODCLI` | C | 6 | Codigo do cliente |
-| `ZXH_WALLET` | C | 60 | Stellar Account ID (chave publica) |
-| `ZXH_TOPIC` | C | 20 | Reservado |
-| `ZXH_PRIVKEY` | C | 300 | Chave secreta Stellar |
-| `ZXH_DTGER` | D | 8 | Data de criacao |
-
----
-
-## Funcoes ADVPL
-
-| Funcao | O que faz |
-|--------|-----------|
-| `U_ZXH()` | Cria a tabela ZXH |
-| `U_BoletoHashStellar(cNossoNum, nValor, dVenc, cCodCli)` | Gera hash, registra na Stellar, gera QR |
-| `U_ValidaBoletoStellar(cAccount, cHash)` | Valida hash na conta Stellar |
-| `U_CriaWalletStellar(cCodCli)` | Cria conta Stellar e grava na ZXH |
-| `U_TestaIntegracaoStellar()` | Testa conexao com a API |
+| Campo | Conteudo | Limite | Exemplo |
+|-------|----------|--------|---------|
+| **key** | Codigo de barras (linha digitavel) | 64 bytes | `2379338128600000000030000000400118434...` (47 digitos) |
+| **value** | `nosso_num\|valor\|vencto\|status` | 64 bytes | `000000040\|120.50\|20250805\|pendente` |
 
 ---
 
@@ -243,10 +255,10 @@ Abrir `http://localhost:3000/validation.html` e informar:
 
 | Aspecto | Detalhe |
 |---------|---------|
-| **Hash** | SHA1 sobre nosso_numero + valor + vencimento + cod_cliente |
 | **Imutabilidade** | Manage Data na Stellar: uma vez gravado, nao pode ser alterado sem nova transacao |
-| **Chaves privadas** | Nunca logar; em producao, criptografar na ZXH |
+| **Chave da empresa** | A chave privada da conta Stellar fica na ZXH (criptografar em producao) |
 | **Transporte** | HTTPS obrigatorio em producao |
+| **Conta unica** | Account ID da empresa e publico; chave privada nunca e exposta |
 
 ## Custos
 
@@ -254,6 +266,7 @@ Abrir `http://localhost:3000/validation.html` e informar:
 |----------|-------|
 | **Testnet** | Gratuito (Friendbot) |
 | **Mainnet** | ~0,00001 XLM por operacao (~US$ 0,000001) |
+| **Reserva** | 1 XLM base + 0,5 XLM por boleto registrado (subentry) |
 
 ---
 
@@ -263,7 +276,7 @@ Abrir `http://localhost:3000/validation.html` e informar:
 
 | | Tecnologia | Papel |
 |-|------------|-------|
-| ![Stellar](https://img.shields.io/badge/-Stellar-7C3AED?logo=stellar&logoColor=white) | Stellar Blockchain | Registro imutavel dos hashes |
+| ![Stellar](https://img.shields.io/badge/-Stellar-7C3AED?logo=stellar&logoColor=white) | Stellar Blockchain | Registro imutavel dos boletos |
 | ![Node](https://img.shields.io/badge/-Node.js-339933?logo=node.js&logoColor=white) | Node.js + Express | API ponte entre Protheus e Stellar |
 | ![ADVPL](https://img.shields.io/badge/-ADVPL-00529B) | TOTVS Protheus | ERP que gera e valida boletos |
 

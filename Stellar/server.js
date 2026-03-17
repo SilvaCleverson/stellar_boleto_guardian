@@ -1,39 +1,40 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
-const { sendHashToAccount } = require("./sendHashToAccount");
+const { Horizon, Keypair } = require("@stellar/stellar-sdk");
+const { sendHashToAccount, HORIZON_URL } = require("./sendHashToAccount");
 const { main: createAccount } = require("./createClientAccount");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const HORIZON_URL = process.env.HORIZON_URL || "https://horizon-testnet.stellar.org";
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-function base64UrlEncode(str) {
-  return Buffer.from(str, "utf8")
-    .toString("base64")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
+function isValidStellarKey(key) {
+  if (!key || typeof key !== "string" || key.length !== 56) return false;
+  try {
+    Keypair.fromPublicKey(key);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({
     message: "API Stellar Boleto Authentication",
-    version: "1.0.0",
+    version: "2.0.0",
     status: "running",
     horizon: HORIZON_URL,
+    network: process.env.STELLAR_NETWORK || "testnet",
   });
 });
 
-// Criar conta Stellar para cliente (retorna dados para ZXH)
-app.post("/api/wallet", async (req, res) => {
+app.post("/api/wallet", async (_req, res) => {
   try {
-    console.log("🔧 Criando nova conta Stellar...");
+    console.log("[STELLAR] Criando nova conta Stellar...");
     const result = await createAccount();
     res.json({
       success: true,
@@ -41,18 +42,14 @@ app.post("/api/wallet", async (req, res) => {
       message: "Conta Stellar criada com sucesso",
     });
   } catch (error) {
-    console.error("❌ Erro ao criar conta:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("[STELLAR] Erro ao criar conta:", error.message);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// Enviar hash para blockchain (Manage Data na conta do cliente)
 app.post("/api/blockchain", async (req, res) => {
   try {
-    const { hash, nosso_numero, valor, vencimento, account, secret } = req.body;
+    const { hash, nosso_numero, valor, vencimento, secret } = req.body;
     const accountSecret = secret || req.body.privateKey;
 
     if (!hash || !nosso_numero || !valor || !vencimento) {
@@ -64,7 +61,7 @@ app.post("/api/blockchain", async (req, res) => {
     if (!accountSecret) {
       return res.status(400).json({
         success: false,
-        error: "É necessário enviar 'secret' ou 'privateKey' da conta do cliente (ZXH_PRIVKEY)",
+        error: "Campo 'secret' ou 'privateKey' é obrigatório (ZXH_PRVKEY)",
       });
     }
 
@@ -77,7 +74,7 @@ app.post("/api/blockchain", async (req, res) => {
       timestamp: new Date().toISOString(),
     };
 
-    console.log("📤 Enviando hash para Stellar...");
+    console.log("[STELLAR] Enviando hash para blockchain:", hash);
     const result = await sendHashToAccount(accountSecret, payload);
 
     res.json({
@@ -86,47 +83,50 @@ app.post("/api/blockchain", async (req, res) => {
       message: "Hash registrado na Stellar com sucesso",
     });
   } catch (error) {
-    console.error("❌ Erro ao enviar para blockchain:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("[STELLAR] Erro ao enviar para blockchain:", error.message);
+    const status = error.message.includes("obrigatório") ? 400 : 500;
+    res.status(status).json({ success: false, error: error.message });
   }
 });
 
-// Listar data entries da conta (chaves)
 app.get("/api/account/:accountId/data", async (req, res) => {
   try {
     const { accountId } = req.params;
-    const response = await fetch(`${HORIZON_URL}/accounts/${accountId}`);
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      return res.status(response.status).json({
-        success: false,
-        error: err.detail || err.error || "Conta não encontrada",
-      });
+
+    if (!isValidStellarKey(accountId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Account ID Stellar inválido" });
     }
-    const account = await response.json();
-    const dataKeys = account.data ? Object.keys(account.data) : [];
+
+    const server = new Horizon.Server(HORIZON_URL);
+    const account = await server.loadAccount(accountId);
+    const dataKeys = account.data_attr ? Object.keys(account.data_attr) : [];
+
     res.json({
       success: true,
       data: { keys: dataKeys, accountId },
     });
   } catch (error) {
-    console.error("❌ Erro ao buscar dados da conta:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("[STELLAR] Erro ao buscar dados da conta:", error.message);
+    const status = error.message.includes("Not Found") ? 404 : 500;
+    res
+      .status(status)
+      .json({ success: false, error: error.message || "Conta não encontrada" });
   }
 });
 
-// Validar se um hash existe na conta (consultar data entry)
 app.get("/api/validate/:accountId/:hash", async (req, res) => {
   try {
     const { accountId, hash } = req.params;
-    const keyB64 = base64UrlEncode(hash);
-    const url = `${HORIZON_URL}/accounts/${accountId}/data/${keyB64}`;
+
+    if (!isValidStellarKey(accountId)) {
+      return res
+        .status(400)
+        .json({ success: false, error: "Account ID Stellar inválido" });
+    }
+
+    const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(hash)}`;
     const response = await fetch(url);
 
     if (response.status === 404) {
@@ -148,9 +148,10 @@ app.get("/api/validate/:accountId/:hash", async (req, res) => {
     const data = await response.json();
     let valueDecoded = "";
     try {
-      const base64 = data.value.replace(/-/g, "+").replace(/_/g, "/");
-      valueDecoded = Buffer.from(base64, "base64").toString("utf8");
-    } catch (_) {}
+      valueDecoded = Buffer.from(data.value, "base64").toString("utf8");
+    } catch (_) {
+      /* valor pode estar vazio */
+    }
 
     const [nosso_numero, valor, vencimento, status] = valueDecoded.split("|");
 
@@ -164,22 +165,26 @@ app.get("/api/validate/:accountId/:hash", async (req, res) => {
         vencimento: vencimento || "",
         status: status || "pendente",
       },
-      transactionId: data.last_modified_ledger ? `ledger:${data.last_modified_ledger}` : null,
+      ledger: data.last_modified_ledger || null,
+      stellarExplorer: `https://stellar.expert/explorer/${
+        (process.env.STELLAR_NETWORK || "testnet") === "public"
+          ? "public"
+          : "testnet"
+      }/account/${accountId}`,
     });
   } catch (error) {
-    console.error("❌ Erro ao validar hash:", error);
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
+    console.error("[STELLAR] Erro ao validar hash:", error.message);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor Stellar rodando na porta ${PORT}`);
-  console.log(`📡 API: http://localhost:${PORT}`);
-  console.log(`   POST /api/wallet - Criar conta Stellar`);
-  console.log(`   POST /api/blockchain - Registrar hash (Manage Data)`);
-  console.log(`   GET /api/account/:accountId/data - Listar chaves da conta`);
-  console.log(`   GET /api/validate/:accountId/:hash - Validar hash`);
+  console.log(`[STELLAR] Servidor rodando na porta ${PORT}`);
+  console.log(`[STELLAR] Horizon: ${HORIZON_URL}`);
+  console.log(`[STELLAR] Network: ${process.env.STELLAR_NETWORK || "testnet"}`);
+  console.log(`[STELLAR] Endpoints:`);
+  console.log(`  POST /api/wallet            - Criar conta Stellar`);
+  console.log(`  POST /api/blockchain         - Registrar hash (Manage Data)`);
+  console.log(`  GET  /api/account/:id/data   - Listar chaves da conta`);
+  console.log(`  GET  /api/validate/:id/:hash - Validar hash`);
 });

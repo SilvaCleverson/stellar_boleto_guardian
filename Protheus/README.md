@@ -1,52 +1,98 @@
-# Fontes ADVPL – Stellar Boleto Guardian
+# Fontes ADVPL -- Stellar Boleto Guardian
 
-Fontes Protheus para autenticação de boletos via blockchain Stellar.
+Fontes Protheus para autenticacao imutavel de boletos via blockchain Stellar.
+
+## Nova arquitetura: codebar como chave
+
+Na nova arquitetura, o **codigo de barras** (linha digitavel, 47 digitos) e usado como chave do Manage Data na Stellar. Isso permite que o usuario final valide o boleto digitando apenas os numeros impressos no documento.
+
+```
+Protheus (DS2U)                     Stellar (Blockchain)
++------------------+                +--------------------+
+| Emite boleto     |   FWRest POST  | Manage Data        |
+| Envia codebar    | -------------> | key = codebar      |
+| como chave       |                | value = payload    |
++------------------+                | (conta da empresa) |
+                                    +--------------------+
+```
+
+> **Nota:** o codigo sera refatorado para implementar esta arquitetura. Atualmente usa hash SHA1 como chave.
 
 ## Estrutura
 
 ### ZXH.prw
-- **Função:** criação da tabela ZXH (cadastro de contas Stellar por cliente).
-- **Campos:**
-  - ZXH_FILIAL: Filial (C, 2)
-  - ZXH_CODCLI: Código do cliente (C, 6)
-  - ZXH_WALLET: Stellar Account ID (C, 60)
-  - ZXH_TOPIC: Reservado (C, 20)
-  - ZXH_PRIVKEY: Chave privada Stellar (C, 300)
-  - ZXH_DTGER: Data da criação (D, 8)
+
+Tabela ZXH para cadastro de contas Stellar. Na nova arquitetura, armazena a **conta unica da empresa**.
+
+| Campo | Tipo | Tam | Descricao |
+|-------|------|-----|-----------|
+| ZXH_FILIAL | C | 2 | Filial |
+| ZXH_CODCLI | C | 6 | Codigo do cliente (ou empresa) |
+| ZXH_WALLET | C | 60 | Stellar Account ID |
+| ZXH_TOPIC | C | 20 | Reservado |
+| ZXH_PRVKEY | C | 300 | Chave privada Stellar |
+| ZXH_DTGER | D | 8 | Data da criacao |
+
+**Indices:**
+- 1: `ZXH_FILIAL+ZXH_WALLET` (Filial+Wallet)
+- 2: `ZXH_FILIAL+ZXH_CODCLI` (Filial+Cliente)
 
 ### BoletoHashStellar.prw
-- **Função:** geração de hash do boleto e registro na Stellar via API Node.
-- **Funções principais:**
-  - `U_BoletoHashStellar()`: Gera hash, envia para API e gera QR.
-  - `U_ValidaBoletoStellar()`: Valida hash na conta Stellar.
-  - `U_CriaWalletStellar()`: Cria conta Stellar e grava na ZXH.
-  - `U_TestaIntegracaoStellar()`: Testa conexão com a API.
 
-## Como usar
+Registro de boletos na Stellar e validacao.
+
+| Funcao | Tipo | Chars | O que faz |
+|--------|------|-------|-----------|
+| `U_BolStlr()` | User | 7 | Registra boleto na Stellar (codebar como chave) |
+| `U_VldBolSt()` | User | 8 | Valida boleto pelo codebar |
+| `U_CriWltSt()` | User | 8 | Cria conta Stellar da empresa |
+| `U_TstStlr()` | User | 7 | Testa conexao com a API |
+
+## Fluxo planejado (nova arquitetura)
 
 ```advpl
 // 1. Criar tabela ZXH (uma vez)
 U_ZXH()
 
-// 2. Testar integração com a API
-U_TestaIntegracaoStellar()
+// 2. Criar conta Stellar da empresa (uma vez)
+U_CriWltSt()
 
-// 3. Criar conta Stellar para o cliente
-U_CriaWalletStellar("000001")
+// 3. Testar integracao
+U_TstStlr()
 
-// 4. Gerar hash ao emitir boleto
-cHash := U_BoletoHashStellar("123456789012", 1235.40, CToD("2025-08-05"), "000001")
+// 4. Ao emitir cada boleto, registrar na Stellar
+U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
+// codebar = linha digitavel (47 digitos)
+// Grava na Stellar: key = codebar, value = nossonum|valor|vencto|status
 
-// 5. Validar boleto (Account ID = ZXH_WALLET do cliente)
-lValido := U_ValidaBoletoStellar(cAccountId, cHash)
+// 5. Validar boleto (usuario digita os 47 numeros)
+lValido := U_VldBolSt(cCodebar)
+// Consulta a API: GET /api/validate/{codebar}
+// Nao precisa de Account ID -- a conta da empresa e fixa
 ```
 
-## Integração
+## Boas praticas Protheus aplicadas
 
-- Os fontes chamam a API Node.js na pasta `Stellar/`.
-- Parâmetros no Protheus: **MV_XURLST** (URL da API, ex.: `http://localhost:3000`) e **MV_XURLVL** (URL da página de validação).
+| Pratica | Detalhe |
+|---------|---------|
+| **FWRest** | HTTP via classe TOTVS padrao |
+| **ErrorBlock + Begin Sequence** | Tratamento de excecao nas chamadas HTTP |
+| **Default** | Parametros com valor padrao |
+| **RecLock check** | Verificacao de retorno do RecLock |
+| **Logging [STELLAR]** | Prefixo padrao no ConOut |
+| **EncodeUTF8/DecodeUTF8** | Conversao CP1252 <-> UTF-8 |
 
-## URLs
+## Regras de nomenclatura Protheus
 
-- Horizon testnet: https://horizon-testnet.stellar.org  
-- Stellar: https://stellar.org
+| Tipo | Max. chars | Exemplo |
+|------|------------|---------|
+| User Function | 8 | `BolStlr` (7) |
+| Static Function | 10 | `ExtCmpJSON` (10) |
+| Nome de campo | 10 | `ZXH_PRVKEY` (10) |
+
+## Parametros Protheus
+
+| Parametro | Valor | Descricao |
+|-----------|-------|-----------|
+| **MV_XURLST** | `http://localhost:3000` | URL da API Stellar |
+| **MV_XURLVL** | `http://localhost:3000` | URL da pagina de validacao |

@@ -1,155 +1,218 @@
 #INCLUDE "TbiCode.ch"
+#INCLUDE "FWMvcDef.ch"
 
-/*/{Protheus.doc} BoletoHashStellar
-GeraÃƒÂ§ÃƒÂ£o de hash para boletos e registro na blockchain Stellar (Manage Data).
-Chama API Node.js que assina e envia a operaÃƒÂ§ÃƒÂ£o.
+/*/{Protheus.doc} BolStlr
+Gera��o de hash para boletos e registro na blockchain Stellar (Manage Data).
+Chama API Node.js que assina e envia a opera��o Manage Data na conta do cliente.
 @type function
 @version 12.1.33
 @author Cleverson Silva
 @since 15/03/2025
-@param cNossoNum, character, Nosso nÃƒÂºmero do boleto
+@param cNossoNm, character, Nosso n�mero do boleto
 @param nValor, numeric, Valor do boleto
-@param dVencimento, date, Data de vencimento
-@param cCodCli, character, CÃƒÂ³digo do cliente
-@return character, Hash gerado
+@param dVencto, date, Data de vencimento
+@param cCodCli, character, C�digo do cliente
+@return character, Hash SHA1 gerado (vazio se erro)
 /*/
-User Function BoletoHashStellar(cNossoNum, nValor, dVencimento, cCodCli)
+User Function BolStlr(cNossoNm, nValor, dVencto, cCodCli)
     Local cHash    := ""
     Local cPayload := ""
-    Local cAccount := ""
-    Local cSecret  := ""
+    Local aCliDat  := {}
 
-    cAccount := GetAccountCliente(cCodCli)
-    cSecret  := GetSecretCliente(cCodCli)
+    Default cNossoNm := ""
+    Default nValor   := 0
+    Default dVencto  := CToD("")
+    Default cCodCli  := ""
 
-    If Empty(cAccount) .Or. Empty(cSecret)
-        MsgAlert("Cliente sem conta Stellar cadastrada. Execute U_CriaWalletStellar(cCodCli) antes.", "Boleto Stellar")
+    If Empty(cNossoNm) .Or. nValor <= 0 .Or. Empty(dVencto) .Or. Empty(cCodCli)
+        ConOut("[STELLAR] BolStlr: parametros invalidos")
         Return ""
     EndIf
 
-    cPayload := cNossoNum + Str(nValor, 15, 2) + DToS(dVencimento) + cCodCli
+    aCliDat := GetCliDat(cCodCli)
+
+    If Empty(aCliDat[1]) .Or. Empty(aCliDat[2])
+        MsgAlert("Cliente sem conta Stellar cadastrada. Execute U_CriWltSt(cCodCli) antes.", "Boleto Stellar")
+        Return ""
+    EndIf
+
+    cPayload := cNossoNm + Str(nValor, 15, 2) + DToS(dVencto) + cCodCli
     cHash    := SHA1(cPayload)
 
-    EnviaParaStellar(cHash, cNossoNum, nValor, dVencimento, cAccount, cSecret)
-    GeraQRCodeStellar(cHash, cAccount)
+    If EnvStlr(cHash, cNossoNm, nValor, dVencto, aCliDat[1], aCliDat[2])
+        GeraQRCod(cHash, aCliDat[1])
+        ConOut("[STELLAR] BolStlr: hash registrado - " + cHash)
+    Else
+        ConOut("[STELLAR] BolStlr: falha ao registrar hash na Stellar")
+    EndIf
 
 Return cHash
 
-/*/{Protheus.doc} EnviaParaStellar
+/*/{Protheus.doc} EnvStlr
 Envia hash para a API Node Stellar (Manage Data na conta do cliente).
 @type static
-@param cHash, cNossoNum, nValor, dVencimento, cAccount, cSecret
-@return Nil
+@param cHash, character, Hash SHA1
+@param cNossoNm, character, Nosso n�mero
+@param nValor, numeric, Valor
+@param dVencto, date, Vencimento
+@param cAccount, character, Account ID Stellar
+@param cSecret, character, Chave privada Stellar
+@return logical, .T. se enviado com sucesso
 /*/
-Static Function EnviaParaStellar(cHash, cNossoNum, nValor, dVencimento, cAccount, cSecret)
-    Local cURL     := GetBaseURLStellar() + "/api/blockchain"
-    Local cJSON    := ""
-    Local cHeaders := ""
+Static Function EnvStlr(cHash, cNossoNm, nValor, dVencto, cAccount, cSecret)
+    Local cJSON := ""
+    Local cResp := ""
+    Local lRet  := .F.
 
     cJSON := '{'
-    cJSON += '"hash":"' + cHash + '",'
-    cJSON += '"nosso_numero":"' + cNossoNum + '",'
-    cJSON += '"valor":"' + Str(nValor, 15, 2) + '",'
-    cJSON += '"vencimento":"' + DToS(dVencimento) + '",'
-    cJSON += '"account":"' + cAccount + '",'
-    cJSON += '"secret":"' + cSecret + '"'
+    cJSON += '"hash":"'         + cHash              + '",'
+    cJSON += '"nosso_numero":"' + cNossoNm           + '",'
+    cJSON += '"valor":"'        + Str(nValor, 15, 2) + '",'
+    cJSON += '"vencimento":"'   + DToS(dVencto)      + '",'
+    cJSON += '"account":"'      + cAccount           + '",'
+    cJSON += '"secret":"'       + cSecret            + '"'
     cJSON += '}'
 
-    cHeaders := "Content-Type: application/json" + CRLF + "Accept: application/json"
-    HTTPRequest(cURL, "POST", cJSON, cHeaders)
-Return
+    cResp := RestPOST(GetBaseURL(), "/api/blockchain", cJSON)
+    lRet  := !Empty(cResp) .And. '"success":true' $ cResp
 
-/*/{Protheus.doc} GeraQRCodeStellar
-Monta URL de validaÃƒÂ§ÃƒÂ£o e QR Code (Stellar Ã¢â‚¬â€œ Account ID).
+Return lRet
+
+/*/{Protheus.doc} GeraQRCod
+Monta URL de valida��o e QR Code com Account ID Stellar.
 @type static
+@param cHash, character, Hash SHA1
+@param cAccount, character, Account ID Stellar
+@return Nil
 /*/
-Static Function GeraQRCodeStellar(cHash, cAccount)
-    Local cURL  := ""
-    Local cQR   := ""
+Static Function GeraQRCod(cHash, cAccount)
+    Local cURL := ""
+    Local cQR  := ""
 
-    cURL := GetValidationURLStellar() + "/validation.html?account=" + cAccount + "&hash=" + cHash
+    cURL := GetVldURL() + "/validation.html?account=" + cAccount + "&hash=" + cHash
     cQR  := "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + cURL
-    ConOut("QR Code Stellar: " + cQR)
+    ConOut("[STELLAR] QR Code: " + cQR)
 Return
 
-/*/{Protheus.doc} ValidaBoletoStellar
+/*/{Protheus.doc} VldBolSt
 Valida boleto consultando a API Stellar (Horizon / account data).
 @type function
+@version 12.1.33
+@author Cleverson Silva
+@since 15/03/2025
 @param cAccount, character, Account ID (conta Stellar do cliente)
 @param cHash, character, Hash do boleto
 @return logical, .T. se hash encontrado na conta
 /*/
-User Function ValidaBoletoStellar(cAccount, cHash)
-    Local cURL     := ""
-    Local cResponse:= ""
-    Local lValido  := .F.
+User Function VldBolSt(cAccount, cHash)
+    Local cResp   := ""
+    Local lValido := .F.
 
-    cURL := GetBaseURLStellar() + "/api/validate/" + cAccount + "/" + cHash
-    cResponse := HTTPRequest(cURL, "GET", "", "Accept: application/json")
-    lValido := ( '"found":true' $ cResponse .Or. '"found": true' $ cResponse )
-    ConOut("ValidaÃƒÂ§ÃƒÂ£o Stellar: " + IIf(lValido, "VÃƒï¿½LIDO", "INVÃƒï¿½LIDO"))
+    Default cAccount := ""
+    Default cHash    := ""
+
+    If Empty(cAccount) .Or. Empty(cHash)
+        ConOut("[STELLAR] VldBolSt: parametros invalidos")
+        Return .F.
+    EndIf
+
+    cResp   := RestGET(GetBaseURL(), "/api/validate/" + cAccount + "/" + cHash)
+    lValido := !Empty(cResp) .And. ( '"found":true' $ cResp .Or. '"found": true' $ cResp )
+
+    ConOut("[STELLAR] Validacao: " + IIf(lValido, "VALIDO", "INVALIDO") + " | Account: " + cAccount)
+
 Return lValido
 
-/*/{Protheus.doc} CriaWalletStellar
+/*/{Protheus.doc} CriWltSt
 Cria conta Stellar via API Node (Friendbot testnet) e persiste na ZXH.
 @type function
-@param cCodCli, character, CÃƒÂ³digo do cliente
+@version 12.1.33
+@author Cleverson Silva
+@since 15/03/2025
+@param cCodCli, character, C�digo do cliente
 @return character, Resposta da API (JSON)
 /*/
-User Function CriaWalletStellar(cCodCli)
-    Local cURL      := GetBaseURLStellar() + "/api/wallet"
-    Local cResponse := ""
-    Local cHeaders  := ""
-    Local cAccount  := ""
-    Local cSecret   := ""
+User Function CriWltSt(cCodCli)
+    Local cResp    := ""
+    Local cAccount := ""
+    Local cSecret  := ""
 
-    cHeaders := "Content-Type: application/json" + CRLF + "Accept: application/json"
-    cResponse := HTTPRequest(cURL, "POST", "{}", cHeaders)
+    Default cCodCli := ""
 
-    cAccount := ExtraiCampoJSONStellar(cResponse, "accountId")
-    If Empty(cAccount)
-        cAccount := ExtraiCampoJSONStellar(cResponse, "wallet")
+    If Empty(cCodCli)
+        ConOut("[STELLAR] CriWltSt: codigo do cliente vazio")
+        Return ""
     EndIf
-    cSecret := ExtraiCampoJSONStellar(cResponse, "privateKey")
+
+    cResp := RestPOST(GetBaseURL(), "/api/wallet", "{}")
+
+    If Empty(cResp)
+        ConOut("[STELLAR] CriWltSt: falha na chamada da API")
+        Return ""
+    EndIf
+
+    cAccount := ExtCmpJSON(cResp, "accountId")
+    If Empty(cAccount)
+        cAccount := ExtCmpJSON(cResp, "wallet")
+    EndIf
+    cSecret := ExtCmpJSON(cResp, "privateKey")
 
     If !Empty(cAccount) .And. !Empty(cSecret)
-        SalvaWalletZXHStellar(cCodCli, cAccount, cSecret)
+        SalvaWZXH(cCodCli, cAccount, cSecret)
+        ConOut("[STELLAR] CriWltSt: wallet criada | Cliente: " + cCodCli + " | Account: " + cAccount)
+    Else
+        ConOut("[STELLAR] CriWltSt: resposta sem dados de conta")
     EndIf
 
-Return cResponse
+Return cResp
 
-/*/{Protheus.doc} SalvaWalletZXHStellar
-Grava Account ID e chave na ZXH (Stellar: ZXH_WALLET = account, ZXH_TOPIC em branco).
+/*/{Protheus.doc} SalvaWZXH
+Grava Account ID e chave privada na tabela ZXH.
 @type static
+@param cCodCli, character, C�digo do cliente
+@param cAccount, character, Account ID Stellar
+@param cSecret, character, Chave privada Stellar
+@return logical, .T. se gravou com sucesso
 /*/
-Static Function SalvaWalletZXHStellar(cCodCli, cAccount, cSecret)
+Static Function SalvaWZXH(cCodCli, cAccount, cSecret)
     Local lFound := .F.
 
     ZXH->(DbSetOrder(2))
     lFound := ZXH->(DbSeek(xFilial("ZXH") + cCodCli))
 
     If lFound
-        RecLock("ZXH", .F.)
+        If !RecLock("ZXH", .F.)
+            ConOut("[STELLAR] SalvaWZXH: falha ao bloquear registro existente")
+            Return .F.
+        EndIf
     Else
-        RecLock("ZXH", .T.)
+        If !RecLock("ZXH", .T.)
+            ConOut("[STELLAR] SalvaWZXH: falha ao incluir novo registro")
+            Return .F.
+        EndIf
     EndIf
-    ZXH->ZXH_FILIAL  := xFilial("ZXH")
-    ZXH->ZXH_CODCLI  := cCodCli
-    ZXH->ZXH_WALLET  := cAccount
-    ZXH->ZXH_TOPIC   := ""  // Reservado (Stellar usa apenas ZXH_WALLET)
-    ZXH->ZXH_PRIVKEY := cSecret
-    ZXH->ZXH_DTGER   := Date()
-    MsUnlock()
-Return
 
-/*/{Protheus.doc} ExtraiCampoJSONStellar
-Extrai valor de campo em JSON (ex.: "accountId":"GABC...").
+    ZXH->ZXH_FILIAL := xFilial("ZXH")
+    ZXH->ZXH_CODCLI := cCodCli
+    ZXH->ZXH_WALLET := cAccount
+    ZXH->ZXH_TOPIC  := ""
+    ZXH->ZXH_PRVKEY := cSecret
+    ZXH->ZXH_DTGER  := Date()
+    MsUnlock()
+
+Return .T.
+
+/*/{Protheus.doc} ExtCmpJSON
+Extrai valor de campo em JSON simples (ex.: "accountId":"GABC...").
 @type static
+@param cJSON, character, String JSON
+@param cCampo, character, Nome do campo
+@return character, Valor extra�do
 /*/
-Static Function ExtraiCampoJSONStellar(cJSON, cCampo)
-    Local nPos := 0
-    Local nIni := 0
-    Local nFim := 0
+Static Function ExtCmpJSON(cJSON, cCampo)
+    Local nPos   := 0
+    Local nIni   := 0
+    Local nFim   := 0
     Local cValor := ""
 
     nPos := At('"' + cCampo + '":', cJSON)
@@ -160,67 +223,121 @@ Static Function ExtraiCampoJSONStellar(cJSON, cCampo)
             cValor := SubStr(cJSON, nIni, nFim - nIni)
         EndIf
     EndIf
+
 Return cValor
 
-/*/{Protheus.doc} GetAccountCliente
-Retorna ZXH_WALLET (Account ID) do cliente.
+/*/{Protheus.doc} GetCliDat
+Retorna Account ID e chave privada Stellar do cliente (um �nico DbSeek).
 @type static
+@param cCodCli, character, C�digo do cliente
+@return array, {cAccount, cSecret}
 /*/
-Static Function GetAccountCliente(cCodCli)
-    Local cAccount := ""
+Static Function GetCliDat(cCodCli)
+    Local aRet := {"", ""}
 
     ZXH->(DbSetOrder(2))
     If ZXH->(DbSeek(xFilial("ZXH") + cCodCli))
-        cAccount := ZXH->ZXH_WALLET
+        aRet[1] := ZXH->ZXH_WALLET
+        aRet[2] := ZXH->ZXH_PRVKEY
     EndIf
-Return cAccount
 
-/*/{Protheus.doc} GetSecretCliente
-Retorna ZXH_PRIVKEY do cliente (chave Stellar).
-@type static
-/*/
-Static Function GetSecretCliente(cCodCli)
-    Local cSecret := ""
+Return aRet
 
-    ZXH->(DbSetOrder(2))
-    If ZXH->(DbSeek(xFilial("ZXH") + cCodCli))
-        cSecret := ZXH->ZXH_PRIVKEY
-    EndIf
-Return cSecret
-
-/*/{Protheus.doc} TestaIntegracaoStellar
-Testa conectividade com a API Stellar (GET /).
+/*/{Protheus.doc} TstStlr
+Testa conectividade com a API Node Stellar (GET /).
 @type function
+@version 12.1.33
+@author Cleverson Silva
+@since 15/03/2025
+@return Nil
 /*/
-User Function TestaIntegracaoStellar()
-    Local cURL      := GetBaseURLStellar() + "/"
-    Local cResponse := ""
+User Function TstStlr()
+    Local cResp := ""
 
-    cResponse := HTTPRequest(cURL, "GET", "", "Accept: application/json")
-    If At("Stellar", cResponse) > 0
-        MsgInfo("ConexÃƒÂ£o com API Stellar OK!", "Teste de IntegraÃƒÂ§ÃƒÂ£o")
+    cResp := RestGET(GetBaseURL(), "/")
+
+    If !Empty(cResp) .And. At("Stellar", cResp) > 0
+        MsgInfo("Conex�o com API Stellar OK!", "Teste de Integra��o")
     Else
-        MsgAlert("Falha na conexÃƒÂ£o com API Stellar. Verifique URL e se o servidor Node estÃƒÂ¡ rodando.", "Teste")
+        MsgAlert("Falha na conex�o com API Stellar. Verifique URL e se o servidor Node est� rodando.", "Teste")
     EndIf
+
 Return
 
-/*/{Protheus.doc} GetBaseURLStellar
-URL base da API Node Stellar (ex.: http://localhost:3000).
+/*/{Protheus.doc} RestPOST
+Executa requisi��o HTTP POST via FWRest com tratamento de erro.
 @type static
+@param cBase, character, URL base (ex.: http://localhost:3000)
+@param cPath, character, Endpoint (ex.: /api/blockchain)
+@param cBody, character, Corpo da requisi��o (JSON)
+@return character, Resposta da API (vazio se erro)
 /*/
-Static Function GetBaseURLStellar()
-    Local cURL := ""
+Static Function RestPOST(cBase, cPath, cBody)
+    Local oRest   := Nil
+    Local cResp   := ""
+    Local cError  := ""
+    Local bOldErr := ErrorBlock({|e| cError := e:Description, Break(e)})
 
-    // Configurar no Protheus (parÃƒÂ¢metro, .ini ou constante)
-    cURL := GetMV("MV_XURLST", .F., "http://localhost:3000")
-Return cURL
+    Begin Sequence
+        oRest := FWRest():New(cBase)
+        oRest:SetPath(cPath)
+        oRest:SetPostParams(EncodeUTF8(cBody))
 
-/*/{Protheus.doc} GetValidationURLStellar
-URL da pÃƒÂ¡gina de validaÃƒÂ§ÃƒÂ£o (ex.: http://localhost:3000).
+        If oRest:Post()
+            cResp := DecodeUTF8(oRest:GetResult())
+        Else
+            ConOut("[STELLAR] RestPOST erro: " + cBase + cPath)
+        EndIf
+    Recover
+        ConOut("[STELLAR] RestPOST exce��o: " + cError)
+    End Sequence
+
+    ErrorBlock(bOldErr)
+
+Return cResp
+
+/*/{Protheus.doc} RestGET
+Executa requisi��o HTTP GET via FWRest com tratamento de erro.
 @type static
+@param cBase, character, URL base
+@param cPath, character, Endpoint
+@return character, Resposta da API (vazio se erro)
 /*/
-Static Function GetValidationURLStellar()
-    Local cURL := ""
+Static Function RestGET(cBase, cPath)
+    Local oRest   := Nil
+    Local cResp   := ""
+    Local cError  := ""
+    Local bOldErr := ErrorBlock({|e| cError := e:Description, Break(e)})
 
-    cURL := GetMV("MV_XURLVL", .F., "http://localhost:3000")
-Return cURL
+    Begin Sequence
+        oRest := FWRest():New(cBase)
+        oRest:SetPath(cPath)
+
+        If oRest:Get()
+            cResp := DecodeUTF8(oRest:GetResult())
+        Else
+            ConOut("[STELLAR] RestGET erro: " + cBase + cPath)
+        EndIf
+    Recover
+        ConOut("[STELLAR] RestGET exce��o: " + cError)
+    End Sequence
+
+    ErrorBlock(bOldErr)
+
+Return cResp
+
+/*/{Protheus.doc} GetBaseURL
+URL base da API Node Stellar (par�metro MV_XURLST).
+@type static
+@return character, URL base
+/*/
+Static Function GetBaseURL()
+Return GetMV("MV_XURLST", .F., "http://localhost:3000")
+
+/*/{Protheus.doc} GetVldURL
+URL da p�gina de valida��o (par�metro MV_XURLVL).
+@type static
+@return character, URL de valida��o
+/*/
+Static Function GetVldURL()
+Return GetMV("MV_XURLVL", .F., "http://localhost:3000")

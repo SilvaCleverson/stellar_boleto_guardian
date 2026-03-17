@@ -2,7 +2,7 @@
 
 # Stellar Boleto Guardian
 
-### Blockchain-powered bank slip authentication
+### Immutable bank slip authentication via Stellar blockchain
 
 [![Stellar](https://img.shields.io/badge/Blockchain-Stellar-blue?logo=stellar&logoColor=white)](https://stellar.org/)
 [![Node.js](https://img.shields.io/badge/API-Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
@@ -17,68 +17,72 @@
 
 ## Understand the project
 
-> **Every bank slip becomes an immutable record on the Stellar blockchain.**
+> **The user only has the bank slip. That's all they need.**
 
-Consider this scenario: a slip is issued, and someone along the way changes the barcode or the amount. The payer pays, but the money goes elsewhere. Classic fraud.
+Meet **DS2U**, a company that uses Protheus ERP and issues hundreds of bank slips daily. One day, a slip is intercepted and its barcode is tampered with. The payer pays, but the money goes elsewhere. Classic fraud.
 
-**Stellar Boleto Guardian solves this in 3 steps:**
+**Stellar Boleto Guardian solves this simply:**
+
+When DS2U issues a slip, the **barcode** (47-digit numeric line) is recorded on the Stellar blockchain. Anyone who receives the slip can type those numbers and instantly verify if it's authentic.
 
 ```
-                        +------------------+
-                        |   1. PROTHEUS    |
-                        |                  |
-                        |  Issues the slip |
-                        |  Generates SHA1  |
-                        |  hash            |
-                        +--------+---------+
-                                 |
-                                 | POST hash + account + secret
-                                 v
-                        +------------------+
-                        |   2. NODE API    |
-                        |                  |
-                        |  Signs a Stellar |
-                        |  transaction     |
-                        |  (Manage Data)   |
-                        +--------+---------+
-                                 |
-                                 | Submit to Horizon
-                                 v
-                        +------------------+
-                        |   3. STELLAR     |
-                        |                  |
-                        |  Stores the hash |
-                        |  on the client   |
-                        |  account         |
-                        |  PERMANENTLY     |
-                        +--------+---------+
-                                 |
-                                 v
-            +--------------------------------------------+
-            |          PUBLIC VALIDATION                  |
-            |                                            |
-            |  Anyone enters Account ID + Hash and       |
-            |  instantly sees if the slip is authentic    |
-            +--------------------------------------------+
+         DS2U issues slip               API records on Stellar
+         +------------------+           +------------------+
+         | Protheus         |           | Manage Data      |
+         | generates slip   |  POST     | key = barcode    |
+         | with barcode     | --------> | value = slip     |
+         | (47 digits)      |           | data             |
+         +------------------+           +--------+---------+
+                                                 |
+                                                 | Recorded permanently
+                                                 v
+                                        +------------------+
+                                        | Stellar          |
+                                        | Blockchain       |
+                                        | (DS2U account)   |
+                                        +--------+---------+
+                                                 |
+                    +----------------------------+
+                    |
+                    v
+         +------------------+
+         | END USER         |
+         | Receives slip    |
+         | Types the 47     |
+         | digits           |
+         | VALIDATES        |
+         | INSTANTLY        |
+         +------------------+
 ```
 
 ### Why does this matter?
 
 | Problem | Without Guardian | With Guardian |
 |---------|-----------------|---------------|
-| **Tampered slip** | Nobody notices until money disappears | Hash changes = fraud detected |
-| **Who validates?** | Only the bank or ERP | Anyone, via blockchain |
-| **Traceability** | Internal logs that can be altered | Immutable Stellar transaction |
+| **Tampered slip** | Nobody notices until money disappears | Barcode not on chain = fraud |
+| **Who validates?** | Only the bank or ERP | Anyone, with just the slip numbers |
+| **What does the user need?** | Hash, Account ID, technical data | **Just the barcode numbers** |
+| **Traceability** | Internal logs that can be altered | Immutable blockchain |
 | **Cost** | Expensive anti-fraud systems | ~0.00001 XLM per slip |
 
 ---
 
-## What the project does
+## Why use the barcode as key?
 
-- **Generates a unique hash** for each slip in Protheus (SHA1)
-- **Records on Stellar** using the Manage Data operation
-- **Enables public validation** via web page (Account ID + hash)
-- **Generates QR Code** on the slip pointing to validation
+Stellar allows storing data on-chain using the **Manage Data** operation: a key (up to 64 bytes) and a value (up to 64 bytes).
+
+A Brazilian bank slip barcode has **47 digits** -- fits perfectly in 64 bytes.
+
+| Approach | Key | What the user needs | Experience |
+|----------|-----|---------------------|------------|
+| Old (hash) | SHA1 of slip | Account ID + Hash | Poor -- technical data |
+| **New (barcode)** | **Barcode digits** | **Just the slip numbers** | **Excellent** |
+
+The barcode is:
+- **Unique** per slip
+- **Printed** on the physical document
+- **Readable** by scanner or manual entry
+- **47 digits** -- fits in 64 bytes of Manage Data
 
 ---
 
@@ -87,53 +91,26 @@ Consider this scenario: a slip is issued, and someone along the way changes the 
 ```
 +------------------+        +--------------------+        +--------------------+
 |    PROTHEUS      |        |     NODE.JS API    |        |      STELLAR       |
-|    (ADVPL)       |        |     (Express)      |        |    (Blockchain)    |
+|    (DS2U)        |        |     (Express)      |        |    (Blockchain)    |
 +------------------+        +--------------------+        +--------------------+
 |                  |        |                    |        |                    |
-| BoletoHash       | POST   | /api/blockchain    | Horizon| Manage Data        |
-| Stellar.prw      |------->| Signs tx with      |------->| name = hash        |
-|                  |        | client secret      |        | value = payload    |
+| Issues slip      | POST   | /api/blockchain    | Horizon| Manage Data        |
+| barcode as       |------->| key = barcode      |------->| on DS2U ACCOUNT    |
+| key              |        | value = payload    |        | (single account)   |
 |                  |        |                    |        |                    |
-| ZXH.prw          | POST   | /api/wallet        | Friend | Creates account    |
-| (accounts table) |------->| Keypair.random()   |--bot-->| Funds 10k XLM     |
+| Initial setup    | POST   | /api/wallet        | Friend | Creates account    |
+| (once)           |------->| Keypair.random()   |--bot-->| Funds it           |
 |                  |        |                    |        |                    |
-|                  | GET    | /api/validate/     | Horizon| GET account data   |
-|                  |------->| :accountId/:hash   |------->| Hash exists?       |
+|                  |        | /api/validate/     | Horizon| GET account data   |
+| User validates   |------->| :barcode           |------->| Barcode exists?    |
 +------------------+        +--------------------+        +--------------------+
 ```
+
+**Key point:** the Stellar account belongs to the **company** (DS2U), not to each client. All slips are stored in the same account. The DS2U Account ID is fixed and pre-configured in the API -- the end user never needs to know it.
 
 ---
 
-## Project structure
-
-```
-stellar_boleto_guardian/
-|
-|-- Protheus/                        # ADVPL sources
-|   |-- ZXH.prw                      # ZXH table creation
-|   |-- BoletoHashStellar.prw        # Hash + submit + validate + QR
-|   +-- README.md
-|
-|-- Stellar/                         # Node.js API
-|   |-- server.js                    # Express (4 endpoints)
-|   |-- createClientAccount.js       # Keypair + Friendbot
-|   |-- sendHashToAccount.js         # Manage Data transaction
-|   |-- env.example                  # Environment variables
-|   |-- package.json
-|   |-- README.md
-|   +-- public/
-|       +-- validation.html          # Public validation page
-|
-|-- README.md                        # Index
-|-- README.pt-BR.md                  # Portuguese docs
-|-- README.en.md                     # English docs (this file)
-|-- README.es.md                     # Spanish docs
-+-- .gitignore
-```
-
----
-
-## Step-by-step setup
+## DS2U Scenario -- step by step
 
 ### Prerequisites
 
@@ -141,23 +118,22 @@ stellar_boleto_guardian/
 |-------------|---------|
 | TOTVS Protheus | 12.1.33+ |
 | Node.js | 18+ |
-| ADVPL functions | `SHA1()`, `HTTPRequest()` |
+| ADVPL functions | `SHA1()`, `FWRest` |
 
-### 1. Create ZXH table in Protheus
-
-Compile `ZXH.prw` and run **once:**
-
-```advpl
-U_ZXH()
-```
-
-### 2. Start the Stellar API
+### 1. Start the Stellar API
 
 ```bash
 cd Stellar
 npm install
-cp env.example .env      # Adjust PORT if needed
-npm start                # Runs on http://localhost:3000
+cp env.example .env
+npm start
+```
+
+### 2. Create the company Stellar account (once)
+
+```advpl
+U_ZXH()            // Create ZXH table
+U_CriWltSt()       // Create DS2U Stellar account, saved to ZXH
 ```
 
 ### 3. Configure Protheus parameters
@@ -167,25 +143,19 @@ npm start                # Runs on http://localhost:3000
 | **MV_XURLST** | `http://localhost:3000` | Stellar API URL |
 | **MV_XURLVL** | `http://localhost:3000` | Validation page URL |
 
-### 4. Create a Stellar account for a client
+### 4. Issue a slip with blockchain registration
 
 ```advpl
-U_CriaWalletStellar("000001")
-// Automatically saves to ZXH: Account ID + secret key
+U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
+// The barcode is recorded on Stellar as the Manage Data key
 ```
 
-### 5. Issue a slip with hash
+### 5. Validate a slip (end user experience)
 
-```advpl
-cHash := U_BoletoHashStellar("123456789012", 1235.40, CToD("05/08/2025"), "000001")
-// Hash is recorded on Stellar and QR Code is generated
-```
-
-### 6. Validate a slip
-
-Open `http://localhost:3000/validation.html` and enter:
-- **Account ID** (from ZXH table)
-- **Hash** (printed on the slip / QR Code)
+1. Open `http://ds2u.com/validate` (or scan the QR Code)
+2. Type the **47 barcode digits**
+3. The system queries Stellar and shows: original amount, due date, status
+4. **If data matches the printed slip, it's authentic. If not on chain, it's fraud.**
 
 ---
 
@@ -194,18 +164,18 @@ Open `http://localhost:3000/validation.html` and enter:
 | Method | Route | Purpose |
 |--------|-------|---------|
 | `GET` | `/` | API status |
-| `POST` | `/api/wallet` | Create Stellar account (Friendbot) |
-| `POST` | `/api/blockchain` | Record hash on account (Manage Data) |
-| `GET` | `/api/account/:id/data` | List account hashes |
-| `GET` | `/api/validate/:id/:hash` | Validate hash exists |
+| `POST` | `/api/wallet` | Create company Stellar account |
+| `POST` | `/api/blockchain` | Register slip (key=barcode, value=payload) |
+| `GET` | `/api/validate/:barcode` | Validate slip by barcode |
+| `GET` | `/api/account/:id/data` | List all registered slips |
 
 ### Example POST /api/blockchain
 
 ```json
 {
-  "hash": "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3",
-  "nosso_numero": "123456789012",
-  "valor": "1235.40",
+  "codebar": "23793381286000000000300000004001184340000012050",
+  "nosso_numero": "000000040",
+  "valor": "120.50",
   "vencimento": "2025-08-05",
   "secret": "S..."
 }
@@ -213,39 +183,14 @@ Open `http://localhost:3000/validation.html` and enter:
 
 ---
 
-## ZXH Table (Protheus)
-
-| Field | Type | Size | Description |
-|-------|------|------|-------------|
-| `ZXH_FILIAL` | C | 2 | Branch |
-| `ZXH_CODCLI` | C | 6 | Client code |
-| `ZXH_WALLET` | C | 60 | Stellar Account ID (public key) |
-| `ZXH_TOPIC` | C | 20 | Reserved |
-| `ZXH_PRIVKEY` | C | 300 | Stellar secret key |
-| `ZXH_DTGER` | D | 8 | Creation date |
-
----
-
-## ADVPL Functions
-
-| Function | Purpose |
-|----------|---------|
-| `U_ZXH()` | Creates ZXH table |
-| `U_BoletoHashStellar(cNossoNum, nValor, dVenc, cCodCli)` | Generates hash, records on Stellar, generates QR |
-| `U_ValidaBoletoStellar(cAccount, cHash)` | Validates hash on Stellar account |
-| `U_CriaWalletStellar(cCodCli)` | Creates Stellar account and saves to ZXH |
-| `U_TestaIntegracaoStellar()` | Tests API connectivity |
-
----
-
 ## Security
 
 | Aspect | Detail |
 |--------|--------|
-| **Hash** | SHA1 over slip_number + amount + due_date + client_code |
 | **Immutability** | Manage Data on Stellar: once written, cannot be altered without a new transaction |
-| **Private keys** | Never log them; encrypt in ZXH for production |
+| **Company key** | Private key stored in ZXH (encrypt in production) |
 | **Transport** | HTTPS mandatory in production |
+| **Single account** | Company Account ID is public; private key is never exposed |
 
 ## Costs
 
@@ -253,6 +198,7 @@ Open `http://localhost:3000/validation.html` and enter:
 |-------------|------|
 | **Testnet** | Free (Friendbot) |
 | **Mainnet** | ~0.00001 XLM per operation (~$0.000001) |
+| **Reserve** | 1 XLM base + 0.5 XLM per registered slip (subentry) |
 
 ---
 
@@ -262,7 +208,7 @@ Open `http://localhost:3000/validation.html` and enter:
 
 | | Technology | Role |
 |-|------------|------|
-| ![Stellar](https://img.shields.io/badge/-Stellar-7C3AED?logo=stellar&logoColor=white) | Stellar Blockchain | Immutable hash storage |
+| ![Stellar](https://img.shields.io/badge/-Stellar-7C3AED?logo=stellar&logoColor=white) | Stellar Blockchain | Immutable slip storage |
 | ![Node](https://img.shields.io/badge/-Node.js-339933?logo=node.js&logoColor=white) | Node.js + Express | API bridge between Protheus and Stellar |
 | ![ADVPL](https://img.shields.io/badge/-ADVPL-00529B) | TOTVS Protheus | ERP that issues and validates slips |
 
