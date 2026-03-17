@@ -224,7 +224,7 @@ MIT - use, modify and distribute freely.
 
 <div align="center">
 
-**Built by [Cleverson Silva](https://github.com/SilvaCleverson)**
+**Built by [Cleverson Silva](https://github.com/SilvaCleverson)** · **Website:** [boletoguardian.xyz](https://boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/)
 

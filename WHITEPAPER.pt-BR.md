@@ -455,6 +455,8 @@ A arquitetura agnostica ao ERP, a escalabilidade da rede Stellar e a aderencia n
 
 **Stellar Boleto Guardian** -- Seguranca, transparencia e confianca em cada boleto.
 
+**Site:** [boletoguardian.xyz](https://boletoguardian.xyz)
+
 Powered by [Stellar](https://stellar.org/)
 
 *Copyright 2026 Cleverson Silva. Distribuido sob licenca MIT.*

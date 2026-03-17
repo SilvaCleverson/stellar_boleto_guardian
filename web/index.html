@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Boleto Guardian — Autenticação imutável de boletos na blockchain Stellar. Valide digitando os 47 dígitos do código de barras.">
+  <title>Boleto Guardian — Segurança e confiança em cada boleto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --card: #1a2332;
+      --primary: #159895;
+      --primary-light: #2dd4d1;
+      --accent: #1a5f7a;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+    header {
+      padding: 24px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .logo { font-size: 1.35rem; font-weight: 700; color: var(--text); text-decoration: none; letter-spacing: -0.02em; }
+    .logo span { color: var(--primary-light); }
+    nav { display: flex; gap: 24px; align-items: center; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--primary-light); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(21, 152, 149, 0.35); }
+    .btn-outline {
+      background: transparent;
+      color: var(--primary-light);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: rgba(21, 152, 149, 0.1); }
+
+    .hero {
+      padding: 80px 0 100px;
+      text-align: center;
+    }
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 20px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero h1 .highlight { color: var(--primary-light); }
+    .hero p {
+      font-size: 1.2rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 36px;
+    }
+    .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .badges {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 48px;
+    }
+    .badge {
+      padding: 8px 14px;
+      border-radius: 8px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.85rem;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    section { padding: 64px 0; }
+    section h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    section .sub { color: var(--muted); margin-bottom: 32px; font-size: 1.05rem; }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 28px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .card h3 { font-size: 1.15rem; margin-bottom: 10px; color: var(--primary-light); }
+    .card p { color: var(--muted); font-size: 0.95rem; }
+    .how {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 32px;
+      align-items: start;
+    }
+    .how-step {
+      text-align: center;
+    }
+    .how-step .num {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      font-weight: 700;
+      font-size: 1.2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    .how-step h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .how-step p { color: var(--muted); font-size: 0.95rem; }
+
+    .cta-block {
+      background: linear-gradient(135deg, var(--card) 0%, rgba(26, 95, 122, 0.2) 100%);
+      border-radius: 20px;
+      padding: 56px 32px;
+      text-align: center;
+      border: 1px solid rgba(21, 152, 149, 0.2);
+    }
+    .cta-block h2 { margin-bottom: 12px; }
+    .cta-block p { color: var(--muted); margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; }
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--primary-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap header-inner">
+      <a href="/" class="logo">Boleto <span>Guardian</span></a>
+      <nav>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#por-que">Por que</a>
+        <a href="/validation.html" class="btn btn-primary">Validar boleto</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <h1>Segurança e confiança em <span class="highlight">cada boleto</span></h1>
+        <p>Autenticação imutável na blockchain Stellar. Recebeu um boleto? Digite os 47 números do código de barras e valide na hora.</p>
+        <div class="hero-cta">
+          <a href="/validation.html" class="btn btn-primary">Validar boleto agora</a>
+          <a href="https://github.com/SilvaCleverson/Boleto" class="btn btn-outline" target="_blank" rel="noopener">Ver no GitHub</a>
+        </div>
+        <div class="badges">
+          <span class="badge">Stellar</span>
+          <span class="badge">Manage Data</span>
+          <span class="badge">47 dígitos</span>
+          <span class="badge">Zero fricção</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="como-funciona">
+      <div class="wrap">
+        <h2>Como funciona</h2>
+        <p class="sub">Três passos: emissão, registro e validação.</p>
+        <div class="how">
+          <div class="how-step">
+            <div class="num">1</div>
+            <h3>Emissão</h3>
+            <p>A empresa emite o boleto no ERP e envia o código de barras para a API.</p>
+          </div>
+          <div class="how-step">
+            <div class="num">2</div>
+            <h3>Blockchain</h3>
+            <p>O código de barras é gravado na Stellar (Manage Data) em segundos.</p>
+          </div>
+          <div class="how-step">
+            <div class="num">3</div>
+            <h3>Validação</h3>
+            <p>Qualquer pessoa digita os 47 números e confere se o boleto é autêntico.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="por-que">
+      <div class="wrap">
+        <h2>Por que o Boleto Guardian?</h2>
+        <p class="sub">Menos fraude, mais transparência, sem complicação.</p>
+        <div class="cards">
+          <div class="card">
+            <h3>Sem dados técnicos</h3>
+            <p>O usuário só precisa dos números do boleto. Nada de hash, Account ID ou chaves.</p>
+          </div>
+          <div class="card">
+            <h3>Imutável</h3>
+            <p>Registro na blockchain Stellar: público, auditável e que não pode ser alterado.</p>
+          </div>
+          <div class="card">
+            <h3>ERP-agnóstico</h3>
+            <p>Integra com qualquer ERP via API REST. Referência: TOTVS Protheus.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="cta-block">
+          <h2>Validar um boleto</h2>
+          <p>Digite os 47 dígitos do código de barras e confira na hora se o boleto foi registrado pela empresa.</p>
+          <a href="/validation.html" class="btn btn-primary">Abrir validador</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Boleto Guardian</strong> — Segurança, transparência e confiança em cada boleto.</p>
+      <p style="margin-top: 8px;">
+        <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
+        <a href="https://github.com/SilvaCleverson/Boleto" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Cleverson Silva · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>

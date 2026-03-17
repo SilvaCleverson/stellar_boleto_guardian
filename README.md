@@ -68,7 +68,7 @@ cd Stellar && npm install && cp env.example .env && npm start
 
 <div align="center">
 
-**Built by [Cleverson Silva](https://github.com/SilvaCleverson)**
+**Built by [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/)
 

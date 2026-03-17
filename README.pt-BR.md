@@ -292,7 +292,7 @@ MIT - use, modifique e distribua livremente.
 
 <div align="center">
 
-**Feito por [Cleverson Silva](https://github.com/SilvaCleverson)**
+**Feito por [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/)
 

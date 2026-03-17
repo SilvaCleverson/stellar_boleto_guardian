@@ -455,6 +455,8 @@ The ERP-agnostic architecture, Stellar network scalability, and native LGPD comp
 
 **Stellar Boleto Guardian** -- Security, transparency, and trust in every boleto.
 
+**Website:** [boletoguardian.xyz](https://boletoguardian.xyz)
+
 Powered by [Stellar](https://stellar.org/)
 
 *Copyright 2026 Cleverson Silva. Distributed under the MIT license.*
