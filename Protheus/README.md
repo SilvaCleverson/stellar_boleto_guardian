@@ -2,12 +2,12 @@
 
 Fontes Protheus para autenticacao imutavel de boletos via blockchain Stellar.
 
-## Nova arquitetura: codebar como chave
+## Arquitetura: codebar como chave
 
-Na nova arquitetura, o **codigo de barras** (linha digitavel, 47 digitos) e usado como chave do Manage Data na Stellar. Isso permite que o usuario final valide o boleto digitando apenas os numeros impressos no documento.
+O **codigo de barras** (linha digitavel, 47 digitos) e usado como chave do Manage Data na Stellar. O usuario final valida o boleto digitando apenas os numeros impressos no documento.
 
 ```
-Protheus (DS2U)                     Stellar (Blockchain)
+Protheus (Empresa)                  Stellar (Blockchain)
 +------------------+                +--------------------+
 | Emite boleto     |   FWRest POST  | Manage Data        |
 | Envia codebar    | -------------> | key = codebar      |
@@ -16,26 +16,26 @@ Protheus (DS2U)                     Stellar (Blockchain)
                                     +--------------------+
 ```
 
-> **Nota:** o codigo sera refatorado para implementar esta arquitetura. Atualmente usa hash SHA1 como chave.
+A conta Stellar e **unica por empresa** e configurada na tabela ZXH. O Account ID e fixo -- o usuario final nunca precisa conhece-lo.
 
 ## Estrutura
 
 ### ZXH.prw
 
-Tabela ZXH para cadastro de contas Stellar. Na nova arquitetura, armazena a **conta unica da empresa**.
+Tabela ZXH para cadastro da conta Stellar da empresa.
 
 | Campo | Tipo | Tam | Descricao |
 |-------|------|-----|-----------|
 | ZXH_FILIAL | C | 2 | Filial |
-| ZXH_CODCLI | C | 6 | Codigo do cliente (ou empresa) |
-| ZXH_WALLET | C | 60 | Stellar Account ID |
+| ZXH_CODCLI | C | 6 | Codigo da empresa |
+| ZXH_WALLET | C | 60 | Stellar Account ID (COMPANY_ACCOUNT) |
 | ZXH_TOPIC | C | 20 | Reservado |
-| ZXH_PRVKEY | C | 300 | Chave privada Stellar |
+| ZXH_PRVKEY | C | 300 | Chave privada Stellar (COMPANY_SECRET) |
 | ZXH_DTGER | D | 8 | Data da criacao |
 
 **Indices:**
 - 1: `ZXH_FILIAL+ZXH_WALLET` (Filial+Wallet)
-- 2: `ZXH_FILIAL+ZXH_CODCLI` (Filial+Cliente)
+- 2: `ZXH_FILIAL+ZXH_CODCLI` (Filial+Empresa)
 
 ### BoletoHashStellar.prw
 
@@ -44,11 +44,11 @@ Registro de boletos na Stellar e validacao.
 | Funcao | Tipo | Chars | O que faz |
 |--------|------|-------|-----------|
 | `U_BolStlr()` | User | 7 | Registra boleto na Stellar (codebar como chave) |
-| `U_VldBolSt()` | User | 8 | Valida boleto pelo codebar |
+| `U_VldBolSt()` | User | 8 | Valida boleto pelo codigo de barras |
 | `U_CriWltSt()` | User | 8 | Cria conta Stellar da empresa |
 | `U_TstStlr()` | User | 7 | Testa conexao com a API |
 
-## Fluxo planejado (nova arquitetura)
+## Fluxo de uso
 
 ```advpl
 // 1. Criar tabela ZXH (uma vez)
@@ -61,7 +61,7 @@ U_CriWltSt()
 U_TstStlr()
 
 // 4. Ao emitir cada boleto, registrar na Stellar
-U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
+U_BolStlr(cCodebar, cNossoNum, nValor, dVencto)
 // codebar = linha digitavel (47 digitos)
 // Grava na Stellar: key = codebar, value = nossonum|valor|vencto|status
 
@@ -79,7 +79,7 @@ lValido := U_VldBolSt(cCodebar)
 | **ErrorBlock + Begin Sequence** | Tratamento de excecao nas chamadas HTTP |
 | **Default** | Parametros com valor padrao |
 | **RecLock check** | Verificacao de retorno do RecLock |
-| **Logging [STELLAR]** | Prefixo padrao no ConOut |
+| **Logging [BOLETO GUARDIAN]** | Prefixo padrao no ConOut |
 | **EncodeUTF8/DecodeUTF8** | Conversao CP1252 <-> UTF-8 |
 
 ## Regras de nomenclatura Protheus
@@ -94,5 +94,5 @@ lValido := U_VldBolSt(cCodebar)
 
 | Parametro | Valor | Descricao |
 |-----------|-------|-----------|
-| **MV_XURLST** | `http://localhost:3000` | URL da API Stellar |
+| **MV_XURLST** | `http://localhost:3000` | URL da API Boleto Guardian |
 | **MV_XURLVL** | `http://localhost:3000` | URL da pagina de validacao |

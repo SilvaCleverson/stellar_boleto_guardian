@@ -1,11 +1,21 @@
 const express = require("express");
 const cors = require("cors");
 const { Horizon, Keypair } = require("@stellar/stellar-sdk");
-const { sendHashToAccount, HORIZON_URL } = require("./sendHashToAccount");
-const { main: createAccount } = require("./createClientAccount");
+const {
+  sendBoletoToBlockchain,
+  isValidCodebar,
+  normalizeCodebar,
+  HORIZON_URL,
+} = require("./sendBoletoToBlockchain");
+const { createCompanyAccount } = require("./createCompanyAccount");
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
+const COMPANY_SECRET = process.env.COMPANY_SECRET || "";
+const STELLAR_NETWORK = process.env.STELLAR_NETWORK || "testnet";
 
 app.use(cors());
 app.use(express.json());
@@ -22,118 +32,129 @@ function isValidStellarKey(key) {
   }
 }
 
+function getExplorerUrl(accountId) {
+  const net = STELLAR_NETWORK === "public" ? "public" : "testnet";
+  return `https://stellar.expert/explorer/${net}/account/${accountId}`;
+}
+
 app.get("/", (_req, res) => {
   res.json({
-    message: "API Stellar Boleto Authentication",
-    version: "2.0.0",
+    name: "Boleto Guardian API",
+    version: "3.0.0",
     status: "running",
     horizon: HORIZON_URL,
-    network: process.env.STELLAR_NETWORK || "testnet",
+    network: STELLAR_NETWORK,
+    companyAccount: COMPANY_ACCOUNT || "(não configurado)",
   });
 });
 
 app.post("/api/wallet", async (_req, res) => {
   try {
-    console.log("[STELLAR] Criando nova conta Stellar...");
-    const result = await createAccount();
+    console.log("[BOLETO GUARDIAN] Criando conta Stellar da empresa...");
+    const result = await createCompanyAccount();
     res.json({
       success: true,
       data: result,
-      message: "Conta Stellar criada com sucesso",
+      message:
+        "Conta Stellar da empresa criada. Configure COMPANY_ACCOUNT e COMPANY_SECRET no .env.",
     });
   } catch (error) {
-    console.error("[STELLAR] Erro ao criar conta:", error.message);
+    console.error("[BOLETO GUARDIAN] Erro ao criar conta:", error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
 app.post("/api/blockchain", async (req, res) => {
   try {
-    const { hash, nosso_numero, valor, vencimento, secret } = req.body;
-    const accountSecret = secret || req.body.privateKey;
+    const { codebar, nosso_numero, valor, vencimento, secret } = req.body;
+    const companySecret = secret || COMPANY_SECRET;
 
-    if (!hash || !nosso_numero || !valor || !vencimento) {
+    if (!codebar || !nosso_numero || !valor || !vencimento) {
       return res.status(400).json({
         success: false,
-        error: "Campos obrigatórios: hash, nosso_numero, valor, vencimento",
+        error: "Campos obrigatórios: codebar, nosso_numero, valor, vencimento",
       });
     }
-    if (!accountSecret) {
+
+    if (!isValidCodebar(codebar)) {
       return res.status(400).json({
         success: false,
-        error: "Campo 'secret' ou 'privateKey' é obrigatório (ZXH_PRVKEY)",
+        error:
+          "Código de barras inválido. Deve conter exatamente 47 dígitos numéricos.",
+      });
+    }
+
+    if (!companySecret) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Chave secreta da empresa não configurada. " +
+          "Defina COMPANY_SECRET no .env ou envie no campo 'secret'.",
       });
     }
 
     const payload = {
-      hash,
+      codebar,
       nosso_numero,
       valor: String(valor),
       vencimento: String(vencimento),
       status: "pendente",
-      timestamp: new Date().toISOString(),
     };
 
-    console.log("[STELLAR] Enviando hash para blockchain:", hash);
-    const result = await sendHashToAccount(accountSecret, payload);
+    console.log(
+      "[BOLETO GUARDIAN] Registrando boleto:",
+      normalizeCodebar(codebar)
+    );
+    const result = await sendBoletoToBlockchain(companySecret, payload);
 
     res.json({
       success: true,
       data: result,
-      message: "Hash registrado na Stellar com sucesso",
+      message: "Boleto registrado na blockchain Stellar com sucesso",
     });
   } catch (error) {
-    console.error("[STELLAR] Erro ao enviar para blockchain:", error.message);
-    const status = error.message.includes("obrigatório") ? 400 : 500;
+    console.error(
+      "[BOLETO GUARDIAN] Erro ao registrar boleto:",
+      error.message
+    );
+    const status = error.message.includes("inválido") ? 400 : 500;
     res.status(status).json({ success: false, error: error.message });
   }
 });
 
-app.get("/api/account/:accountId/data", async (req, res) => {
+app.get("/api/validate/:codebar", async (req, res) => {
   try {
-    const { accountId } = req.params;
+    const { codebar } = req.params;
 
-    if (!isValidStellarKey(accountId)) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Account ID Stellar inválido" });
+    if (!isValidCodebar(codebar)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Código de barras inválido. Deve conter exatamente 47 dígitos numéricos.",
+      });
     }
 
-    const server = new Horizon.Server(HORIZON_URL);
-    const account = await server.loadAccount(accountId);
-    const dataKeys = account.data_attr ? Object.keys(account.data_attr) : [];
-
-    res.json({
-      success: true,
-      data: { keys: dataKeys, accountId },
-    });
-  } catch (error) {
-    console.error("[STELLAR] Erro ao buscar dados da conta:", error.message);
-    const status = error.message.includes("Not Found") ? 404 : 500;
-    res
-      .status(status)
-      .json({ success: false, error: error.message || "Conta não encontrada" });
-  }
-});
-
-app.get("/api/validate/:accountId/:hash", async (req, res) => {
-  try {
-    const { accountId, hash } = req.params;
-
-    if (!isValidStellarKey(accountId)) {
-      return res
-        .status(400)
-        .json({ success: false, error: "Account ID Stellar inválido" });
+    const accountId = req.query.account || COMPANY_ACCOUNT;
+    if (!accountId || !isValidStellarKey(accountId)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Conta da empresa não configurada. " +
+          "Defina COMPANY_ACCOUNT no .env ou envie via query param ?account=G...",
+      });
     }
 
-    const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(hash)}`;
+    const normalized = normalizeCodebar(codebar);
+    const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(normalized)}`;
     const response = await fetch(url);
 
     if (response.status === 404) {
       return res.json({
         success: true,
         found: false,
-        message: "Hash não encontrado no blockchain",
+        message:
+          "Código de barras NÃO encontrado na blockchain. " +
+          "Este boleto pode ser fraudulento.",
       });
     }
 
@@ -150,7 +171,7 @@ app.get("/api/validate/:accountId/:hash", async (req, res) => {
     try {
       valueDecoded = Buffer.from(data.value, "base64").toString("utf8");
     } catch (_) {
-      /* valor pode estar vazio */
+      /* valor vazio */
     }
 
     const [nosso_numero, valor, vencimento, status] = valueDecoded.split("|");
@@ -159,32 +180,89 @@ app.get("/api/validate/:accountId/:hash", async (req, res) => {
       success: true,
       found: true,
       data: {
-        hash,
+        codebar: normalized,
         nosso_numero: nosso_numero || "",
         valor: valor || "",
         vencimento: vencimento || "",
         status: status || "pendente",
       },
       ledger: data.last_modified_ledger || null,
-      stellarExplorer: `https://stellar.expert/explorer/${
-        (process.env.STELLAR_NETWORK || "testnet") === "public"
-          ? "public"
-          : "testnet"
-      }/account/${accountId}`,
+      stellarExplorer: getExplorerUrl(accountId),
     });
   } catch (error) {
-    console.error("[STELLAR] Erro ao validar hash:", error.message);
+    console.error(
+      "[BOLETO GUARDIAN] Erro ao validar boleto:",
+      error.message
+    );
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
+app.get("/api/account/data", async (req, res) => {
+  try {
+    const accountId = req.query.account || COMPANY_ACCOUNT;
+
+    if (!accountId || !isValidStellarKey(accountId)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Conta da empresa não configurada. " +
+          "Defina COMPANY_ACCOUNT no .env ou envie via query param ?account=G...",
+      });
+    }
+
+    const server = new Horizon.Server(HORIZON_URL);
+    const account = await server.loadAccount(accountId);
+    const dataEntries = account.data_attr || {};
+
+    const boletos = Object.entries(dataEntries).map(([key, valueB64]) => {
+      let valueDecoded = "";
+      try {
+        valueDecoded = Buffer.from(valueB64, "base64").toString("utf8");
+      } catch (_) {
+        /* ignore */
+      }
+      const [nosso_numero, valor, vencimento, status] =
+        valueDecoded.split("|");
+      return {
+        codebar: key,
+        nosso_numero: nosso_numero || "",
+        valor: valor || "",
+        vencimento: vencimento || "",
+        status: status || "",
+      };
+    });
+
+    res.json({
+      success: true,
+      data: {
+        accountId,
+        total: boletos.length,
+        boletos,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "[BOLETO GUARDIAN] Erro ao listar boletos:",
+      error.message
+    );
+    const status = error.message.includes("Not Found") ? 404 : 500;
+    res
+      .status(status)
+      .json({ success: false, error: error.message || "Conta não encontrada" });
+  }
+});
+
 app.listen(PORT, () => {
-  console.log(`[STELLAR] Servidor rodando na porta ${PORT}`);
-  console.log(`[STELLAR] Horizon: ${HORIZON_URL}`);
-  console.log(`[STELLAR] Network: ${process.env.STELLAR_NETWORK || "testnet"}`);
-  console.log(`[STELLAR] Endpoints:`);
-  console.log(`  POST /api/wallet            - Criar conta Stellar`);
-  console.log(`  POST /api/blockchain         - Registrar hash (Manage Data)`);
-  console.log(`  GET  /api/account/:id/data   - Listar chaves da conta`);
-  console.log(`  GET  /api/validate/:id/:hash - Validar hash`);
+  console.log(`[BOLETO GUARDIAN] Servidor rodando na porta ${PORT}`);
+  console.log(`[BOLETO GUARDIAN] Horizon: ${HORIZON_URL}`);
+  console.log(`[BOLETO GUARDIAN] Network: ${STELLAR_NETWORK}`);
+  console.log(
+    `[BOLETO GUARDIAN] Conta empresa: ${COMPANY_ACCOUNT || "(não configurada)"}`
+  );
+  console.log(`[BOLETO GUARDIAN] Endpoints:`);
+  console.log(`  POST /api/wallet              - Criar conta Stellar da empresa`);
+  console.log(`  POST /api/blockchain           - Registrar boleto (codebar)`);
+  console.log(`  GET  /api/validate/:codebar    - Validar boleto pelo código de barras`);
+  console.log(`  GET  /api/account/data         - Listar boletos registrados`);
 });

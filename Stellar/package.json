@@ -1,20 +1,21 @@
 {
-  "name": "stellar-boleto-authentication",
-  "version": "2.0.0",
-  "description": "Sistema de autenticação de boletos via blockchain Stellar",
+  "name": "boleto-guardian-api",
+  "version": "3.0.0",
+  "description": "Boleto Guardian - Autenticação imutável de boletos via blockchain Stellar",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "create-account": "node createClientAccount.js"
+    "create-account": "node createCompanyAccount.js"
   },
   "keywords": [
     "stellar",
     "blockchain",
     "boleto",
-    "authentication",
-    "protheus",
+    "guardian",
     "manage-data",
+    "codebar",
+    "authentication",
     "horizon"
   ],
   "author": "Cleverson Silva",
