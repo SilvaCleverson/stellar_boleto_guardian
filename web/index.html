@@ -70,6 +70,24 @@
       transition: color 0.2s;
     }
     nav a:hover { color: var(--primary); }
+    .lang-switch {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .lang-switch a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-switch a:hover { background: var(--card); color: var(--primary); }
+    .lang-switch a.active { background: var(--card); color: var(--primary); font-weight: 600; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -294,15 +312,20 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="/" class="logo">Boleto <span>Guardian</span></a>
+      <a href="index.html" class="logo">Boleto <span>Guardian</span></a>
       <nav>
+        <div class="lang-switch">
+          <a href="index.html" class="active" title="Português">🇧🇷 PT</a>
+          <a href="index-en.html" title="English">🇺🇸 EN</a>
+          <a href="index-es.html" title="Español">🇪🇸 ES</a>
+        </div>
         <a href="#resumo">Resumo</a>
         <a href="#problema">Problema</a>
         <a href="#solucao">Solução</a>
         <a href="#arquitetura">Arquitetura</a>
         <a href="#stellar">Stellar</a>
         <a href="#visao">Visão</a>
-        <a href="/validation.html" class="btn btn-primary">Validar boleto</a>
+        <a href="validation.html" class="btn btn-primary">Validar boleto</a>
       </nav>
     </div>
   </header>
@@ -314,7 +337,7 @@
       <p class="tagline">Autenticação imutável de boletos bancários via blockchain Stellar</p>
       <p class="meta"><strong>Autor:</strong> Cleverson Silva · <strong>Data:</strong> Março 2026</p>
       <div class="hero-cta">
-        <a href="/validation.html" class="btn btn-primary">Validar boleto</a>
+        <a href="validation.html" class="btn btn-primary">Validar boleto</a>
         <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-primary" target="_blank" rel="noopener" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">GitHub</a>
       </div>
       <div class="badges">
@@ -554,7 +577,7 @@
       <p><strong>Stellar Boleto Guardian</strong> — Segurança, transparência e confiança em cada boleto.</p>
       <p class="footer-links">
         <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
-        <a href="/validation.html">Validar boleto</a> ·
+        <a href="validation.html">Validar boleto</a> ·
         <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
         <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
       </p>

@@ -1,10 +1,17 @@
 # Dependências
 node_modules/
 
-# Ambiente (não versionar segredos)
+# Ambiente e segredos — NUNCA commitar no deploy
 .env
 .env.local
 .env.*.local
+.env.production
+.env.development
+*.pem
+*.key
+credentials.json
+config/secrets.*
+**/secrets/
 
 # Logs e cache
 *.log

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Boleto Guardian — Whitepaper v1.0. Autenticación inmutable de boletos en la blockchain Stellar. Seguridad y confianza en cada boleto.">
+  <title>Boleto Guardian — Whitepaper v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c111b;
+      --surface: #131b2e;
+      --card: #1a2540;
+      --primary: #14b8a6;
+      --primary-dim: #0d9488;
+      --accent: #0e7490;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.12);
+      --prose: 720px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      font-size: 1.05rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .wrap-narrow { max-width: var(--prose); margin: 0 auto; padding: 0 24px; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(12, 17, 27, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--primary); }
+    nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--primary); }
+    .lang-switch {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .lang-switch a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-switch a:hover { background: var(--card); color: var(--primary); }
+    .lang-switch a.active { background: var(--card); color: var(--primary); font-weight: 600; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35); }
+
+    .hero {
+      padding: 64px 0 56px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero .version {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .hero .tagline {
+      font-size: 1.15rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .hero .meta {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .hero .meta strong { color: var(--text); }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero .badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .hero .badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+    }
+
+    main { padding: 48px 0 64px; }
+    .toc {
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: block;
+    }
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+      display: block;
+      column-count: 1;
+    }
+    @media (min-width: 640px) {
+      .toc ol { column-count: 2; column-gap: 32px; }
+    }
+    .toc li {
+      counter-increment: toc;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .toc li::before { content: counter(toc) ". "; color: var(--primary); font-weight: 600; margin-right: 6px; }
+    .toc a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .toc a:hover { color: var(--primary); }
+
+    .sec {
+      margin-bottom: 56px;
+      scroll-margin-top: 80px;
+    }
+    .sec h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 28px 0 12px;
+      color: var(--primary);
+    }
+    .sec p { margin-bottom: 16px; color: var(--text); }
+    .sec ul, .sec ol {
+      margin: 0 0 20px 24px;
+      color: var(--text);
+    }
+    .sec li { margin-bottom: 8px; }
+    .sec strong { color: var(--text); }
+    .blockquote {
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      background: rgba(20, 184, 166, 0.06);
+      border-radius: 0 10px 10px 0;
+      font-size: 1.05rem;
+    }
+    .blockquote p:last-child { margin-bottom: 0; }
+    .diagram {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 20px 0;
+      color: var(--muted);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(20, 184, 166, 0.04); }
+    .phase-list { list-style: none; margin-left: 0; }
+    .phase-list li {
+      margin-bottom: 16px;
+      padding-left: 28px;
+      position: relative;
+    }
+    .phase-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .phase-list strong { display: block; margin-bottom: 4px; color: var(--primary); }
+    .conclusion-quote {
+      text-align: center;
+      padding: 32px 24px;
+      margin: 40px 0;
+      background: linear-gradient(135deg, var(--card) 0%, rgba(14, 116, 144, 0.15) 100%);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .conclusion-quote p {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text);
+    }
+    .refs { font-size: 0.95rem; }
+    .refs ol { margin-left: 20px; }
+    .refs li { margin-bottom: 10px; }
+    .refs a { color: var(--primary); text-decoration: none; }
+    .refs a:hover { text-decoration: underline; }
+
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index-es.html" class="logo">Boleto <span>Guardian</span></a>
+      <nav>
+        <div class="lang-switch">
+          <a href="index.html" title="Português">🇧🇷 PT</a>
+          <a href="index-en.html" title="English">🇺🇸 EN</a>
+          <a href="index-es.html" class="active" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="#resumo">Resumen</a>
+        <a href="#problema">Problema</a>
+        <a href="#solucao">Solución</a>
+        <a href="#arquitetura">Arquitectura</a>
+        <a href="#stellar">Stellar</a>
+        <a href="#visao">Visión</a>
+        <a href="validation-es.html" class="btn btn-primary">Validar boleto</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Stellar Boleto Guardian</h1>
+      <p class="version">Whitepaper v1.0</p>
+      <p class="tagline">Autenticación inmutable de boletos bancarios vía blockchain Stellar</p>
+      <p class="meta"><strong>Autor:</strong> Cleverson Silva · <strong>Fecha:</strong> Marzo 2026</p>
+      <div class="hero-cta">
+        <a href="validation-es.html" class="btn btn-primary">Validar boleto</a>
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-primary" target="_blank" rel="noopener" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">GitHub</a>
+      </div>
+      <div class="badges">
+        <span class="badge">Stellar</span>
+        <span class="badge">Manage Data</span>
+        <span class="badge">47 dígitos</span>
+        <span class="badge">Privacidad</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <nav class="toc">
+        <h2>Índice</h2>
+        <ol>
+          <li><a href="#resumo">Resumen ejecutivo</a></li>
+          <li><a href="#problema">El problema</a></li>
+          <li><a href="#solucao">La solución: Boleto Guardian</a></li>
+          <li><a href="#arquitetura">Arquitectura conceptual</a></li>
+          <li><a href="#stellar">¿Por qué Stellar?</a></li>
+          <li><a href="#viabilidade">Viabilidad y escalabilidad</a></li>
+          <li><a href="#seguranca">Seguridad, privacidad y cumplimiento</a></li>
+          <li><a href="#adocao">Estrategia de adopción</a></li>
+          <li><a href="#visao">Visión de futuro</a></li>
+          <li><a href="#conclusao">Conclusión</a></li>
+          <li><a href="#referencias">Referencias</a></li>
+        </ol>
+      </nav>
+
+      <section class="sec" id="resumo">
+        <h2>1. Resumen ejecutivo</h2>
+        <p>Brasil emite más de <strong>4 mil millones de boletos bancarios al año</strong>, consolidando el boleto como uno de los instrumentos de pago más utilizados en el país. Sin embargo, este volumen convive con una realidad alarmante: las estimaciones apuntan a pérdidas entre <strong>R$ 25 y 29 mil millones anuales</strong> en fraudes digitales con boletos y otras modalidades de pago electrónico (ClearSale, 2024; Finsiders, 2024).</p>
+        <p><strong>Stellar Boleto Guardian</strong> es una solución que registra la línea digitável de cada boleto emitido en la blockchain Stellar, creando una prueba pública, inmutable y auditable de autenticidad. El diferencial central es la experiencia del usuario final: <strong>para validar un boleto, basta con digitar los números impresos en el documento</strong>. No es necesario conocer hashes, claves criptográficas ni ningún concepto técnico.</p>
+        <p>La solución se integra con cualquier sistema ERP mediante una API intermediaria, siendo agnóstica a la plataforma. En este whitepaper utilizamos TOTVS Protheus como referencia de implementación, pero la arquitectura es replicable para cualquier ERP del mercado.</p>
+      </section>
+
+      <section class="sec" id="problema">
+        <h2>2. El problema</h2>
+        <h3>2.1 El escenario de fraude en Brasil</h3>
+        <p>El boleto bancario es un pilar del sistema financiero brasileño. Presente en transacciones B2B, B2C y gubernamentales, atiende desde grandes corporaciones hasta consumidores finales. Su popularidad lo convirtió en uno de los blancos preferidos de los delincuentes digitales.</p>
+        <ul>
+          <li><strong>4 mil millones</strong> de boletos emitidos anualmente en Brasil (FEBRABAN)</li>
+          <li><strong>R$ 25 a 29 mil millones</strong> en pérdidas por fraude digital, incluyendo boletos y PIX</li>
+          <li>El <strong>fraude del boleto adulterado</strong> figura entre las modalidades más comunes de delito digital en el país</li>
+        </ul>
+        <h3>2.2 Cómo ocurre la fraude</h3>
+        <p>El ciclo de fraude explota vulnerabilidades en varios puntos de la cadena:</p>
+        <pre class="diagram">  Empresa emite      Boleto en tránsito  Delincuente        Pagador recibe
+  boleto legítimo                    intercepta         boleto adulterado
+  +-----------+        +-----------+        +-----------+        +-----------+
+  | ERP       |        | E-mail,   |        | Altera     |        | Paga a    |
+  | genera    | -----> | portal    | -----> | codebar    | -----> | cuenta    |
+  | boleto    |        |           |        | o datos    |        | errónea   |
+  +-----------+        +-----------+        +-----------+        +-----------+</pre>
+        <p>Técnicas más comunes: interceptación de e-mails con sustitución del código de barras; malware que altera la línea digitável en visualización o impresión; ingeniería social con boletos falsos; adulteración física de boletos impresos.</p>
+        <h3>2.3 La brecha de confianza</h3>
+        <p>El problema fundamental es la <strong>ausencia de una capa de verificación pública y fiable</strong> entre empresa, institución financiera y pagador. Hoy el pagador depende exclusivamente de la confianza en el remitente. No existe un mecanismo público y a prueba de adulteración para verificar si el boleto recibido es idéntico al emitido por la empresa.</p>
+        <h3>2.4 Limitaciones de las soluciones actuales</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Enfoque</th><th>Limitación</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Verificación por el banco</td><td>Exige acceso a banca por internet y verificación manual</td></tr>
+              <tr><td>Sistemas antifraude corporativos</td><td>Operan internamente, sin transparencia para el pagador</td></tr>
+              <tr><td>DDA (Débito Directo Autorizado)</td><td>Exige registro previo, no cubre todos los escenarios</td></tr>
+              <tr><td>Logs internos del ERP</td><td>Pueden alterarse; no son públicos ni auditable</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Todas comparten una falla común: <strong>el pagador no tiene autonomía para validar el boleto de forma independiente, pública e instantánea</strong>.</p>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>3. La solución: Boleto Guardian</h2>
+        <h3>3.1 El concepto</h3>
+        <p>Boleto Guardian resuelve la brecha de confianza de forma directa: <strong>al emitir un boleto, la empresa registra la línea digitável en la blockchain Stellar</strong>. A partir de ahí, cualquier persona que tenga el boleto puede verificar su autenticidad consultando la blockchain.</p>
+        <div class="blockquote">
+          <p><strong>¿Recibió un boleto? Digite los números. Si existe en la blockchain, es auténtico.</strong></p>
+        </div>
+        <h3>3.2 ¿Por qué la línea digitável como clave?</h3>
+        <p>La línea digitável de un boleto bancario brasileño tiene <strong>47 dígitos</strong>. Esta secuencia es única por boleto, impresa en el documento, estandarizada por FEBRABAN y compacta (cabe en los 64 bytes del Manage Data de Stellar). Esta elección elimina la necesidad de que el usuario conozca información técnica. <strong>El boleto es la propia credencial de consulta.</strong></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Enfoque</th><th>Clave de consulta</th><th>Qué necesita el usuario</th><th>Experiencia</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Tradicional (hash)</td><td>Hash del boleto</td><td>Account ID + Hash SHA1</td><td>Compleja, técnica</td></tr>
+              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Línea digitável (47 dígitos)</strong></td><td><strong>Nada más que el boleto</strong></td><td><strong>Simple, intuitiva</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>3.3 Stellar Manage Data</h3>
+        <p>La blockchain Stellar ofrece de forma nativa la operación <strong>Manage Data</strong>: pares clave-valor en la cuenta del usuario. <strong>Clave</strong> hasta 64 bytes (línea digitável); <strong>valor</strong> hasta 64 bytes (nuestro número, valor, vencimiento, estado). No exige smart contracts ni infraestructura compleja.</p>
+        <h3>3.4 Una cuenta por empresa</h3>
+        <p>Cada empresa emisora tiene <strong>una única cuenta en la red Stellar</strong>. Todos los boletos quedan registrados en esa cuenta. El Account ID se configura una vez en la API — el usuario final nunca necesita conocerlo.</p>
+        <pre class="diagram">  Empresa (ej: DS2U)   Cuenta Stellar: GABCD...XYZ
+  +--------------------------------------------------+
+  | Manage Data    key: 23793.38128...004001...      |
+  |               val: 000000040|120.50|20250805|pendiente
+  |               key: 23793.38128...004002...        |
+  |               val: 000000041|350.00|20250810|pendiente
+  |               ... (todos los boletos de la empresa)
+  +--------------------------------------------------+</pre>
+        <h3>3.5 Validación sin fricción</h3>
+        <p>1) El pagador recibe el boleto. 2) Accede a la página de validación (o código QR). 3) Digita los 47 números. 4) El sistema consulta Stellar y muestra los datos originales. 5) Si los datos coinciden, el boleto es auténtico. <strong>Si la línea digitável no existe en la blockchain, el boleto no fue emitido por la empresa — posible fraude.</strong></p>
+      </section>
+
+      <section class="sec" id="arquitetura">
+        <h2>4. Arquitectura conceptual</h2>
+        <h3>4.1 Visión general</h3>
+        <p>Tres capas: ERP → API Middleware → Red Stellar. El usuario final consulta vía GET (digita el codebar y valida).</p>
+        <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
+|   SISTEMA ERP     |       |  API MIDDLEWARE   |       | REDE STELLAR      |
+| Genera boletos    | POST  | Recibe, valida,   |  TX   | Manage Data       |
+| Envía codebar     |------>| construye TX,     |----->| Registro inmutable|
++-------------------+       | firma y envía     |       | Consulta pública  |
+                            +--------^--------+       +-------------------+
+                                     | GET
+                            +--------+--------+
+                            |  USUARIO FINAL   |
+                            | Digita codebar   |
+                            +-----------------+</pre>
+        <h3>4.2 Los tres momentos</h3>
+        <p><strong>Momento 1 — Emisión:</strong> El ERP genera el boleto y envía línea digitável y metadatos a la API. <strong>Momento 2 — Registro en la blockchain:</strong> La API valida, monta la transacción Manage Data y envía a la red; en ~5 segundos el registro está confirmado e inmutable. <strong>Momento 3 — Validación pública:</strong> Cualquier persona consulta la blockchain con la línea digitável; la API devuelve los datos originales para comparación.</p>
+        <h3>4.3 Integración con ERP</h3>
+        <p>Boleto Guardian es <strong>agnóstico al ERP</strong>. La comunicación es vía HTTP (REST). Usamos TOTVS Protheus como referencia; la misma integración puede replicarse para Sankhya, Omie, SAP, Oracle o cualquier ERP que soporte peticiones web.</p>
+      </section>
+
+      <section class="sec" id="stellar">
+        <h2>5. ¿Por qué Stellar?</h2>
+        <p>La elección de la blockchain es crítica. Boleto Guardian exige una red rápida, barata, segura y de fácil integración. <strong>Stellar</strong> cumple todos los requisitos.</p>
+        <h3>5.2 Manage Data: operación nativa</h3>
+        <p>A diferencia de blockchains que exigen smart contracts para almacenar datos, Stellar lo ofrece <strong>de forma nativa en el protocolo</strong>: sin escribir ni auditar contratos, sin riesgos de vulnerabilidades. Simplicidad que reduce desarrollo, mantenimiento y auditoría.</p>
+        <h3>5.3 Costo operativo</h3>
+        <p>Cada transacción cuesta aproximadamente <strong>0,00001 XLM</strong>. El costo por boleto registrado permanece en el orden de fracciones de centavo. Comparación:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Blockchain</th><th>Costo por transacción</th><th>¿Smart contract?</th><th>Tiempo confirmación</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Stellar</strong></td><td><strong>~0,00001 XLM</strong></td><td><strong>No</strong></td><td><strong>~5 s</strong></td></tr>
+              <tr><td>Ethereum</td><td>Variable (gas)</td><td>Sí (Solidity)</td><td>~15 s a minutos</td></tr>
+              <tr><td>Bitcoin</td><td>Variable</td><td>N/A</td><td>~10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>5.4 Finalidad rápida</h3>
+        <p>Transacciones confirmadas en aproximadamente <strong>5 segundos</strong>, con finalidad absoluta. No es necesario esperar múltiples confirmaciones como en blockchains proof-of-work.</p>
+        <h3>5.5 Red pública y descentralizada</h3>
+        <p>Cualquiera puede consultar datos de cualquier cuenta (Stellar Explorer, Horizon API), verificar el historial y auditar registros de forma independiente. Esta transparencia es fundamental para una capa de confianza que no dependa de una entidad centralizada.</p>
+        <h3>5.6 Gobernanza</h3>
+        <p>La red es mantenida por la <strong>Stellar Development Foundation (SDF)</strong>, organización sin fines de lucro dedicada al desarrollo del protocolo y a la inclusión financiera global.</p>
+      </section>
+
+      <section class="sec" id="viabilidade">
+        <h2>6. Viabilidad y escalabilidad</h2>
+        <p><strong>Costo favorable:</strong> El costo por boleto registrado es órdenes de magnitud menor que el perjuicio medio de una sola fraude. <strong>Reserva XLM:</strong> Cada entrada Manage Data consume una pequeña reserva en la cuenta de la empresa; a escala, es manejable y predecible. <strong>Escalabilidad:</strong> Stellar procesa miles de transacciones por segundo con ~5 s de confirmación; la API es stateless y escalable horizontalmente. <strong>Mercado direccionable:</strong> 4 mil millones de boletos/año en Brasil, con crecimiento estimado del 15% anual.</p>
+      </section>
+
+      <section class="sec" id="seguranca">
+        <h2>7. Seguridad, privacidad y cumplimiento</h2>
+        <h3>7.1 Inmutabilidad</h3>
+        <p>Una vez registrado en Stellar, un Manage Data solo puede ser alterado por una nueva transacción firmada por la clave de la cuenta. Terceros no pueden adulterar; cualquier cambio genera una transacción visible en el historial.</p>
+        <h3>7.2 Protección de la clave</h3>
+        <p>La clave privada de la cuenta Stellar de la empresa es el único activo sensible. Debe almacenarse en un entorno seguro (cofre digital, HSM o almacenamiento cifrado) y <strong>nunca exponerse</strong> al usuario final. La API debe operar con HTTPS obligatorio.</p>
+        <h3>7.3 Privacidad por diseño — LGPD</h3>
+        <p><strong>Ningún dato personal</strong> se almacena en la blockchain. La línea digitável y los metadatos no identifican al pagador. Nombre, CPF/CNPJ y dirección <strong>nunca</strong> se registran on-chain. El sistema es compatible con la LGPD desde la concepción.</p>
+        <h3>7.4 Transparencia y auditoría</h3>
+        <p>Los datos en Stellar son públicos. Cualquiera puede auditar vía Stellar Explorer; los reguladores pueden verificar la integridad; la empresa demuestra transparencia sin esfuerzo adicional.</p>
+        <h3>7.5 Infraestructura de producción</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Requisito</th><th>Descripción</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>HTTPS</td><td>Toda comunicación ERP, API y usuario cifrada</td></tr>
+              <tr><td>Backup de la clave</td><td>Clave privada con backup seguro y redundante</td></tr>
+              <tr><td>Monitoreo</td><td>Alertas por fallos de transacción, indisponibilidad o uso anómalo</td></tr>
+              <tr><td>Logs auditable</td><td>Registro de todas las operaciones para rastreabilidad interna</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="sec" id="adocao">
+        <h2>8. Estrategia de adopción</h2>
+        <p><strong>Alianzas con consultorías ERP:</strong> Consultorías certificadas (TOTVS, Sankhya, Omie) tienen acceso directo a bases de clientes. <strong>Integraciones nativas:</strong> Módulos en los ERPs líderes, disponibles en marketplaces oficiales. <strong>Modelo white-label:</strong> La solución puede ser rebrandeada por ERPs y fintechs. <strong>Contratos corporativos directos:</strong> Para grandes empresas con alto volumen de emisión, con customizaciones y SLAs diferenciados.</p>
+        <p>Cuantas más empresas adoptan, más boletos se registran, más usuarios validan, mayor la confianza del mercado — creando un ciclo virtuoso de adopción.</p>
+      </section>
+
+      <section class="sec" id="visao">
+        <h2>9. Visión de futuro</h2>
+        <p>Boleto Guardian es el primer paso de una plataforma más amplia de confianza digital. La misma arquitectura puede extenderse a otros documentos críticos:</p>
+        <ul class="phase-list">
+          <li><strong>Fase 1 — Estándar nacional en boletos:</strong> Consolidar como referencia en validación de boletos en Brasil, con integración en los principales ERPs y reconocimiento como sello de seguridad.</li>
+          <li><strong>Fase 2 — Notas fiscales electrónicas:</strong> Validar NF-e y NFS-e, combatiendo fraude en documentos fiscales.</li>
+          <li><strong>Fase 3 — Contratos digitales:</strong> Registro inmutable de términos, firmas y cambios contractuales.</li>
+          <li><strong>Fase 4 — Infraestructura nacional de confianza:</strong> Plataforma como capa de validación digital de Brasil, con APIs públicas para documentos gubernamentales y privados.</li>
+        </ul>
+        <div class="blockquote">
+          <p><em>"En 5 años, Boleto Guardian será sinónimo de confianza digital en Brasil, así como el candado SSL representa seguridad en la web. Cada documento validado fortalece la red de confianza."</em></p>
+        </div>
+      </section>
+
+      <section class="sec" id="conclusao">
+        <h2>10. Conclusión</h2>
+        <p>El mercado brasileño de boletos mueve miles de millones de transacciones al año, y la fraude representa uno de los mayores desafíos de seguridad financiera. La ausencia de una capa de verificación pública, inmutable y accesible entre emisor y pagador es cubierta por Boleto Guardian de forma elegante y eficiente.</p>
+        <p>Al usar la blockchain <strong>Stellar</strong> y su operación nativa <strong>Manage Data</strong>, la solución prescinde de smart contracts complejos, opera con costo mínimo y ofrece confirmación en segundos. La <strong>línea digitável como clave de consulta</strong> garantiza que el usuario no precise conocimiento técnico — basta tener el documento en mano.</p>
+        <div class="conclusion-quote">
+          <p>Cada boleto validado es un boleto seguro. Cada boleto seguro fortalece la confianza en el sistema financiero brasileño.</p>
+        </div>
+      </section>
+
+      <section class="sec refs" id="referencias">
+        <h2>11. Referencias</h2>
+        <ol>
+          <li><a href="https://stellar.org/developers" target="_blank" rel="noopener">Stellar Development Foundation</a> — Documentación del protocolo Stellar.</li>
+          <li><a href="https://developers.stellar.org/api" target="_blank" rel="noopener">Stellar Horizon API</a> — Referencia para consultas de cuenta y datos.</li>
+          <li>FEBRABAN — Datos sobre volumen de boletos en Brasil.</li>
+          <li>ClearSale (2024) — Informe de fraude digital en Brasil.</li>
+          <li>Finsiders (2024) — Análisis de pérdidas por fraude en boletos y PIX.</li>
+          <li>Banco Central de Brasil — Reglamentación de boletos y sistema de pagos.</li>
+          <li><a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" target="_blank" rel="noopener">LGPD</a> — Ley General de Protección de Datos de Brasil (Ley 13.709/2018).</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Stellar Boleto Guardian</strong> — Seguridad, transparencia y confianza en cada boleto.</p>
+      <p class="footer-links">
+        <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
+        <a href="validation-es.html">Validar boleto</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Cleverson Silva · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>

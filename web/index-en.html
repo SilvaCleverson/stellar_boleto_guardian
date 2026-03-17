@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Boleto Guardian — Whitepaper v1.0. Immutable bank slip authentication on Stellar blockchain. Security and trust in every slip.">
+  <title>Boleto Guardian — Whitepaper v1.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c111b;
+      --surface: #131b2e;
+      --card: #1a2540;
+      --primary: #14b8a6;
+      --primary-dim: #0d9488;
+      --accent: #0e7490;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: rgba(148, 163, 184, 0.12);
+      --prose: 720px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      font-size: 1.05rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .wrap-narrow { max-width: var(--prose); margin: 0 auto; padding: 0 24px; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(12, 17, 27, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--primary); }
+    nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--primary); }
+    .lang-switch {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .lang-switch a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-switch a:hover { background: var(--card); color: var(--primary); }
+    .lang-switch a.active { background: var(--card); color: var(--primary); font-weight: 600; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+      font-family: inherit;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35); }
+
+    .hero {
+      padding: 64px 0 56px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero .version {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .hero .tagline {
+      font-size: 1.15rem;
+      color: var(--muted);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+    .hero .meta {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+    .hero .meta strong { color: var(--text); }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero .badges {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 32px;
+    }
+    .hero .badge {
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+    }
+
+    main { padding: 48px 0 64px; }
+    .toc {
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .toc h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: block;
+    }
+    .toc ol {
+      list-style: none;
+      counter-reset: toc;
+      display: block;
+      column-count: 1;
+    }
+    @media (min-width: 640px) {
+      .toc ol { column-count: 2; column-gap: 32px; }
+    }
+    .toc li {
+      counter-increment: toc;
+      margin-bottom: 10px;
+      break-inside: avoid;
+    }
+    .toc li::before { content: counter(toc) ". "; color: var(--primary); font-weight: 600; margin-right: 6px; }
+    .toc a {
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .toc a:hover { color: var(--primary); }
+
+    .sec {
+      margin-bottom: 56px;
+      scroll-margin-top: 80px;
+    }
+    .sec h2 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+      color: var(--text);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 28px 0 12px;
+      color: var(--primary);
+    }
+    .sec p { margin-bottom: 16px; color: var(--text); }
+    .sec ul, .sec ol {
+      margin: 0 0 20px 24px;
+      color: var(--text);
+    }
+    .sec li { margin-bottom: 8px; }
+    .sec strong { color: var(--text); }
+    .blockquote {
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      margin: 24px 0;
+      background: rgba(20, 184, 166, 0.06);
+      border-radius: 0 10px 10px 0;
+      font-size: 1.05rem;
+    }
+    .blockquote p:last-child { margin-bottom: 0; }
+    .diagram {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+      overflow-x: auto;
+      margin: 20px 0;
+      color: var(--muted);
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--surface);
+      color: var(--primary);
+      font-weight: 600;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(20, 184, 166, 0.04); }
+    .phase-list { list-style: none; margin-left: 0; }
+    .phase-list li {
+      margin-bottom: 16px;
+      padding-left: 28px;
+      position: relative;
+    }
+    .phase-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .phase-list strong { display: block; margin-bottom: 4px; color: var(--primary); }
+    .conclusion-quote {
+      text-align: center;
+      padding: 32px 24px;
+      margin: 40px 0;
+      background: linear-gradient(135deg, var(--card) 0%, rgba(14, 116, 144, 0.15) 100%);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .conclusion-quote p {
+      font-size: 1.15rem;
+      font-weight: 500;
+      margin: 0;
+      color: var(--text);
+    }
+    .refs { font-size: 0.95rem; }
+    .refs ol { margin-left: 20px; }
+    .refs li { margin-bottom: 10px; }
+    .refs a { color: var(--primary); text-decoration: none; }
+    .refs a:hover { text-decoration: underline; }
+
+    footer {
+      padding: 40px 0;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="index-en.html" class="logo">Boleto <span>Guardian</span></a>
+      <nav>
+        <div class="lang-switch">
+          <a href="index.html" title="Português">🇧🇷 PT</a>
+          <a href="index-en.html" class="active" title="English">🇺🇸 EN</a>
+          <a href="index-es.html" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="#resumo">Summary</a>
+        <a href="#problema">Problem</a>
+        <a href="#solucao">Solution</a>
+        <a href="#arquitetura">Architecture</a>
+        <a href="#stellar">Stellar</a>
+        <a href="#visao">Vision</a>
+        <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <h1>Stellar Boleto Guardian</h1>
+      <p class="version">Whitepaper v1.0</p>
+      <p class="tagline">Immutable bank slip authentication via Stellar blockchain</p>
+      <p class="meta"><strong>Author:</strong> Cleverson Silva · <strong>Date:</strong> March 2026</p>
+      <div class="hero-cta">
+        <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-primary" target="_blank" rel="noopener" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">GitHub</a>
+      </div>
+      <div class="badges">
+        <span class="badge">Stellar</span>
+        <span class="badge">Manage Data</span>
+        <span class="badge">47 digits</span>
+        <span class="badge">Privacy</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <nav class="toc">
+        <h2>Table of contents</h2>
+        <ol>
+          <li><a href="#resumo">Executive summary</a></li>
+          <li><a href="#problema">The problem</a></li>
+          <li><a href="#solucao">The solution: Boleto Guardian</a></li>
+          <li><a href="#arquitetura">Conceptual architecture</a></li>
+          <li><a href="#stellar">Why Stellar?</a></li>
+          <li><a href="#viabilidade">Feasibility and scalability</a></li>
+          <li><a href="#seguranca">Security, privacy and compliance</a></li>
+          <li><a href="#adocao">Adoption strategy</a></li>
+          <li><a href="#visao">Future vision</a></li>
+          <li><a href="#conclusao">Conclusion</a></li>
+          <li><a href="#referencias">References</a></li>
+        </ol>
+      </nav>
+
+      <section class="sec" id="resumo">
+        <h2>1. Executive summary</h2>
+        <p>Brazil issues more than <strong>4 billion bank slips per year</strong>, making the boleto one of the most used payment instruments in the country. However, this volume coexists with an alarming reality: estimates point to losses between <strong>R$ 25 and 29 billion annually</strong> in digital fraud involving slips and other electronic payment methods (ClearSale, 2024; Finsiders, 2024).</p>
+        <p><strong>Stellar Boleto Guardian</strong> is a solution that records the barcode of each issued slip on the Stellar blockchain, creating a public, immutable and auditable proof of authenticity. The key differentiator is the end-user experience: <strong>to validate a slip, simply type the numbers printed on the document</strong>. No need to know hashes, cryptographic keys or any technical concept.</p>
+        <p>The solution integrates with any ERP system via a middleware API, making it platform-agnostic. In this whitepaper we use TOTVS Protheus as an implementation reference, but the architecture is replicable for any ERP on the market.</p>
+      </section>
+
+      <section class="sec" id="problema">
+        <h2>2. The problem</h2>
+        <h3>2.1 Fraud scenario in Brazil</h3>
+        <p>The bank slip (boleto) is a pillar of the Brazilian financial system. Present in B2B, B2C and government transactions, it serves from large corporations to end consumers. Its popularity has made it one of the preferred targets of digital criminals.</p>
+        <ul>
+          <li><strong>4 billion</strong> slips issued annually in Brazil (FEBRABAN)</li>
+          <li><strong>R$ 25 to 29 billion</strong> in losses from digital fraud, including slips and PIX</li>
+          <li>The <strong>tampered slip scam</strong> is among the most common types of digital crime in the country</li>
+        </ul>
+        <h3>2.2 How fraud happens</h3>
+        <p>The fraud cycle exploits vulnerabilities at several points in the chain:</p>
+        <pre class="diagram">  Company issues      Slip in transit    Criminal           Payer receives
+  legitimate slip                        intercepts         tampered slip
+  +-----------+        +-----------+        +-----------+        +-----------+
+  | ERP       |        | Email,    |        | Alters    |        | Pays to   |
+  | generates | -----> | mail,     | -----> | barcode   | -----> | wrong     |
+  | slip      |        | portal    |        | or data   |        | account   |
+  +-----------+        +-----------+        +-----------+        +-----------+</pre>
+        <p>Most common techniques: email interception with barcode replacement; malware that alters the barcode on display or print; social engineering with fake slips; physical tampering of printed slips.</p>
+        <h3>2.3 The trust gap</h3>
+        <p>The fundamental problem is the <strong>absence of a public, reliable verification layer</strong> between company, financial institution and payer. Today, the payer depends exclusively on trust in the sender. There is no public, tamper-proof mechanism to verify whether the received slip is identical to the one issued by the company.</p>
+        <h3>2.4 Limitations of current solutions</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Approach</th><th>Limitation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Bank verification</td><td>Requires internet banking access and manual checking</td></tr>
+              <tr><td>Corporate antifraud systems</td><td>Operate internally, no transparency for the payer</td></tr>
+              <tr><td>DDA (Authorized Direct Debit)</td><td>Requires prior registration, does not cover all scenarios</td></tr>
+              <tr><td>ERP internal logs</td><td>Can be altered; not public or auditable</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>They all share a common flaw: <strong>the payer has no autonomy to validate the slip independently, publicly and instantly</strong>.</p>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>3. The solution: Boleto Guardian</h2>
+        <h3>3.1 The concept</h3>
+        <p>Boleto Guardian solves the trust gap directly: <strong>when issuing a slip, the company records the barcode on the Stellar blockchain</strong>. From then on, anyone with the slip can verify its authenticity by querying the blockchain.</p>
+        <div class="blockquote">
+          <p><strong>Received a slip? Type the numbers. If it exists on the blockchain, it's authentic.</strong></p>
+        </div>
+        <h3>3.2 Why the barcode as key?</h3>
+        <p>A Brazilian bank slip barcode has <strong>47 digits</strong>. This sequence is unique per slip, printed on the document, standardized by FEBRABAN and compact (fits in Stellar's 64-byte Manage Data). This choice eliminates the need for the user to know any technical information. <strong>The slip is the query credential itself.</strong></p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Approach</th><th>Query key</th><th>What the user needs</th><th>Experience</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Traditional (hash)</td><td>Slip hash</td><td>Account ID + SHA1 hash</td><td>Complex, technical</td></tr>
+              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Barcode (47 digits)</strong></td><td><strong>Nothing but the slip</strong></td><td><strong>Simple, intuitive</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>3.3 Stellar Manage Data</h3>
+        <p>The Stellar blockchain natively offers the <strong>Manage Data</strong> operation: key-value pairs on the user's account. <strong>Key</strong> up to 64 bytes (barcode); <strong>value</strong> up to 64 bytes (our number, amount, due date, status). No smart contracts or complex infrastructure required.</p>
+        <h3>3.4 One account per company</h3>
+        <p>Each issuing company has <strong>one account on the Stellar network</strong>. All slips are recorded on that account. The Account ID is configured once in the API — the end user never needs to know it.</p>
+        <pre class="diagram">  Company (e.g. DS2U)   Stellar account: GABCD...XYZ
+  +--------------------------------------------------+
+  | Manage Data    key: 23793.38128...004001...      |
+  |               val: 000000040|120.50|20250805|pending
+  |               key: 23793.38128...004002...        |
+  |               val: 000000041|350.00|20250810|pending
+  |               ... (all company slips)             |
+  +--------------------------------------------------+</pre>
+        <h3>3.5 Zero-friction validation</h3>
+        <p>1) The payer receives the slip. 2) Accesses the validation page (or QR code). 3) Types the 47 digits. 4) The system queries Stellar and displays the original data. 5) If the data matches, the slip is authentic. <strong>If the barcode does not exist on the blockchain, the slip was not issued by the company — potential fraud.</strong></p>
+      </section>
+
+      <section class="sec" id="arquitetura">
+        <h2>4. Conceptual architecture</h2>
+        <h3>4.1 Overview</h3>
+        <p>Three layers: ERP → API Middleware → Stellar Network. The end user queries via GET (types the barcode and validates).</p>
+        <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
+|    ERP SYSTEM     |       |  API MIDDLEWARE   |       | STELLAR NETWORK    |
+| Generates slips   | POST  | Receives,        |  TX   | Manage Data       |
+| Sends barcode     |------>| validates,       |----->| Immutable record  |
++-------------------+       | builds TX, sends |       | Public query       |
+                            +--------^--------+       +-------------------+
+                                     | GET
+                            +--------+--------+
+                            |  END USER       |
+                            | Types barcode   |
+                            +-----------------+</pre>
+        <h3>4.2 The three moments</h3>
+        <p><strong>Moment 1 — Issuance:</strong> The ERP generates the slip and sends barcode and metadata to the API. <strong>Moment 2 — Blockchain registration:</strong> The API validates, builds the Manage Data transaction and submits to the network; in ~5 seconds the record is confirmed and immutable. <strong>Moment 3 — Public validation:</strong> Anyone queries the blockchain with the barcode; the API returns the original data for comparison.</p>
+        <h3>4.3 ERP integration</h3>
+        <p>Boleto Guardian is <strong>ERP-agnostic</strong>. Communication is via HTTP (REST). We use TOTVS Protheus as a reference; the same integration can be replicated for Sankhya, Omie, SAP, Oracle or any ERP that supports web requests.</p>
+      </section>
+
+      <section class="sec" id="stellar">
+        <h2>5. Why Stellar?</h2>
+        <p>Blockchain choice is critical. Boleto Guardian requires a fast, cheap, secure and easy-to-integrate network. <strong>Stellar</strong> meets all requirements.</p>
+        <h3>5.2 Manage Data: native operation</h3>
+        <p>Unlike blockchains that require smart contracts to store data, Stellar offers this <strong>natively in the protocol</strong>: no writing or auditing contracts, no contract vulnerability risks. Simplicity that reduces development, maintenance and auditing.</p>
+        <h3>5.3 Operational cost</h3>
+        <p>Each transaction costs approximately <strong>0.00001 XLM</strong>. The cost per registered slip remains in the order of fractions of a cent. Comparison:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Blockchain</th><th>Cost per transaction</th><th>Smart contract?</th><th>Confirmation time</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Stellar</strong></td><td><strong>~0.00001 XLM</strong></td><td><strong>No</strong></td><td><strong>~5 s</strong></td></tr>
+              <tr><td>Ethereum</td><td>Variable (gas)</td><td>Yes (Solidity)</td><td>~15 s to minutes</td></tr>
+              <tr><td>Bitcoin</td><td>Variable</td><td>N/A</td><td>~10 min</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>5.4 Fast finality</h3>
+        <p>Transactions confirmed in approximately <strong>5 seconds</strong>, with absolute finality. No need to wait for multiple confirmations as in proof-of-work blockchains.</p>
+        <h3>5.5 Public and decentralized network</h3>
+        <p>Anyone can query data from any account (Stellar Explorer, Horizon API), verify history and audit records independently. This transparency is essential for a trust layer that does not depend on a centralized entity.</p>
+        <h3>5.6 Governance</h3>
+        <p>The network is maintained by the <strong>Stellar Development Foundation (SDF)</strong>, a non-profit organization dedicated to protocol development and global financial inclusion.</p>
+      </section>
+
+      <section class="sec" id="viabilidade">
+        <h2>6. Feasibility and scalability</h2>
+        <p><strong>Favorable cost:</strong> Cost per registered slip is orders of magnitude lower than the average loss from a single fraud. <strong>XLM reserve:</strong> Each Manage Data entry consumes a small reserve on the company account; at scale, it is manageable and predictable. <strong>Scalability:</strong> Stellar processes thousands of transactions per second with ~5 s confirmation; the API is stateless and horizontally scalable. <strong>Addressable market:</strong> 4 billion slips/year in Brazil, with an estimated 15% annual growth.</p>
+      </section>
+
+      <section class="sec" id="seguranca">
+        <h2>7. Security, privacy and compliance</h2>
+        <h3>7.1 Immutability</h3>
+        <p>Once recorded on Stellar, a Manage Data entry can only be changed by a new transaction signed by the account key. Third parties cannot tamper; any change generates a visible transaction in the history.</p>
+        <h3>7.2 Key protection</h3>
+        <p>The company's Stellar account private key is the only sensitive asset. It must be stored in a secure environment (digital vault, HSM or encrypted storage) and <strong>never exposed</strong> to the end user. The API must operate with mandatory HTTPS.</p>
+        <h3>7.3 Privacy by design — LGPD</h3>
+        <p><strong>No personal data</strong> is stored on the blockchain. The barcode and metadata do not identify the payer. Name, CPF/CNPJ and address are <strong>never</strong> recorded on-chain. The system is LGPD-compliant by design.</p>
+        <h3>7.4 Transparency and auditing</h3>
+        <p>Data on Stellar is public. Anyone can audit via Stellar Explorer; regulators can verify integrity; the company demonstrates transparency with no extra effort.</p>
+        <h3>7.5 Production infrastructure</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Requirement</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>HTTPS</td><td>All ERP, API and user communication encrypted</td></tr>
+              <tr><td>Key backup</td><td>Private key with secure and redundant backup</td></tr>
+              <tr><td>Monitoring</td><td>Alerts for transaction failures, unavailability or anomalous use</td></tr>
+              <tr><td>Auditable logs</td><td>Record of all operations for internal traceability</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="sec" id="adocao">
+        <h2>8. Adoption strategy</h2>
+        <p><strong>Partnerships with ERP consultancies:</strong> Certified consultancies (TOTVS, Sankhya, Omie) have direct access to client bases. <strong>Native integrations:</strong> Modules in leading ERPs, available on official marketplaces. <strong>White-label model:</strong> The solution can be rebranded by ERPs and fintechs. <strong>Direct corporate contracts:</strong> For large companies with high issuance volume, with customizations and differentiated SLAs.</p>
+        <p>The more companies adopt, the more slips are registered, the more users validate, the greater market trust — creating a virtuous adoption cycle.</p>
+      </section>
+
+      <section class="sec" id="visao">
+        <h2>9. Future vision</h2>
+        <p>Boleto Guardian is the first step of a broader digital trust platform. The same architecture can be extended to other critical documents:</p>
+        <ul class="phase-list">
+          <li><strong>Phase 1 — National standard for slips:</strong> Consolidate as the reference for slip validation in Brazil, with integration in major ERPs and recognition as a security seal.</li>
+          <li><strong>Phase 2 — Electronic invoices:</strong> Validate NF-e and NFS-e, combating fraud in tax documents.</li>
+          <li><strong>Phase 3 — Digital contracts:</strong> Immutable record of terms, signatures and contractual changes.</li>
+          <li><strong>Phase 4 — National trust infrastructure:</strong> Platform as Brazil's digital validation layer, with public APIs for government and private documents.</li>
+        </ul>
+        <div class="blockquote">
+          <p><em>"In 5 years, Boleto Guardian will be synonymous with digital trust in Brazil, just as the SSL lock represents security on the web. Every validated document strengthens the trust network."</em></p>
+        </div>
+      </section>
+
+      <section class="sec" id="conclusao">
+        <h2>10. Conclusion</h2>
+        <p>The Brazilian slip market moves billions of transactions annually, and fraud represents one of the biggest financial security challenges. The absence of a public, immutable and accessible verification layer between issuer and payer is filled by Boleto Guardian in an elegant and efficient way.</p>
+        <p>By using the <strong>Stellar</strong> blockchain and its native <strong>Manage Data</strong> operation, the solution dispenses with complex smart contracts, operates at minimal cost and offers confirmation in seconds. The <strong>barcode as query key</strong> ensures the user needs no technical knowledge — just have the document in hand.</p>
+        <div class="conclusion-quote">
+          <p>Every validated slip is a secure slip. Every secure slip strengthens trust in the Brazilian financial system.</p>
+        </div>
+      </section>
+
+      <section class="sec refs" id="referencias">
+        <h2>11. References</h2>
+        <ol>
+          <li><a href="https://stellar.org/developers" target="_blank" rel="noopener">Stellar Development Foundation</a> — Stellar protocol documentation.</li>
+          <li><a href="https://developers.stellar.org/api" target="_blank" rel="noopener">Stellar Horizon API</a> — Reference for account and data queries.</li>
+          <li>FEBRABAN — Data on slip volume in Brazil.</li>
+          <li>ClearSale (2024) — Digital fraud report in Brazil.</li>
+          <li>Finsiders (2024) — Analysis of losses from fraud in slips and PIX.</li>
+          <li>Central Bank of Brazil — Slip regulation and payment system.</li>
+          <li><a href="https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm" target="_blank" rel="noopener">LGPD</a> — Brazilian General Data Protection Law (Law 13.709/2018).</li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Stellar Boleto Guardian</strong> — Security, transparency and trust in every slip.</p>
+      <p class="footer-links">
+        <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
+        <a href="validation-en.html">Validate slip</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Cleverson Silva · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>

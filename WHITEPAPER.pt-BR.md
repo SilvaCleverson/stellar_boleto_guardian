@@ -324,20 +324,25 @@ Uma vez registrado na blockchain Stellar, um dado de Manage Data so pode ser alt
 
 ### 7.2 Protecao de chaves
 
-A chave privada da conta Stellar da empresa e o unico ativo sensivel do sistema. Ela deve ser armazenada em ambiente seguro (cofre digital, HSM ou armazenamento criptografado) e **nunca e exposta** ao usuario final ou transmitida em texto claro.
+A chave privada da conta Stellar da empresa e o unico ativo sensivel do sistema. Ela deve ser armazenada em ambiente seguro (cofre digital, HSM ou Secret Manager) e **nunca e exposta** ao usuario final nem transmitida pela rede pelo cliente (ex.: ERP). O **cliente nunca envia a chave**: a API utiliza apenas a chave configurada no servidor (variavel de ambiente ou cofre). O ERP e demais clientes enviam somente o codigo de barras e metadados nao sensiveis; nao armazenam nem transmitem a chave privada. Em deploy e controle de versao, **senhas, tokens, chaves privadas e hashes de assinatura nunca devem ser commitados ou enviados**.
 
 A API intermediaria e a unica camada que acessa a chave privada para assinar transacoes, e deve operar em ambiente protegido com HTTPS obrigatorio.
 
-### 7.3 Privacy by Design -- LGPD
+### 7.3 Nao subir dados financeiros completos
+
+O Boleto Guardian **nao** envia nem armazena documentos financeiros completos ou dados financeiros sensiveis. Apenas o **minimo necessario para a verificacao de autenticidade** e enviado à API e registrado na blockchain: o codigo de barras (47 digitos), nosso numero, valor, vencimento e status. O sistema **nao** recebe nem armazena: texto completo do boleto, dados bancarios, historico financeiro do cliente ou qualquer informacao alem do estritamente necessario para comprovar que um dado codigo de barras foi emitido pela empresa. Isso reduz exposicao e mantem a solucao alinhada a minimizacao de dados e expectativas regulatorias.
+
+### 7.4 Privacy by Design -- LGPD
 
 O Boleto Guardian foi concebido com o principio de **privacy by design**:
 
 - **Nenhum dado pessoal** e armazenado na blockchain
 - A linha digitavel e os metadados do boleto nao identificam o pagador
 - Informacoes sensiveis (nome, CPF/CNPJ, endereco) **nunca** sao registradas na chain
+- **Nenhum dado financeiro completo** e enviado; apenas o conjunto minimo para verificacao (ver 7.3)
 - O sistema e aderente a Lei Geral de Protecao de Dados (LGPD) desde sua concepcao
 
-### 7.4 Transparencia e auditoria
+### 7.5 Transparencia e auditoria
 
 Os dados registrados na blockchain Stellar sao **publicos por natureza**. Isso significa que:
 
@@ -346,7 +351,7 @@ Os dados registrados na blockchain Stellar sao **publicos por natureza**. Isso s
 - A empresa emissora pode demonstrar transparencia sem esforco adicional
 - Auditorias independentes (como CertiK ou similares) podem certificar a seguranca do sistema
 
-### 7.5 Infraestrutura de producao
+### 7.6 Infraestrutura de producao
 
 Para operacao em ambiente de producao, o Boleto Guardian requer:
 

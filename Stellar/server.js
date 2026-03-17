@@ -66,8 +66,9 @@ app.post("/api/wallet", async (_req, res) => {
 
 app.post("/api/blockchain", async (req, res) => {
   try {
-    const { codebar, nosso_numero, valor, vencimento, secret } = req.body;
-    const companySecret = secret || COMPANY_SECRET;
+    const { codebar, nosso_numero, valor, vencimento } = req.body;
+    // Chave apenas do ambiente do servidor (env ou vault). Nunca aceitar do body por segurança.
+    const companySecret = COMPANY_SECRET;
 
     if (!codebar || !nosso_numero || !valor || !vencimento) {
       return res.status(400).json({
@@ -89,7 +90,8 @@ app.post("/api/blockchain", async (req, res) => {
         success: false,
         error:
           "Chave secreta da empresa não configurada. " +
-          "Defina COMPANY_SECRET no .env ou envie no campo 'secret'.",
+          "Defina COMPANY_SECRET no .env (ou use Secret Manager) no servidor da API. " +
+          "A chave nunca deve ser enviada pelo cliente.",
       });
     }
 
@@ -166,28 +168,13 @@ app.get("/api/validate/:codebar", async (req, res) => {
       });
     }
 
-    const data = await response.json();
-    let valueDecoded = "";
-    try {
-      valueDecoded = Buffer.from(data.value, "base64").toString("utf8");
-    } catch (_) {
-      /* valor vazio */
-    }
+    await response.json(); // confirma que existe; não expomos o conteúdo
 
-    const [nosso_numero, valor, vencimento, status] = valueDecoded.split("|");
-
+    // Retorna apenas se o boleto foi emitido pela empresa — nenhum dado financeiro
     res.json({
       success: true,
       found: true,
-      data: {
-        codebar: normalized,
-        nosso_numero: nosso_numero || "",
-        valor: valor || "",
-        vencimento: vencimento || "",
-        status: status || "pendente",
-      },
-      ledger: data.last_modified_ledger || null,
-      stellarExplorer: getExplorerUrl(accountId),
+      message: "Boleto emitido pela empresa.",
     });
   } catch (error) {
     console.error(

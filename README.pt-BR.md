@@ -214,8 +214,7 @@ O cliente da DS2U recebe o boleto e quer saber se e autentico:
   "codebar": "23793381286000000000300000004001184340000012050",
   "nosso_numero": "000000040",
   "valor": "120.50",
-  "vencimento": "2025-08-05",
-  "secret": "S..."
+  "vencimento": "2025-08-05"
 }
 ```
 

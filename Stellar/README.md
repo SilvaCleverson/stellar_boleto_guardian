@@ -81,7 +81,7 @@ npm start
 }
 ```
 
-O `codebar` (47 digitos) e a chave do Manage Data. A chave secreta da empresa vem do `.env` (`COMPANY_SECRET`). Opcionalmente, pode ser enviada no campo `secret` do body.
+O `codebar` (47 digitos) e a chave do Manage Data. A chave secreta da empresa **so pode** vir do ambiente do servidor (`.env` `COMPANY_SECRET` ou Secret Manager). Por seguranca, a API **nao aceita** chave no body -- o cliente (ex.: Protheus) nunca envia nem armazena a chave.
 
 ## Resposta GET /api/validate/:codebar
 
@@ -115,6 +115,22 @@ Acesse `http://localhost:3000/validation.html` para a pagina de validacao public
 | **value** | `nosso_num\|valor\|vencto\|status` | 64 bytes |
 
 Exemplo de value: `000000040|120.50|20250805|pendente` (35 bytes)
+
+## Seguranca e chave
+
+A chave privada Stellar (COMPANY_SECRET) e usada apenas no servidor da API para assinar transacoes. Ela **nunca** deve ser enviada pelo cliente (Protheus ou outro). Hoje a API le a chave de `process.env.COMPANY_SECRET` (arquivo `.env` no servidor).
+
+**Opcional -- Secret Manager (cofre de senhas):** Em producao, recomenda-se nao deixar a chave em texto no `.env`. E possivel carregar `COMPANY_SECRET` de um cofre na inicializacao da API, por exemplo:
+
+- **AWS:** Secrets Manager -- buscar o secret no startup (SDK `@aws-sdk/client-secrets-manager`) e atribuir a `process.env.COMPANY_SECRET` antes de subir o Express.
+- **Azure:** Key Vault -- usar `@azure/keyvault-secrets` para obter o valor e definir em env.
+- **HashiCorp Vault:** API HTTP ou cliente Node para ler o secret e injetar em env.
+
+A API continua usando `process.env.COMPANY_SECRET`; a unica mudanca e a origem do valor (vault em vez de arquivo .env).
+
+**Deploy em producao:** (1) Usar **HTTPS** em toda a comunicacao (ERP, API e usuario) -- via reverse proxy (nginx, Caddy) ou load balancer. (2) **Ambiente restrito:** o arquivo `.env` (ou o cofre) deve ser acessivel apenas pelo processo da API; nao commitar `.env` no repositorio; usar IAM/roles com minimo privilegio se usar vault na nuvem.
+
+**Nunca enviar no deploy (nem no commit):** senhas; tokens de API ou autenticacao; chaves privadas (ex.: COMPANY_SECRET, ZXH_PRVKEY); hashes de assinatura; arquivo `.env` com valores reais; certificados ou `.pem` com chaves. Configurar esses valores apenas no ambiente do servidor (variaveis de ambiente ou Secret Manager), nunca no codigo nem em artefatos versionados.
 
 ## Custos
 

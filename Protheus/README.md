@@ -16,21 +16,25 @@ Protheus (Empresa)                  Stellar (Blockchain)
                                     +--------------------+
 ```
 
-A conta Stellar e **unica por empresa** e configurada na tabela ZXH. O Account ID e fixo -- o usuario final nunca precisa conhece-lo.
+A conta Stellar e **unica por empresa**. O Account ID e fixo -- o usuario final nunca precisa conhece-lo.
+
+### Seguranca da chave
+
+A **chave privada Stellar** (COMPANY_SECRET) **nao deve ser armazenada nem enviada pelo Protheus**. Por politica de seguranca da API, a assinatura das transacoes usa apenas a chave configurada no **servidor da API** (variavel de ambiente ou Secret Manager). O Protheus envia somente `codebar`, `nosso_numero`, `valor` e `vencimento` no POST `/api/blockchain`. A conta da empresa e configurada uma vez no ambiente da API; o Protheus nao envia e nao deve guardar a chave privada.
 
 ## Estrutura
 
 ### ZXH.prw
 
-Tabela ZXH para cadastro da conta Stellar da empresa.
+Tabela ZXH para cadastro da conta Stellar da empresa (URL da API e, se desejar, Account ID para referencia).
 
 | Campo | Tipo | Tam | Descricao |
 |-------|------|-----|-----------|
 | ZXH_FILIAL | C | 2 | Filial |
 | ZXH_CODCLI | C | 6 | Codigo da empresa |
-| ZXH_WALLET | C | 60 | Stellar Account ID (COMPANY_ACCOUNT) |
+| ZXH_WALLET | C | 60 | Stellar Account ID (COMPANY_ACCOUNT) -- apenas referencia; nao enviado na assinatura |
 | ZXH_TOPIC | C | 20 | Reservado |
-| ZXH_PRVKEY | C | 300 | Chave privada Stellar (COMPANY_SECRET) |
+| ZXH_PRVKEY | C | 300 | **Nao utilizar para envio à API.** A chave fica apenas no servidor da API. Campo mantido por compatibilidade; deixar em branco ou nao preencher. |
 | ZXH_DTGER | D | 8 | Data da criacao |
 
 **Indices:**
@@ -62,7 +66,7 @@ U_TstStlr()
 
 // 4. Ao emitir cada boleto, registrar na Stellar
 U_BolStlr(cCodebar, cNossoNum, nValor, dVencto)
-// codebar = linha digitavel (47 digitos)
+// Envia apenas codebar, nosso_numero, valor, vencimento (a API usa COMPANY_SECRET do servidor)
 // Grava na Stellar: key = codebar, value = nossonum|valor|vencto|status
 
 // 5. Validar boleto (usuario digita os 47 numeros)

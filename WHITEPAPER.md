@@ -324,20 +324,25 @@ Once recorded on the Stellar blockchain, a Manage Data entry can only be altered
 
 ### 7.2 Key protection
 
-The company's Stellar account private key is the only sensitive asset in the system. It must be stored in a secure environment (digital vault, HSM, or encrypted storage) and is **never exposed** to the end user or transmitted in plain text.
+The company's Stellar account private key is the only sensitive asset in the system. It must be stored in a secure environment (digital vault, HSM, or Secret Manager) and is **never exposed** to the end user or transmitted over the network by the client (e.g. ERP). The **client never sends the key**: the API uses only the key configured on the server (environment variable or vault). The ERP and other clients send only the barcode and non-sensitive metadata; they do not store or transmit the private key. In deployment and version control, **passwords, tokens, private keys, and signing hashes must never be committed or uploaded**.
 
 The intermediary API is the only layer that accesses the private key to sign transactions, and it must operate in a protected environment with mandatory HTTPS.
 
-### 7.3 Privacy by Design -- LGPD
+### 7.3 No upload of full financial data
+
+The Boleto Guardian does **not** upload or store full financial documents or sensitive financial data. Only the **minimum data required for authenticity verification** is sent to the API and recorded on the blockchain: the barcode (47 digits), nosso número, amount, due date, and status. The system does **not** receive or store: full boleto text, bank account details, customer financial history, or any data beyond what is necessary to prove that a given barcode was issued by the company. This limits exposure and keeps the solution aligned with data minimization and regulatory expectations.
+
+### 7.4 Privacy by Design -- LGPD
 
 The Boleto Guardian was conceived with the **privacy by design** principle:
 
 - **No personal data** is stored on the blockchain
 - The barcode number and boleto metadata do not identify the payer
 - Sensitive information (name, CPF/CNPJ, address) is **never** recorded on chain
+- **No full financial data** is uploaded; only the minimal set for verification (see 7.3)
 - The system is compliant with Brazil's General Data Protection Law (LGPD) from its inception
 
-### 7.4 Transparency and audit
+### 7.5 Transparency and audit
 
 Data recorded on the Stellar blockchain is **public by nature**. This means:
 
@@ -346,7 +351,7 @@ Data recorded on the Stellar blockchain is **public by nature**. This means:
 - The issuing company can demonstrate transparency with no additional effort
 - Independent audits (such as CertiK or similar) can certify the system's security
 
-### 7.5 Production infrastructure
+### 7.6 Production infrastructure
 
 For production environment operation, the Boleto Guardian requires:
 
