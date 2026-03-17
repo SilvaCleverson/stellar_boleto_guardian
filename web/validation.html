@@ -116,6 +116,13 @@
             color: #92400e;
             border: 1px solid #fde68a;
         }
+        .alert-info {
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+            margin-bottom: 24px;
+        }
+        .alert-info strong { display: block; margin-bottom: 6px; }
         .result { margin-top: 28px; display: none; }
         .result-card {
             background: #f0fdf4;
@@ -180,6 +187,11 @@
             <p>Validação de boletos na Blockchain Stellar</p>
         </div>
         <div class="content">
+            <div class="alert alert-info" id="noticeApi">
+                <strong>Como funciona a validação</strong>
+                A validação em tempo real depende da <strong>API Boleto Guardian</strong> configurada pela empresa que emitiu o boleto. Neste site, a API pode ainda não estar disponível. Se você recebeu um boleto de uma empresa que usa o Boleto Guardian, utilize o link de validação fornecido por ela.
+            </div>
+
             <div class="instruction">
                 Recebeu um boleto? Digite os <strong>47 números</strong> do código de barras.<br>
                 Se existir na blockchain, o boleto é autêntico.
@@ -281,7 +293,19 @@
 
             try {
                 const response = await fetch(API_BASE + '/api/validate/' + encodeURIComponent(digits));
-                const data = await response.json();
+                const text = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(text);
+                } catch (_) {
+                    showErrorUnavailable();
+                    return;
+                }
+
+                if (!response.ok) {
+                    showErrorUnavailable();
+                    return;
+                }
 
                 if (!data.success) {
                     showError('Erro: ' + (data.error || 'Resposta inválida da API'));
@@ -295,7 +319,7 @@
 
                 showResult(data);
             } catch (e) {
-                showError('Erro de conexão: ' + e.message);
+                showErrorUnavailable();
             } finally {
                 showLoading(false);
                 btnValidate.disabled = false;
@@ -335,6 +359,13 @@
             const el = document.getElementById('errorAlert');
             el.textContent = msg;
             el.style.display = 'block';
+        }
+
+        function showErrorUnavailable() {
+            showError(
+                'A validação não está disponível no momento. A API do Boleto Guardian não está configurada ou está indisponível para este site. ' +
+                'Se você recebeu um boleto de uma empresa que usa o Boleto Guardian, utilize o link de validação fornecido por ela.'
+            );
         }
 
         function showLoading(show) {

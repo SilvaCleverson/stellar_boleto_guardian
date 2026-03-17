@@ -137,25 +137,32 @@
 
     main { padding: 48px 0 64px; }
     .toc {
-      background: var(--surface);
-      border-radius: 12px;
-      padding: 28px 32px;
-      margin-bottom: 48px;
-      border: 1px solid var(--border);
+      margin-bottom: 56px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
     }
     .toc h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 16px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 20px;
       color: var(--text);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: block;
     }
     .toc ol {
       list-style: none;
       counter-reset: toc;
+      display: block;
+      column-count: 1;
+    }
+    @media (min-width: 640px) {
+      .toc ol { column-count: 2; column-gap: 32px; }
     }
     .toc li {
       counter-increment: toc;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      break-inside: avoid;
     }
     .toc li::before { content: counter(toc) ". "; color: var(--primary); font-weight: 600; margin-right: 6px; }
     .toc a {
