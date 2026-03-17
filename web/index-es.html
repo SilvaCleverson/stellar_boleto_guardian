@@ -55,12 +55,16 @@
       padding: 0 24px;
     }
     .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
       font-size: 1.25rem;
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
       letter-spacing: -0.02em;
     }
+    .logo svg.stellar-icon { flex-shrink: 0; color: var(--primary); }
     .logo span { color: var(--primary); }
     nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
     nav a {
@@ -86,6 +90,7 @@
       text-decoration: none;
       font-size: 0.85rem;
       transition: background 0.2s, color 0.2s;
+      font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Inter', system-ui, sans-serif;
     }
     .lang-switch a:hover { background: var(--card); color: var(--primary); }
     .lang-switch a.active { background: var(--card); color: var(--primary); font-weight: 600; }
@@ -145,6 +150,8 @@
       flex-wrap: wrap;
       margin-top: 32px;
     }
+    .hero-logo { margin-bottom: 16px; }
+    .hero-logo svg { color: var(--primary); vertical-align: middle; }
     .hero .badge {
       padding: 6px 12px;
       border-radius: 6px;
@@ -313,7 +320,10 @@
 <body>
   <header>
     <div class="header-inner">
-      <a href="index-es.html" class="logo">Boleto <span>Guardian</span></a>
+      <a href="index-es.html" class="logo">
+        <svg class="stellar-icon" width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><title>Stellar</title><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+        Boleto <span>Guardian</span>
+      </a>
       <nav>
         <div class="lang-switch">
           <a href="index.html" title="Português">🇧🇷 PT</a>
@@ -333,6 +343,7 @@
 
   <section class="hero">
     <div class="wrap">
+      <p class="hero-logo" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></p>
       <h1>Stellar Boleto Guardian</h1>
       <p class="version">Whitepaper v1.0</p>
       <p class="tagline">Autenticación inmutable de boletos bancarios vía blockchain Stellar</p>
@@ -579,7 +590,7 @@
       <p class="footer-links">
         <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
         <a href="validation-es.html">Validar boleto</a> ·
-        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener"><svg width="16" height="16" viewBox="0 0 32 32" fill="none" style="vertical-align: -3px; margin-right: 2px;"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>Stellar</a> ·
         <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
       </p>
       <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Cleverson Silva · MIT</p>
