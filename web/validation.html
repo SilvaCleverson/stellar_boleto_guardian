@@ -6,11 +6,14 @@
     <!-- Defina content com a URL da API se estiver em outro dominio (ex: https://api.boletoguardian.xyz) -->
     <meta name="api-base" content="">
     <title>Boleto Guardian - Validação na Blockchain Stellar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0d3b66 0%, #1a5f7a 50%, #159895 100%);
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0c111b 0%, #131b2e 50%, #1a2540 100%);
             min-height: 100vh;
             padding: 20px;
             display: flex;
@@ -26,7 +29,7 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #0d3b66 0%, #1a5f7a 100%);
+            background: linear-gradient(135deg, #131b2e 0%, #1a2540 100%);
             color: white;
             padding: 36px 30px;
             text-align: center;
@@ -56,14 +59,14 @@
             font-size: 1.05em;
             line-height: 1.6;
         }
-        .instruction strong { color: #0d3b66; }
+        .instruction strong { color: #14b8a6; }
         .codebar-input {
             width: 100%;
             padding: 18px 16px;
             border: 2px solid #d0d7de;
             border-radius: 10px;
             font-size: 20px;
-            font-family: 'Consolas', 'Courier New', monospace;
+            font-family: 'Inconsolata', monospace;
             letter-spacing: 2px;
             text-align: center;
             transition: border-color 0.2s;
@@ -71,8 +74,8 @@
         }
         .codebar-input:focus {
             outline: none;
-            border-color: #159895;
-            box-shadow: 0 0 0 3px rgba(21, 152, 149, 0.15);
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
         }
         .codebar-input::placeholder { letter-spacing: 0; font-size: 15px; color: #aaa; }
         .char-count {
@@ -87,7 +90,7 @@
         .btn-validate {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(135deg, #1a5f7a 0%, #159895 100%);
+            background: linear-gradient(135deg, #0e7490 0%, #14b8a6 100%);
             color: white;
             border: none;
             border-radius: 10px;
@@ -102,7 +105,7 @@
         .loading { text-align: center; padding: 30px; color: #666; display: none; }
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #159895;
+            border-top: 4px solid #14b8a6;
             border-radius: 50%;
             width: 36px; height: 36px;
             animation: spin 0.8s linear infinite;
@@ -183,7 +186,7 @@
             font-size: 13px;
             color: #9ca3af;
         }
-        .footer-note a { color: #159895; text-decoration: none; }
+        .footer-note a { color: #14b8a6; text-decoration: none; }
     </style>
 </head>
 <body>
