@@ -23,37 +23,9 @@ Meet **DS2U**, a company that uses Protheus ERP and issues hundreds of bank slip
 
 **Stellar Boleto Guardian solves this simply:**
 
-When DS2U issues a slip, the **barcode** (47-digit numeric line) is recorded on the Stellar blockchain. Anyone who receives the slip can type those numbers and instantly verify if it's authentic.
-
-```
-         DS2U issues slip               API records on Stellar
-         +------------------+           +------------------+
-         | Protheus         |           | Manage Data      |
-         | generates slip   |  POST     | key = barcode    |
-         | with barcode     | --------> | value = slip     |
-         | (47 digits)      |           | data             |
-         +------------------+           +--------+---------+
-                                                 |
-                                                 | Recorded permanently
-                                                 v
-                                        +------------------+
-                                        | Stellar          |
-                                        | Blockchain       |
-                                        | (DS2U account)   |
-                                        +--------+---------+
-                                                 |
-                    +----------------------------+
-                    |
-                    v
-         +------------------+
-         | END USER         |
-         | Receives slip    |
-         | Types the 47     |
-         | digits           |
-         | VALIDATES        |
-         | INSTANTLY        |
-         +------------------+
-```
+1. When issuing the slip, Protheus sends the **barcode** (47 digits) to the API
+2. The API records those numbers on the Stellar blockchain -- immutable, public, permanent
+3. The payer types the digits in any browser and sees instantly: authentic or fraud
 
 ### Why does this matter?
 

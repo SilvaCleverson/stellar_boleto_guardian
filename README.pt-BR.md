@@ -23,36 +23,9 @@ Imagine a empresa **DS2U**. Ela usa Protheus, emite centenas de boletos por dia 
 
 **O Stellar Boleto Guardian resolve isso de forma simples:**
 
-Quando a DS2U emite um boleto, o **codigo de barras** (linha digitavel, 47 digitos) e gravado na blockchain Stellar. Qualquer pessoa que receber o boleto pode digitar esses numeros e verificar na hora se o boleto e autentico.
-
-```
-         DS2U emite boleto              API grava na Stellar
-         +------------------+           +------------------+
-         | Protheus gera    |           | Manage Data      |
-         | boleto com       |  POST     | key = codebar    |
-         | codebar          | --------> | value = dados    |
-         | 47 digitos       |           | do boleto        |
-         +------------------+           +--------+---------+
-                                                 |
-                                                 | Gravado para sempre
-                                                 v
-                                        +------------------+
-                                        | Blockchain       |
-                                        | Stellar          |
-                                        | (conta da DS2U)  |
-                                        +--------+---------+
-                                                 |
-                    +----------------------------+
-                    |
-                    v
-         +------------------+
-         | USUARIO          |
-         | Recebe boleto    |
-         | Digita os 47     |
-         | numeros          |
-         | VALIDA NA HORA   |
-         +------------------+
-```
+1. Ao emitir o boleto, o Protheus envia o **codigo de barras** (47 digitos) para a API
+2. A API grava esses numeros na blockchain Stellar -- imutavel, publico, permanente
+3. O pagador digita os numeros em qualquer navegador e ve na hora: autentico ou fraude
 
 ### Por que isso importa?
 

@@ -23,37 +23,9 @@ Conoce a **DS2U**, una empresa que usa Protheus ERP y emite cientos de boletos d
 
 **Stellar Boleto Guardian lo resuelve de forma simple:**
 
-Cuando DS2U emite un boleto, el **codigo de barras** (linea digitalizadora, 47 digitos) se graba en la blockchain Stellar. Cualquiera que reciba el boleto puede digitar esos numeros y verificar al instante si es autentico.
-
-```
-         DS2U emite boleto              API graba en Stellar
-         +------------------+           +------------------+
-         | Protheus genera  |           | Manage Data      |
-         | boleto con       |  POST     | key = codebar    |
-         | codigo de barras | --------> | value = datos    |
-         | (47 digitos)     |           | del boleto       |
-         +------------------+           +--------+---------+
-                                                 |
-                                                 | Grabado para siempre
-                                                 v
-                                        +------------------+
-                                        | Blockchain       |
-                                        | Stellar          |
-                                        | (cuenta de DS2U) |
-                                        +--------+---------+
-                                                 |
-                    +----------------------------+
-                    |
-                    v
-         +------------------+
-         | USUARIO          |
-         | Recibe boleto    |
-         | Digita los 47    |
-         | numeros          |
-         | VALIDA AL        |
-         | INSTANTE         |
-         +------------------+
-```
+1. Al emitir el boleto, Protheus envia el **codigo de barras** (47 digitos) a la API
+2. La API graba esos numeros en la blockchain Stellar -- inmutable, publico, permanente
+3. El pagador digita los numeros en cualquier navegador y ve al instante: autentico o fraude
 
 ### Por que importa?
 
