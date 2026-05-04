@@ -112,6 +112,32 @@ Existing approaches to combat boleto fraud present significant limitations:
 
 All these solutions share a common flaw: **the payer has no autonomy to validate the boleto independently, publicly, and instantly**.
 
+### 2.5 Prioritized pains and personas
+
+> *The question is not "how do I use Stellar?". The question is: **what real financial problem do we solve better with this product?** (Stellar builder framing.)*
+
+Boleto Guardian starts **from the pain**, not from the blockchain. Below are **prioritized pains** (ordered by product impact) and **personas** who feel each pain.
+
+#### Pains (prioritized)
+
+| Priority | Pain | Evidence / context |
+|----------|------|-------------------|
+| **P1** | **"I don't know if this boleto is the same one the company issued."** | The payer trusts email, PDF, or paper; there is no public, independent check before payment. |
+| **P2** | **"I paid and the money went to a fraudster."** | Tampered barcode in transit; direct loss and hard recovery. |
+| **P3** | **"Customers and suppliers say my company sent a fake boleto."** | Reputational damage and support/legal cost even when the company is also a victim. |
+| **P4** | **"My ERP and my bank don't give the payer a simple, auditable proof."** | Internal logs don't convince third parties; manual online-banking checks don't scale. |
+
+#### Personas
+
+| Persona | Profile | What they need | How Boleto Guardian helps |
+|---------|---------|----------------|---------------------------|
+| **Payer (B2C or sole trader)** | Receives boleto by email, portal, or paper; non-technical. | Confirm in seconds whether the slip is authentic **before** paying, without an account at the issuer's bank. | Types the **47 digits** (or uses the company validation link); checks on-chain whether the record exists. |
+| **Treasury / collections (B2B)** | High issuance volume; owns delinquency and fraud exposure. | Reduce "I paid the wrong account" and give **trust** about the slip sent. | Immutable record per issuance; clear validation messaging aligned with the brand. |
+| **IT / integration (ERP)** | Ships APIs; owns secrets and compliance. | Simple **REST** integration; signing key **not** in the end-user client; path to **HSM** on the roadmap. | ERP-agnostic middleware; security docs (no key in the browser). |
+| **Audit / compliance (secondary)** | Needs traceability and data policies. | Integrity proof without excessive personal data on-chain. | Only necessary metadata; no payer PII on the network. |
+
+**Anti-pattern avoided:** this is not a generic wallet or DeFi without demand -- the use case is a **Brazilian payment slip**, and the action is **validate (and, in the next phase, settle) inside the Guardian ecosystem**, with clear personas (payer + issuer + IT).
+
 ---
 
 ## 3. The Solution: Boleto Guardian
@@ -411,6 +437,14 @@ Every company that adopts the Boleto Guardian strengthens the ecosystem. The mor
 ## 9. Future Vision
 
 The Boleto Guardian is the first step of a broader digital trust platform. The same architecture that validates boletos can be extended to other critical documents:
+
+### Next step: Settlement inside the Boleto Guardian environment
+
+The immediate phase ahead is to **carry boleto settlement within the Boleto Guardian ecosystem itself**: align on-chain validation, operations, and payer experience so that **settlement** (payment confirmation and closing the instrument lifecycle) runs inside the product environment, reducing hand-offs between systems and strengthening a single audit trail.
+
+### Security roadmap: HSM-backed signing (including HSM2-class modules)
+
+A **future architecture version** is planned where **Stellar transactions are signed without holding the private key in software on the API server**, using an **HSM** (Hardware Security Module). This includes evaluating integration with certified modules and compliance profiles often associated with **HSM Level 2** (for example, FIPS 140-2 Level 2 or equivalent), reducing private-key exposure and aligning deployment with enterprise and financial security standards.
 
 ### Phase 1: National Standard for Boletos
 

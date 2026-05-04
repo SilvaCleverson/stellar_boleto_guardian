@@ -423,6 +423,12 @@
           </table>
         </div>
         <p>Todas comparten una falla común: <strong>el pagador no tiene autonomía para validar el boleto de forma independiente, pública e instantánea</strong>.</p>
+        <h3>2.5 Dolores priorizados y personas</h3>
+        <div class="blockquote">
+          <p>La pregunta no es ¿cómo uso Stellar?. Es: <strong>¿qué problema financiero real resolvemos mejor?</strong> El producto parte del <strong>dolor</strong>, no de la blockchain.</p>
+        </div>
+        <p><strong>Dolores (P1→P4):</strong> (1) no saber si el boleto es el mismo que emitió la empresa; (2) pagar y el dinero ir al estafador; (3) empresa acusada injustamente de boleto falso; (4) ERP/banco no dan prueba simple al pagador.</p>
+        <p><strong>Personas:</strong> <em>Pagador</em> (B2C/MEI) — validar antes de pagar con los 47 dígitos; <em>Tesorería B2B</em> — confianza en el boleto enviado; <em>TI/ERP</em> — API REST, clave fuera del cliente, ruta HSM; <em>Compliance</em> (secundaria) — trazabilidad sin datos personales on-chain.</p>
       </section>
 
       <section class="sec" id="solucao">
@@ -550,6 +556,8 @@
         <h2>9. Visión de futuro</h2>
         <p>Boleto Guardian es el primer paso de una plataforma más amplia de confianza digital. La misma arquitectura puede extenderse a otros documentos críticos:</p>
         <ul class="phase-list">
+          <li><strong>Próximo paso — Liquidación en Boleto Guardian:</strong> Evolucionar para que la <strong>liquidación del boleto</strong> (confirmación de pago y cierre del ciclo) ocurra en el <strong>propio entorno</strong> del producto, integrada con la validación y el registro on-chain.</li>
+          <li><strong>Seguridad — Firma con HSM (HSM2):</strong> Hoja de ruta para una versión en que las transacciones Stellar se firmen vía <strong>HSM</strong> (Hardware Security Module), incluyendo perfiles de cumplimiento como <strong>FIPS 140-2 Level 2</strong>, sin mantener la clave privada en software en la API.</li>
           <li><strong>Fase 1 — Estándar nacional en boletos:</strong> Consolidar como referencia en validación de boletos en Brasil, con integración en los principales ERPs y reconocimiento como sello de seguridad.</li>
           <li><strong>Fase 2 — Notas fiscales electrónicas:</strong> Validar NF-e y NFS-e, combatiendo fraude en documentos fiscales.</li>
           <li><strong>Fase 3 — Contratos digitales:</strong> Registro inmutable de términos, firmas y cambios contractuales.</li>

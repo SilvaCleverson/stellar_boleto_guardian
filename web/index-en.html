@@ -423,6 +423,12 @@
           </table>
         </div>
         <p>They all share a common flaw: <strong>the payer has no autonomy to validate the slip independently, publicly and instantly</strong>.</p>
+        <h3>2.5 Prioritized pains and personas</h3>
+        <div class="blockquote">
+          <p>The question is not "how do I use Stellar?". It is: <strong>what real financial problem do we solve best?</strong> The product starts from the <strong>pain</strong>, not from the blockchain.</p>
+        </div>
+        <p><strong>Pains (P1→P4):</strong> (1) not knowing if the slip matches what the company issued; (2) paying and money going to a fraudster; (3) company wrongly accused of sending a fake slip; (4) ERP/bank not giving the payer simple proof.</p>
+        <p><strong>Personas:</strong> <em>Payer</em> (B2C/sole trader) — validate before paying with the 47 digits; <em>B2B treasury</em> — trust in the slip sent; <em>IT/ERP</em> — REST API, key off the client, HSM path; <em>Compliance</em> (secondary) — traceability without personal data on-chain.</p>
       </section>
 
       <section class="sec" id="solucao">
@@ -550,6 +556,8 @@
         <h2>9. Future vision</h2>
         <p>Boleto Guardian is the first step of a broader digital trust platform. The same architecture can be extended to other critical documents:</p>
         <ul class="phase-list">
+          <li><strong>Next step — Settlement in Boleto Guardian:</strong> Evolve so that <strong>slip settlement</strong> (payment confirmation and closing the lifecycle) happens in the <strong>product's own environment</strong>, integrated with validation and on-chain registration.</li>
+          <li><strong>Security — HSM signing (HSM2):</strong> Roadmap for a version where Stellar transactions are signed via <strong>HSM</strong> (Hardware Security Module), including compliance profiles such as <strong>FIPS 140-2 Level 2</strong>, without keeping the private key in software on the API.</li>
           <li><strong>Phase 1 — National standard for slips:</strong> Consolidate as the reference for slip validation in Brazil, with integration in major ERPs and recognition as a security seal.</li>
           <li><strong>Phase 2 — Electronic invoices:</strong> Validate NF-e and NFS-e, combating fraud in tax documents.</li>
           <li><strong>Phase 3 — Digital contracts:</strong> Immutable record of terms, signatures and contractual changes.</li>

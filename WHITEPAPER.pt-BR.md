@@ -112,6 +112,32 @@ As abordagens existentes para combater fraude em boletos apresentam limitacoes s
 
 Todas essas solucoes compartilham uma falha comum: **o pagador nao tem autonomia para validar o boleto de forma independente, publica e instantanea**.
 
+### 2.5 Dores priorizadas e personas
+
+> *A pergunta nao e "como uso Stellar?". A pergunta e: **qual problema financeiro real resolvemos melhor com esta solucao?** (adaptado do framework de builders Stellar.)*
+
+O Boleto Guardian parte **da dor**, nao da blockchain. Abaixo estao as dores **prioritarias** (ordenadas por impacto na decisao de produto) e as **personas** que representam quem sente cada dor.
+
+#### Dores (priorizadas)
+
+| Prioridade | Dor | Evidencia / contexto |
+|------------|-----|----------------------|
+| **P1** | **"Nao sei se este boleto e o mesmo que a empresa emitiu."** | Pagador depende de confiar no e-mail, PDF ou papel; nao ha verificacao publica e independente antes de pagar. |
+| **P2** | **"Paguei e o dinheiro foi para o golpista."** | Linha digitavel adulterada em transito; prejuizo direto e dificuldade de reversao. |
+| **P3** | **"Clientes e fornecedores acusam minha empresa de enviar boleto falso."** | Dano reputacional e custo de suporte/litigio mesmo quando a empresa e vitima do mesmo golpe. |
+| **P4** | **"Meu ERP e meu banco nao dao ao pagador uma prova simples e auditavel."** | Logs internos nao convencem terceiros; conferencia manual no internet banking nao escala. |
+
+#### Personas
+
+| Persona | Perfil | O que precisa | Como o Boleto Guardian ajuda |
+|---------|--------|---------------|------------------------------|
+| **Pagador (B2C ou MEI)** | Recebe boleto por e-mail, portal ou papel; nao e tecnico. | Confirmar em segundos se o titulo e autentico **antes** de pagar, sem conta no banco emissor. | Digita os **47 digitos** (ou usa o link da empresa); verifica na blockchain se o registro existe. |
+| **Tesouraria / cobranca (B2B)** | Emite alto volume de boletos; responde por inadimplencia e fraude. | Reduzir "paguei no lugar errado" e dar **confianca** ao cliente sobre o boleto enviado. | Registro imutavel por emissao; mensagem clara de validacao alinhada a marca. |
+| **TI / integracao (ERP)** | Implanta APIs; cuida de segredos e compliance. | Integracao **REST** simples; chave de assinatura **fora** do cliente final; caminho para **HSM** no roadmap. | Middleware agnostico ao ERP; documentacao de seguranca (sem expor chave no browser). |
+| **Auditoria / compliance (secundaria)** | Exige rastreabilidade e politicas de dados. | Prova de integridade sem LGPD excessiva on-chain. | Apenas metadados necessarios; sem dados pessoais do pagador na rede. |
+
+**Anti-padrao evitado:** nao e "carteira generica" nem "DeFi sem demanda" -- o caso de uso e **um titulo de cobranca brasileiro** e a acao e **validar (e, na fase seguinte, liquidar) no ecossistema Guardian**, com persona clara (pagador + emissor + TI).
+
 ---
 
 ## 3. A Solucao: Boleto Guardian
@@ -411,6 +437,14 @@ Cada empresa que adota o Boleto Guardian fortalece o ecossistema. Quanto mais bo
 ## 9. Visao de Futuro
 
 O Boleto Guardian e o primeiro passo de uma plataforma mais ampla de confianca digital. A mesma arquitetura que valida boletos pode ser estendida para outros documentos criticos:
+
+### Proximo passo: Liquidacao no ambiente Boleto Guardian
+
+A fase imediata em frente e **conduzir a liquidacao do boleto no proprio ecossistema Boleto Guardian**: alinhar validacao on-chain, operacao e experiencia do pagador para que o fluxo de **liquidacao** (confirmacao de pagamento e encerramento do ciclo do titulo) ocorra dentro do ambiente do produto, reduzindo saltos entre sistemas e reforcando a trilha de auditoria unificada.
+
+### Roadmap de seguranca: versao com assinatura em HSM (HSM2)
+
+Planeja-se uma **versao da arquitetura em que a assinatura das transacoes Stellar nao dependa de chave em software na API**, utilizando **HSM** (Hardware Security Module). Isso inclui avaliacao de integracao com modulos certificados e perfis de compliance frequentemente associados a **HSM nivel 2** (por exemplo, FIPS 140-2 Level 2 / equivalente), reduzindo a superficie de exposicao da chave privada e alinhando o deploy a padroes de seguranca corporativa e financeira.
 
 ### Fase 1: Padrao Nacional em Boletos
 
