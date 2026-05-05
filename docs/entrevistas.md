@@ -7,16 +7,6 @@ Roteiro base para descoberta com potenciais usuários. Não é um script — é uma ân
 **Duração estimada:** 20–30 min  
 **Formato:** conversa aberta, não apresentação
 
----
-
-## Antes de começar
-
-- Agradecer o tempo
-- Deixar claro: estamos aprendendo, não vendendo
-- Pedir permissão para anotar
-- "Pode me contar um pouco sobre como funciona o processo de emissão de boletos aqui?"
-
----
 
 ## Perguntas base
 
