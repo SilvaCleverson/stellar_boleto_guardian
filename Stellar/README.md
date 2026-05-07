@@ -1,111 +1,79 @@
-# API Stellar -- Boleto Guardian
+# Stellar/ — API Express (uso local)
 
-API Node.js que registra e valida boletos na blockchain [Stellar](https://stellar.org/) usando a operacao nativa **Manage Data**.
+Esta pasta contem o servidor Express usado para desenvolvimento local sem o Vercel CLI.
+Em producao, os mesmos endpoints sao servidos pelas **serverless functions** em `../api/`.
 
-## Arquitetura: codigo de barras como chave
+## Quando usar
 
-O **codigo de barras** (linha digitavel, 47 digitos) e usado diretamente como chave do Manage Data. O usuario final valida o boleto digitando apenas os numeros impressos no documento -- sem necessidade de hashes, Account IDs ou qualquer conhecimento tecnico.
-
-```
-POST /api/blockchain              Stellar Manage Data
-+------------------------+       +------------------------+
-| codebar: "47 digitos"  | ----> | key = codebar          |
-| nosso_numero, valor,   |       | value = payload        |
-| vencimento             |       | (conta unica da empresa)|
-+------------------------+       +------------------------+
-
-GET /api/validate/:codebar
-+------------------------+       +------------------------+
-| Usuario digita codebar | ----> | Busca na conta empresa |
-+------------------------+       | Retorna dados do boleto|
-                                 +------------------------+
-```
-
-**Ponto-chave:** a conta Stellar e da **empresa**, nao de cada cliente. O Account ID e fixo e configurado via variavel de ambiente (`COMPANY_ACCOUNT`). O usuario final nunca precisa saber dele.
-
-## Pre-requisitos
-
-- Node.js 18+
-- `@stellar/stellar-sdk` v13+
+| Cenario | Usar |
+|---------|------|
+| Desenvolvimento local rapido | `node server.js` nesta pasta |
+| Testar identico ao Vercel | `vercel dev` na raiz do projeto |
+| Producao | Vercel (deploy automatico via GitHub) |
 
 ## Instalacao
 
 ```bash
-cd Stellar
 npm install
 cp env.example .env
+# Preencher COMPANY_ACCOUNT, COMPANY_SECRET, ADMIN_API_KEY
 ```
 
-## Setup: criar conta da empresa
+## Gerar conta Stellar da empresa (uma unica vez)
 
 ```bash
-npm run create-account
+node createCompanyAccount.js
 ```
 
-Copie o `COMPANY_ACCOUNT` e `COMPANY_SECRET` gerados para o `.env`.
+Saida:
+```
+Account ID (COMPANY_ACCOUNT): GDBLQ...
+Secret Key (COMPANY_SECRET):  SXXXXX...
+Saldo: 10000.0000000 XLM
+```
 
-## Iniciar a API
+Copie os valores para o `.env`.
+
+## Iniciar a API local
 
 ```bash
-npm start
+npm start        # producao
+npm run dev      # com nodemon (hot reload)
 ```
+
+Acesse `http://localhost:3000`.
 
 ## Variaveis de ambiente (.env)
 
 | Variavel | Descricao | Default |
 |----------|-----------|---------|
-| HORIZON_URL | Horizon (testnet ou mainnet) | https://horizon-testnet.stellar.org |
-| STELLAR_NETWORK | Rede: `testnet` ou `public` | testnet |
-| COMPANY_ACCOUNT | Account ID da empresa | - |
-| COMPANY_SECRET | Chave secreta da empresa | - |
-| PORT | Porta da API | 3000 |
+| `HORIZON_URL` | Horizon endpoint | https://horizon-testnet.stellar.org |
+| `STELLAR_NETWORK` | `testnet` ou `public` | testnet |
+| `COMPANY_ACCOUNT` | Chave publica da conta da empresa | - |
+| `COMPANY_SECRET` | Chave privada (nunca expor) | - |
+| `ADMIN_API_KEY` | Chave para endpoints administrativos | - |
+| `PORT` | Porta do servidor | 3000 |
 
 ## Endpoints
 
-| Metodo | Rota | Descricao |
-|--------|------|-----------|
-| GET | / | Status da API (network, horizon, conta) |
-| POST | /api/wallet | Cria conta Stellar da empresa |
-| POST | /api/blockchain | Registra boleto (key=codebar, value=payload) |
-| GET | /api/validate/:codebar | Valida boleto pelo codigo de barras |
-| GET | /api/account/data | Lista todos os boletos registrados |
+| Metodo | Rota | Auth | Descricao |
+|--------|------|------|-----------|
+| `GET` | `/` | - | Status da API |
+| `POST` | `/api/wallet` | - | Cria conta Stellar da empresa |
+| `POST` | `/api/blockchain` | ADMIN_API_KEY | Registra boleto (key=codebar) |
+| `GET` | `/api/validate/:codebar` | - | Valida boleto (publico) |
+| `GET` | `/api/account/data` | - | Lista boletos registrados |
+| `GET` | `/api/admin/boletos/:codebar` | ADMIN_API_KEY | Busca boleto com dados completos |
 
-## Payload POST /api/blockchain
+## Arquivos
 
-```json
-{
-  "codebar": "23793381286000000000300000004001184340000012050",
-  "nosso_numero": "000000040",
-  "valor": "120.50",
-  "vencimento": "2025-08-05"
-}
-```
-
-O `codebar` (47 digitos) e a chave do Manage Data. A chave secreta da empresa **so pode** vir do ambiente do servidor (`.env` `COMPANY_SECRET` ou Secret Manager). Por seguranca, a API **nao aceita** chave no body -- o cliente (ex.: Protheus) nunca envia nem armazena a chave.
-
-## Resposta GET /api/validate/:codebar
-
-```json
-{
-  "success": true,
-  "found": true,
-  "data": {
-    "codebar": "23793381286000000000300000004001184340000012050",
-    "nosso_numero": "000000040",
-    "valor": "120.50",
-    "vencimento": "20250805",
-    "status": "pendente"
-  },
-  "ledger": 12345,
-  "stellarExplorer": "https://stellar.expert/explorer/testnet/account/GABCDE..."
-}
-```
-
-O endpoint de validacao **nao exige Account ID** -- a conta da empresa e fixa e configurada na API.
-
-## Pagina de validacao
-
-Acesse `http://localhost:3000/validation.html` para a pagina de validacao publica. O usuario digita os 47 numeros e recebe o resultado instantaneamente.
+| Arquivo | Descricao |
+|---------|-----------|
+| `server.js` | Servidor Express com todas as rotas |
+| `sendBoletoToBlockchain.js` | Registra boleto na Stellar via Manage Data |
+| `createCompanyAccount.js` | Cria conta Stellar (Friendbot em testnet) |
+| `env.example` | Modelo de variaveis de ambiente |
+| `public/validation.html` | Pagina de validacao publica |
 
 ## Manage Data na Stellar
 
@@ -114,40 +82,15 @@ Acesse `http://localhost:3000/validation.html` para a pagina de validacao public
 | **key** | Codigo de barras (47 digitos) | 64 bytes |
 | **value** | `nosso_num\|valor\|vencto\|status` | 64 bytes |
 
-Exemplo de value: `000000040|120.50|20250805|pendente` (35 bytes)
-
-## Seguranca e chave
-
-A chave privada Stellar (COMPANY_SECRET) e usada apenas no servidor da API para assinar transacoes. Ela **nunca** deve ser enviada pelo cliente (Protheus ou outro). Hoje a API le a chave de `process.env.COMPANY_SECRET` (arquivo `.env` no servidor).
-
-**Opcional -- Secret Manager (cofre de senhas):** Em producao, recomenda-se nao deixar a chave em texto no `.env`. E possivel carregar `COMPANY_SECRET` de um cofre na inicializacao da API, por exemplo:
-
-- **AWS:** Secrets Manager -- buscar o secret no startup (SDK `@aws-sdk/client-secrets-manager`) e atribuir a `process.env.COMPANY_SECRET` antes de subir o Express.
-- **Azure:** Key Vault -- usar `@azure/keyvault-secrets` para obter o valor e definir em env.
-- **HashiCorp Vault:** API HTTP ou cliente Node para ler o secret e injetar em env.
-
-A API continua usando `process.env.COMPANY_SECRET`; a unica mudanca e a origem do valor (vault em vez de arquivo .env).
-
-**Deploy em producao:** (1) Usar **HTTPS** em toda a comunicacao (ERP, API e usuario) -- via reverse proxy (nginx, Caddy) ou load balancer. (2) **Ambiente restrito:** o arquivo `.env` (ou o cofre) deve ser acessivel apenas pelo processo da API; nao commitar `.env` no repositorio; usar IAM/roles com minimo privilegio se usar vault na nuvem.
-
-**Nunca enviar no deploy (nem no commit):** senhas; tokens de API ou autenticacao; chaves privadas (ex.: COMPANY_SECRET, ZXH_PRVKEY); hashes de assinatura; arquivo `.env` com valores reais; certificados ou `.pem` com chaves. Configurar esses valores apenas no ambiente do servidor (variaveis de ambiente ou Secret Manager), nunca no codigo nem em artefatos versionados.
+Exemplo: `000000040|120.50|20250805|pendente` (35 bytes)
 
 ## Custos
 
 | Ambiente | Custo |
 |----------|-------|
-| **Testnet** | Gratuito (Friendbot) |
-| **Mainnet** | ~0,00001 XLM por operacao |
-| **Reserva** | 1 XLM base + 0,5 XLM por boleto (subentry) |
-
-## Arquivos
-
-| Arquivo | Descricao |
-|---------|-----------|
-| `server.js` | Servidor Express com todas as rotas da API |
-| `sendBoletoToBlockchain.js` | Registra boleto na Stellar via Manage Data |
-| `createCompanyAccount.js` | Cria conta Stellar da empresa (Friendbot em testnet) |
-| `public/validation.html` | Pagina publica de validacao de boletos |
+| Testnet | Gratuito (Friendbot) |
+| Mainnet | ~0,00001 XLM por operacao |
+| Reserva | 1 XLM base + 0,5 XLM por boleto (subentry) |
 
 ## Referencias
 

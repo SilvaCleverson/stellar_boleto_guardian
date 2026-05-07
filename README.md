@@ -2,14 +2,16 @@
 
 # Stellar Boleto Guardian
 
-### Autenticacao imutavel de boletos via blockchain Stellar
+### Immutable boleto authentication via Stellar blockchain
 
 [![Stellar](https://img.shields.io/badge/Blockchain-Stellar-blue?logo=stellar&logoColor=white)](https://stellar.org/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel&logoColor=white)](https://vercel.com/)
 [![Node.js](https://img.shields.io/badge/API-Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Protheus](https://img.shields.io/badge/ERP-TOTVS%20Protheus-00529B)](https://www.totvs.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **[Portugues](README.pt-BR.md)** | **[English](README.en.md)** | **[Espanol](README.es.md)**
+
+**Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
 
 ---
 
@@ -24,36 +26,57 @@
 ## How it works
 
 ```
- PROTHEUS (ERP)              NODE.JS (API)                 STELLAR (Blockchain)
- +-----------------+         +-----------------+           +-------------------+
- | Emite boleto    |         | Assina transacao|           | Conta da EMPRESA  |
- | Envia codebar   | ------> | Manage Data     | --------> | key = codebar     |
- | (47 digitos)    |  JSON   | key = codebar   |  Horizon  | value = payload   |
- +-----------------+         +-----------------+           +-------------------+
-                                                                    |
-                                                                    v
-                                                  +----------------------------------+
-                                                  |  VALIDACAO PUBLICA               |
-                                                  |  Usuario digita codebar do       |
-                                                  |  boleto e valida na hora         |
-                                                  +----------------------------------+
+ COMPANY (registro.html)         SERVERLESS API (Vercel)       STELLAR (Blockchain)
+ +---------------------------+   +----------------------+      +--------------------+
+ | Enter codebar (47 digits) |   | POST /api/blockchain |      | Manage Data        |
+ | Provide ADMIN_API_KEY     |-->| Verify admin key     |----> | key  = codebar     |
+ |                           |   | Sign transaction     |      | value = payload    |
+ +---------------------------+   +----------------------+      +--------------------+
+                                                                       |
+ PAYER (validation.html)                                               v
+ +---------------------------+   +----------------------+      +--------------------+
+ | Type barcode from boleto  |-->| GET /api/validate/   |----> | Codebar exists?    |
+ |                           |   | :codebar             |      | Return result      |
+ +---------------------------+   +----------------------+      +--------------------+
 ```
 
-## Quick start
+## Quick start (local)
 
 ```bash
-# 1. Start the Stellar API
-cd Stellar && npm install && cp env.example .env && npm start
+# 1. Install dependencies
+npm install
+cd Stellar && npm install && cd ..
 
-# 2. In Protheus (once)
-# U_ZXH()                 --> create ZXH table
-# U_CriWltSt()            --> create company Stellar account
+# 2. Configure environment
+cp Stellar/env.example Stellar/.env
+# Fill in COMPANY_ACCOUNT, COMPANY_SECRET, ADMIN_API_KEY
 
-# 3. On every slip
-# U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
+# 3. Run locally (mirrors production)
+vercel dev
+```
 
-# 4. Validate -- user only needs the barcode numbers
-# Open http://localhost:3000/validation.html
+Open `http://localhost:3000`.
+
+## Project structure
+
+```
+stellar_boleto_guardian/
+├── api/                    # Vercel serverless functions
+│   ├── blockchain.js       # POST /api/blockchain
+│   ├── wallet.js           # POST /api/wallet
+│   ├── validate/[codebar].js
+│   ├── account/data.js
+│   └── admin/boletos/[codebar].js
+├── lib/
+│   └── stellar.js          # Shared Stellar SDK logic
+├── web/                    # Static frontend (Vercel outputDirectory)
+│   ├── index.html
+│   ├── validation.html     # Public boleto validation
+│   └── registro.html       # Internal registration (admin only)
+├── Stellar/                # Express server (local / legacy)
+├── Protheus/               # ADVPL sources (future integration)
+├── vercel.json             # Vercel config
+└── package.json            # Serverless function dependencies
 ```
 
 ## Full docs
@@ -68,8 +91,8 @@ cd Stellar && npm install && cp env.example .env && npm start
 
 <div align="center">
 
-**Built by [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://boletoguardian.xyz)
+**Built by [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
 
-Powered by [Stellar](https://stellar.org/)
+Powered by [Stellar](https://stellar.org/) · Hosted on [Vercel](https://vercel.com/)
 
 </div>
