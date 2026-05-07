@@ -81,7 +81,7 @@ async function sendBoletoToBlockchain(companySecret, payload) {
         value: valueBytes,
       })
     )
-    .setTimeout(30)
+    .setTimeout(300)
     .build();
 
   transaction.sign(keypair);

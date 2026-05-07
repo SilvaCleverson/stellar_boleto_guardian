@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
 const COMPANY_SECRET = process.env.COMPANY_SECRET || "";
 const STELLAR_NETWORK = process.env.STELLAR_NETWORK || "testnet";
+const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
 
 app.use(cors());
 app.use(express.json());
@@ -35,6 +36,64 @@ function isValidStellarKey(key) {
 function getExplorerUrl(accountId) {
   const net = STELLAR_NETWORK === "public" ? "public" : "testnet";
   return `https://stellar.expert/explorer/${net}/account/${accountId}`;
+}
+
+function getAdminKeyFromRequest(req) {
+  const headerKey = req.header("x-admin-key");
+  if (headerKey) return headerKey.trim();
+
+  const authHeader = req.header("authorization");
+  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) return "";
+  return authHeader.slice(7).trim();
+}
+
+function requireAdmin(req, res, next) {
+  if (!ADMIN_API_KEY) {
+    return res.status(500).json({
+      success: false,
+      error: "ADMIN_API_KEY n\u00e3o configurada no servidor.",
+    });
+  }
+
+  const providedKey = getAdminKeyFromRequest(req);
+  if (!providedKey || providedKey !== ADMIN_API_KEY) {
+    return res.status(401).json({
+      success: false,
+      error: "N\u00e3o autorizado. Informe uma chave administrativa v\u00e1lida.",
+    });
+  }
+
+  next();
+}
+
+async function getBoletoRecord(accountId, codebar) {
+  const normalized = normalizeCodebar(codebar);
+  const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(normalized)}`;
+  const response = await fetch(url);
+
+  if (response.status === 404) {
+    return { found: false };
+  }
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.detail || err.error || "Erro ao consultar Horizon");
+  }
+
+  const payload = await response.json();
+  const decodedValue = Buffer.from(payload.value || "", "base64").toString("utf8");
+  const [nosso_numero, valor, vencimento, status] = decodedValue.split("|");
+
+  return {
+    found: true,
+    record: {
+      codebar: normalized,
+      nosso_numero: nosso_numero || "",
+      valor: valor || "",
+      vencimento: vencimento || "",
+      status: status || "",
+    },
+  };
 }
 
 app.get("/", (_req, res) => {
@@ -64,16 +123,16 @@ app.post("/api/wallet", async (_req, res) => {
   }
 });
 
-app.post("/api/blockchain", async (req, res) => {
+app.post("/api/blockchain", requireAdmin, async (req, res) => {
   try {
-    const { codebar, nosso_numero, valor, vencimento } = req.body;
+    const { codebar, nosso_numero = "", valor = "", vencimento = "" } = req.body;
     // Chave apenas do ambiente do servidor (env ou vault). Nunca aceitar do body por segurança.
     const companySecret = COMPANY_SECRET;
 
-    if (!codebar || !nosso_numero || !valor || !vencimento) {
+    if (!codebar) {
       return res.status(400).json({
         success: false,
-        error: "Campos obrigatórios: codebar, nosso_numero, valor, vencimento",
+        error: "Campo obrigatório: codebar",
       });
     }
 
@@ -146,11 +205,8 @@ app.get("/api/validate/:codebar", async (req, res) => {
       });
     }
 
-    const normalized = normalizeCodebar(codebar);
-    const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(normalized)}`;
-    const response = await fetch(url);
-
-    if (response.status === 404) {
+    const lookup = await getBoletoRecord(accountId, codebar);
+    if (!lookup.found) {
       return res.json({
         success: true,
         found: false,
@@ -159,16 +215,6 @@ app.get("/api/validate/:codebar", async (req, res) => {
           "Este boleto pode ser fraudulento.",
       });
     }
-
-    if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      return res.status(response.status).json({
-        success: false,
-        error: err.detail || err.error || "Erro ao consultar Horizon",
-      });
-    }
-
-    await response.json(); // confirma que existe; não expomos o conteúdo
 
     // Retorna apenas se o boleto foi emitido pela empresa — nenhum dado financeiro
     res.json({
@@ -181,6 +227,49 @@ app.get("/api/validate/:codebar", async (req, res) => {
       "[BOLETO GUARDIAN] Erro ao validar boleto:",
       error.message
     );
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.get("/api/admin/boletos/:codebar", requireAdmin, async (req, res) => {
+  try {
+    const { codebar } = req.params;
+
+    if (!isValidCodebar(codebar)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "C\u00f3digo de barras inv\u00e1lido. Deve conter exatamente 47 d\u00edgitos num\u00e9ricos.",
+      });
+    }
+
+    const accountId = req.query.account || COMPANY_ACCOUNT;
+    if (!accountId || !isValidStellarKey(accountId)) {
+      return res.status(400).json({
+        success: false,
+        error:
+          "Conta da empresa n\u00e3o configurada. " +
+          "Defina COMPANY_ACCOUNT no .env ou envie via query param ?account=G...",
+      });
+    }
+
+    const lookup = await getBoletoRecord(accountId, codebar);
+    if (!lookup.found) {
+      return res.json({
+        success: true,
+        found: false,
+        message: "Boleto n\u00e3o encontrado nos registros da empresa.",
+      });
+    }
+
+    res.json({
+      success: true,
+      found: true,
+      data: lookup.record,
+      message: "Boleto encontrado no registro da empresa.",
+    });
+  } catch (error) {
+    console.error("[BOLETO GUARDIAN] Erro ao buscar boleto admin:", error.message);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -249,7 +338,8 @@ app.listen(PORT, () => {
   );
   console.log(`[BOLETO GUARDIAN] Endpoints:`);
   console.log(`  POST /api/wallet              - Criar conta Stellar da empresa`);
-  console.log(`  POST /api/blockchain           - Registrar boleto (codebar)`);
+  console.log(`  POST /api/blockchain          - Registrar boleto (admin)`);
   console.log(`  GET  /api/validate/:codebar    - Validar boleto pelo código de barras`);
+  console.log(`  GET  /api/admin/boletos/:codebar - Buscar boleto registrado (admin)`);
   console.log(`  GET  /api/account/data         - Listar boletos registrados`);
 });

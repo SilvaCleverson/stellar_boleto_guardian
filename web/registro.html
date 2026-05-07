@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="api-base" content="" />
+  <title>Boleto Guardian - Registro Interno</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #111827;
+      border: 1px solid #1f2937;
+      border-radius: 12px;
+      padding: 20px;
+    }
+    h1 { margin-bottom: 10px; font-size: 1.6rem; }
+    p { color: #94a3b8; margin-bottom: 16px; }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .row.one { grid-template-columns: 1fr; }
+    label { display: block; margin-bottom: 6px; font-size: 0.9rem; color: #cbd5e1; }
+    input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0b1220;
+      color: #e2e8f0;
+    }
+    button {
+      margin-top: 12px;
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: #0d9488;
+      color: #fff;
+      font-weight: 700;
+    }
+    button.secondary { background: #2563eb; }
+    .box {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid #1f2937;
+    }
+    .status {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      display: none;
+    }
+    .status.ok { background: #064e3b; color: #d1fae5; display: block; }
+    .status.err { background: #7f1d1d; color: #fecaca; display: block; }
+    .result {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      background: #0b1220;
+      display: none;
+      white-space: pre-wrap;
+    }
+    .tx-card {
+      margin-top: 12px;
+      padding: 14px;
+      border: 1px solid #065f46;
+      border-radius: 8px;
+      background: #022c22;
+      display: none;
+    }
+    .tx-card h3 { font-size: 0.9rem; color: #6ee7b7; margin-bottom: 10px; }
+    .tx-field { margin-bottom: 8px; font-size: 0.85rem; }
+    .tx-field span { color: #94a3b8; display: block; }
+    .tx-field code {
+      color: #e2e8f0;
+      word-break: break-all;
+      font-family: monospace;
+    }
+    .tx-field a { color: #38bdf8; text-decoration: none; }
+    .tx-field a:hover { text-decoration: underline; }
+    a { color: #38bdf8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Registro interno de boletos</h1>
+    <p>
+      Esta página deve ser usada apenas internamente. O registro e a busca exigem chave administrativa.
+      <a href="validation.html">Validação pública</a>.
+    </p>
+
+    <div id="accountInfo" style="margin-top:12px; padding:12px; background:#0b1220; border:1px solid #1e3a5f; border-radius:8px; font-size:0.85rem; display:none;">
+      <div style="color:#94a3b8; margin-bottom:4px;">Conta Stellar da empresa (chave pública)</div>
+      <a id="accountLink" href="#" target="_blank" rel="noopener" style="color:#38bdf8; word-break:break-all; font-family:monospace;"></a>
+    </div>
+
+    <div class="box">
+      <h2>Acesso administrativo</h2>
+      <div class="row one" style="margin-top: 10px;">
+        <div>
+          <label for="adminKey">Chave administrativa (ADMIN_API_KEY)</label>
+          <input id="adminKey" type="password" placeholder="Informe a chave administrativa" />
+        </div>
+      </div>
+      <button onclick="saveAdminKey()">Salvar chave na sessão</button>
+      <div id="authStatus" class="status"></div>
+    </div>
+
+    <div class="box">
+      <h2>Registrar boleto</h2>
+      <div class="row one" style="margin-top: 10px;">
+        <div>
+          <label for="regCodebar">Código de barras (47 dígitos)</label>
+          <input id="regCodebar" type="text" placeholder="Somente números" maxlength="47" inputmode="numeric" />
+        </div>
+      </div>
+      <button onclick="registerBoleto()">Registrar</button>
+      <div id="registerStatus" class="status"></div>
+      <div id="txCard" class="tx-card">
+        <h3>&#10003; Transação registrada na Stellar Testnet</h3>
+        <div class="tx-field">
+          <span>Hash da transação</span>
+          <a id="txHash" href="#" target="_blank" rel="noopener" style="color:#38bdf8; word-break:break-all; font-family:monospace; font-size:0.85rem;"></a>
+        </div>
+        <div class="tx-field">
+          <span>Ledger</span>
+          <code id="txLedger"></code>
+        </div>
+        <div class="tx-field">
+          <span>Conta da empresa</span>
+          <a id="txAccount" href="#" target="_blank" rel="noopener" style="color:#38bdf8; word-break:break-all; font-family:monospace; font-size:0.85rem;"></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <h2>Buscar boleto registrado</h2>
+      <div class="row one" style="margin-top: 10px;">
+        <div>
+          <label for="searchCodebar">Código de barras (47 dígitos)</label>
+          <input id="searchCodebar" type="text" placeholder="Somente números" />
+        </div>
+      </div>
+      <button class="secondary" onclick="searchBoleto()">Buscar</button>
+      <div id="searchStatus" class="status"></div>
+      <div id="searchResult" class="result"></div>
+    </div>
+  </div>
+
+  <script>
+    var API_BASE = (document.querySelector('meta[name="api-base"]') && document.querySelector('meta[name="api-base"]').content) || window.location.origin;
+    if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+
+    const SESSION_KEY = "bg_admin_key";
+
+    fetch(API_BASE + "/api/account/data").then(r => r.json()).then(data => {
+      const accountId = data && data.data && data.data.accountId;
+      if (accountId) {
+        const box = document.getElementById("accountInfo");
+        const link = document.getElementById("accountLink");
+        link.href = "https://stellar.expert/explorer/testnet/account/" + accountId;
+        link.textContent = accountId;
+        box.style.display = "block";
+      }
+    }).catch(() => {});
+
+    function digitsOnly(value) {
+      return String(value || "").replace(/\D/g, "");
+    }
+
+    function setStatus(el, ok, text) {
+      el.className = ok ? "status ok" : "status err";
+      el.textContent = text;
+    }
+
+    function getAdminKey() {
+      return sessionStorage.getItem(SESSION_KEY) || "";
+    }
+
+    function saveAdminKey() {
+      const key = document.getElementById("adminKey").value.trim();
+      const status = document.getElementById("authStatus");
+      if (!key) {
+        setStatus(status, false, "Informe uma chave válida.");
+        return;
+      }
+      sessionStorage.setItem(SESSION_KEY, key);
+      setStatus(status, true, "Chave salva na sessão atual do navegador.");
+      document.getElementById("adminKey").value = "";
+    }
+
+    async function registerBoleto() {
+      const status = document.getElementById("registerStatus");
+      const txCard = document.getElementById("txCard");
+      txCard.style.display = "none";
+
+      const adminKey = getAdminKey();
+      if (!adminKey) {
+        setStatus(status, false, "Salve a chave administrativa antes de registrar.");
+        return;
+      }
+
+      const codebar = digitsOnly(document.getElementById("regCodebar").value);
+
+      if (!/^\d{47}$/.test(codebar)) {
+        setStatus(status, false, "Código de barras inválido. Deve conter 47 dígitos.");
+        return;
+      }
+
+      setStatus(status, true, "Registrando na blockchain Stellar...");
+
+      try {
+        const response = await fetch(API_BASE + "/api/blockchain", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-key": adminKey
+          },
+          body: JSON.stringify({ codebar })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+          setStatus(status, false, data.error || "Falha ao registrar boleto.");
+          return;
+        }
+
+        setStatus(status, true, "Boleto registrado com sucesso na blockchain Stellar!");
+
+        const tx = data.data || {};
+        if (tx.transactionHash) {
+          const txUrl = "https://stellar.expert/explorer/testnet/tx/" + tx.transactionHash;
+          const accUrl = "https://stellar.expert/explorer/testnet/account/" + (tx.accountId || "");
+          const hashEl = document.getElementById("txHash");
+          hashEl.href = txUrl;
+          hashEl.textContent = tx.transactionHash;
+          document.getElementById("txLedger").textContent = tx.ledger || "—";
+          const accEl = document.getElementById("txAccount");
+          accEl.href = accUrl;
+          accEl.textContent = tx.accountId || "—";
+          txCard.style.display = "block";
+        }
+      } catch (error) {
+        setStatus(status, false, "Erro de comunicação com a API.");
+      }
+    }
+
+    async function searchBoleto() {
+      const status = document.getElementById("searchStatus");
+      const result = document.getElementById("searchResult");
+      result.style.display = "none";
+      result.textContent = "";
+
+      const adminKey = getAdminKey();
+      if (!adminKey) {
+        setStatus(status, false, "Salve a chave administrativa antes de buscar.");
+        return;
+      }
+
+      const codebar = digitsOnly(document.getElementById("searchCodebar").value);
+      if (!/^\d{47}$/.test(codebar)) {
+        setStatus(status, false, "Código de barras inválido. Deve conter 47 dígitos.");
+        return;
+      }
+
+      try {
+        const response = await fetch(API_BASE + "/api/admin/boletos/" + encodeURIComponent(codebar), {
+          headers: { "x-admin-key": adminKey }
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.success) {
+          setStatus(status, false, data.error || "Falha ao buscar boleto.");
+          return;
+        }
+        if (!data.found) {
+          setStatus(status, false, "Boleto não encontrado nos registros.");
+          return;
+        }
+
+        setStatus(status, true, "Boleto encontrado.");
+        result.textContent = JSON.stringify(data.data, null, 2);
+        result.style.display = "block";
+      } catch (error) {
+        setStatus(status, false, "Erro de comunicação com a API.");
+      }
+    }
+  </script>
+</body>
+</html>
