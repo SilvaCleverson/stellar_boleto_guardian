@@ -204,6 +204,7 @@
       const status = document.getElementById("registerStatus");
       const txCard = document.getElementById("txCard");
       txCard.style.display = "none";
+      status.className = "status";
 
       const adminKey = getAdminKey();
       if (!adminKey) {
@@ -260,6 +261,7 @@
       const result = document.getElementById("searchResult");
       result.style.display = "none";
       result.textContent = "";
+      status.className = "status";
 
       const adminKey = getAdminKey();
       if (!adminKey) {
