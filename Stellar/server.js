@@ -154,6 +154,17 @@ app.post("/api/blockchain", requireAdmin, async (req, res) => {
       });
     }
 
+    if (COMPANY_ACCOUNT && isValidStellarKey(COMPANY_ACCOUNT)) {
+      try {
+        const existing = await getBoletoRecord(COMPANY_ACCOUNT, codebar);
+        if (existing.found) {
+          return res.status(409).json({ success: false, error: "Código de barras já registrado na blockchain." });
+        }
+      } catch (_) {
+        // se falhar a consulta, segue o registro normalmente
+      }
+    }
+
     const payload = {
       codebar,
       nosso_numero,

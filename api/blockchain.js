@@ -1,4 +1,4 @@
-const { sendBoletoToBlockchain, isValidCodebar } = require("../lib/stellar");
+const { sendBoletoToBlockchain, isValidCodebar, getBoletoRecord, isValidStellarKey } = require("../lib/stellar");
 
 function getAdminKey(req) {
   const h = req.headers["x-admin-key"];
@@ -42,6 +42,18 @@ module.exports = async function handler(req, res) {
 
   if (!COMPANY_SECRET) {
     return res.status(400).json({ success: false, error: "COMPANY_SECRET não configurada. Defina nas variáveis de ambiente do Vercel." });
+  }
+
+  const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
+  if (COMPANY_ACCOUNT && isValidStellarKey(COMPANY_ACCOUNT)) {
+    try {
+      const existing = await getBoletoRecord(COMPANY_ACCOUNT, codebar);
+      if (existing.found) {
+        return res.status(409).json({ success: false, error: "Código de barras já registrado na blockchain." });
+      }
+    } catch (_) {
+      // se falhar a consulta, segue o registro normalmente
+    }
   }
 
   try {
