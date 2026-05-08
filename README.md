@@ -91,7 +91,7 @@ stellar_boleto_guardian/
 
 <div align="center">
 
-**Built by [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
+**Built by Equipe Guardian** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/) · Hosted on [Vercel](https://vercel.com/)
 

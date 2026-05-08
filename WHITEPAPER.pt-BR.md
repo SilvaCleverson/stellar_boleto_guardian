@@ -8,7 +8,7 @@
 
 *Transformando a seguranca de transacoes financeiras no Brasil*
 
-**Autor:** Cleverson Silva
+**Autor:** Equipe Guardian
 **Data:** Marco de 2026
 **Versao:** 1.0
 
@@ -498,6 +498,6 @@ A arquitetura agnostica ao ERP, a escalabilidade da rede Stellar e a aderencia n
 
 Powered by [Stellar](https://stellar.org/)
 
-*Copyright 2026 Cleverson Silva. Distribuido sob licenca MIT.*
+*Copyright 2026 Equipe Guardian. Distribuido sob licenca MIT.*
 
 </div>

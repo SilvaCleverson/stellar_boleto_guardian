@@ -18,7 +18,7 @@
     "authentication",
     "horizon"
   ],
-  "author": "Cleverson Silva",
+  "author": "Equipe Guardian",
   "license": "MIT",
   "dependencies": {
     "@stellar/stellar-sdk": "^13.0.0",

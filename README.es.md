@@ -189,7 +189,7 @@ MIT - use, modifique y distribuya libremente.
 
 <div align="center">
 
-**Hecho por [Cleverson Silva](https://github.com/SilvaCleverson)**
+**Hecho por Equipe Guardian**
 
 **Sitio:** [boletoguardian.xyz](https://boletoguardian.xyz)
 

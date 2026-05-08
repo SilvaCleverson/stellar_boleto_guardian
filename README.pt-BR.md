@@ -237,7 +237,7 @@ Resposta:
 
 <div align="center">
 
-**Feito por [Cleverson Silva](https://github.com/SilvaCleverson)** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
+**Feito por Equipe Guardian** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/) · Hospedado no [Vercel](https://vercel.com/)
 

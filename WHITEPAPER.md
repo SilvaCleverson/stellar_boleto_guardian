@@ -8,7 +8,7 @@
 
 *Transforming financial transaction security in Brazil*
 
-**Author:** Cleverson Silva
+**Author:** Equipe Guardian
 **Date:** March 2026
 **Version:** 1.0
 
@@ -498,6 +498,6 @@ The ERP-agnostic architecture, Stellar network scalability, and native LGPD comp
 
 Powered by [Stellar](https://stellar.org/)
 
-*Copyright 2026 Cleverson Silva. Distributed under the MIT license.*
+*Copyright 2026 Equipe Guardian. Distributed under the MIT license.*
 
 </div>
