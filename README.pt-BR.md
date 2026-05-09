@@ -17,6 +17,12 @@
 
 ---
 
+> **Parte do ecossistema Guardian Labs**
+>
+> A Guardian Labs constrói infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil. O Boleto Guardian é o primeiro produto desse ecossistema. Outros instrumentos de pagamento brasileiros estão no roadmap futuro.
+
+---
+
 ## Entenda o projeto
 
 > **O usuario so tem o boleto. E so o que ele precisa.**

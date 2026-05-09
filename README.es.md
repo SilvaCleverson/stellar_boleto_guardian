@@ -15,6 +15,12 @@
 
 ---
 
+> **Parte del ecosistema Guardian Labs**
+>
+> Guardian Labs construye infraestructura pública de autenticidad para las claves que mueven dinero en Brasil. Boleto Guardian es el primer producto de este ecosistema. Otros instrumentos de pago brasileños están en la hoja de ruta futura.
+
+---
+
 ## Entiende el proyecto
 
 > **El usuario solo tiene el boleto. Es todo lo que necesita.**

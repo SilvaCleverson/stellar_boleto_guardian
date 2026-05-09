@@ -2,7 +2,7 @@
 
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
-**Mantido por:** Cleverson Silva
+**Mantido por:** Equipe Guardian
 **Última atualização:** 08/05/2026
 
 ---
@@ -18,6 +18,8 @@ Este é o **Documento de Produto** (RT — *Record of Thinking*) do Boleto Guard
 ---
 
 ## 1. O que está sendo ofertado
+
+O **Boleto Guardian** é o primeiro produto da **Guardian Labs** — uma marca-mãe que constrói infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil. Outros instrumentos de pagamento brasileiros estão no roadmap futuro da Guardian Labs.
 
 O **Boleto Guardian** é uma camada pública de autenticidade para boletos brasileiros, construída sobre a blockchain Stellar.
 
@@ -191,6 +193,12 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 **Decisão:** Avaliar formalmente até a Sprint 2 (16/05/2026) se o protocolo x402 da Coinbase faz sentido para o modelo de receita do Boleto Guardian.
 **Por quê:** Entrega oficial da Sprint 2 exige commit no GitHub com x402 ou justificativa formal de N/A. Decisão depende do modelo de receita escolhido (D-009).
 
+### D-011 · Adoção de marca-mãe Guardian Labs
+
+**Data:** 08/05/2026
+**Decisão:** Adotar Guardian Labs como marca-mãe do projeto. O Boleto Guardian passa a ser oficialmente o primeiro produto do ecossistema Guardian Labs. O posicionamento institucional passa a ser: "infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil".
+**Por quê:** A tese de longo prazo do projeto sempre foi maior que apenas boletos — a categoria comum entre boleto e outros instrumentos de pagamento brasileiros é "chaves que movem dinheiro". Adotar a marca-mãe agora resolve quatro problemas: (1) permite expansão futura sem perder marca acumulada; (2) facilita o pitch internacional, em que "boleto" exige explicação; (3) dá ao programa Stellar 37 Degrees uma narrativa de empresa, não só de produto; (4) cria um sistema visual coerente para futuros produtos da família. Decisão tomada com base na lógica de holding/conglomerado em fase early — adotar nome forte de família agora custa pouco e abre muito.
+
 ---
 
 ## 6. Pesquisa em curso (entrevistas e descobertas)
@@ -258,6 +266,7 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 | Versão | Data | Mudanças |
 |---|---|---|
 | v1.0 | 08/05/2026 | Versão inicial: persona, arquitetura, decisões D-001 a D-010, hipóteses, riscos |
+| v1.1 | 08/05/2026 | Adoção da marca-mãe Guardian Labs (D-011); atualização da Seção 1 e do README |
 
 ---
 

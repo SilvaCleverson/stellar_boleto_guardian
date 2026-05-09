@@ -15,6 +15,12 @@
 
 ---
 
+> **Part of the Guardian Labs ecosystem**
+>
+> Guardian Labs builds public authenticity infrastructure for the keys that move money in Brazil. Boleto Guardian is the first product in this ecosystem. Other Brazilian payment instruments are on the future roadmap.
+
+---
+
 ## Understand the project
 
 > **The user only has the bank slip. That's all they need.**
