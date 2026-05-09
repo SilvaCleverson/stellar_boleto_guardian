@@ -31,16 +31,45 @@ Cada boleto vira uma prova pública e imutável de autenticidade, auditável por
 
 ## 2. Para quem é
 
-### Persona alvo (cliente pagante — empresa emissora)
+### Persona alvo · Camila
+
+**Quem é Camila:**
+Camila tem entre 35 e 42 anos. É Gerente Financeira ou Controller em uma PME brasileira (R$ 10M – R$ 500M de faturamento), atuando em indústria, comércio B2B ou serviços recorrentes. Lidera uma equipe pequena, reporta ao CFO ou diretamente ao dono da empresa. A empresa emite mais de 1.000 boletos por mês, geralmente via Protheus, Sankhya ou Omie.
 
 | Atributo | Definição |
 |---|---|
-| **Quem** | Gestor financeiro, controller, ou dono de empresa de pequeno e médio porte |
-| **Cargo** | CFO, gerente financeiro, controller, analista de contas a receber, ou empresário decisor |
-| **Porte da empresa** | R$ 10M–R$ 500M de faturamento, 1.000+ boletos emitidos por mês |
-| **Setor** | Indústria, comércio, serviços B2B com cobrança recorrente, e-commerces médios |
-| **Sistema usado** | Protheus, Sankhya, Omie, ContaAzul ou ERP equivalente (idealmente Protheus) |
-| **Dor específica** | Cliente protestado em cartório por causa de boleto adulterado. Cliente perdeu dinheiro pagando um boleto fraudado, ficou com nome sujo, culpa a empresa pelo prejuízo, a empresa perde o cliente para sempre, e o golpista nunca é responsabilizado. |
+| **Nome** | Camila (nome representativo — 95% das pessoas entrevistadas para o discovery são mulheres entre 25-45 anos) |
+| **Idade** | 35-42 anos |
+| **Cargo** | Gerente Financeira / Controller / Coordenadora Financeira |
+| **Empresa** | PME brasileira, R$ 10M – R$ 500M de faturamento |
+| **Setor** | Indústria, comércio B2B, serviços recorrentes |
+| **Sistema** | Protheus, Sankhya, Omie ou ERP equivalente |
+| **Volume** | 1.000+ boletos emitidos por mês |
+
+**As duas dores da Camila:**
+
+**Dor 1 — A descoberta tardia da fraude.**
+A empresa de Camila emite o boleto e envia ao cliente. Tempo passa. O cliente não aparece como pago no sistema. Camila aciona a cobrança — primeiro por contato amigável, depois por carta, e em última instância protesta em cartório. É nesse momento que o cliente liga indignado, com comprovante de pagamento em mãos. Aí se descobre: o cliente pagou, mas pagou um boleto adulterado. O dinheiro foi para a conta de um criminoso. A empresa nunca recebeu. O cliente — que acreditava ter quitado a dívida — foi protestado em cartório por culpa de uma fraude que ele não cometeu.
+
+A fraude é técnica do golpista, mas é Camila quem precisa:
+
+- Explicar à diretoria a perda do cliente
+- Mediar a crise com o cliente lesado, mesmo sem culpa formal
+- Reverter o protesto em cartório (quando ainda dá tempo)
+- Justificar o tempo da equipe gasto resolvendo o caso
+- Aguentar a percepção, dentro e fora da empresa, de que "a empresa não protege seus clientes"
+
+**Dor 2 — A operação diária da desconfiança.**
+Mesmo quando não há fraude, Camila e sua equipe gastam horas todos os dias atendendo clientes desconfiados:
+
+- Clientes que ligam para confirmar se o boleto recebido é mesmo da empresa
+- Clientes que pedem reenvio do boleto por outro canal "para ter certeza"
+- Clientes que questionam pequenas diferenças visuais no documento
+- Clientes que pagam com atraso porque ficaram inseguros e foram conferir antes
+
+Cada chamada é curta, mas o volume é diário. O custo não é uma fraude pontual — é **o atrito permanente de operar em um sistema onde o pagador não tem como verificar a autenticidade do que recebeu**.
+
+Camila não escolhe entre as duas dores. Ela vive as duas ao mesmo tempo: a fraude eventual com impacto alto, e a desconfiança operacional com impacto contínuo.
 
 ### Beneficiário secundário (não-pagante — pagador final)
 
@@ -199,6 +228,12 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 **Decisão:** Adotar Guardian Labs como marca-mãe do projeto. O Boleto Guardian passa a ser oficialmente o primeiro produto do ecossistema Guardian Labs. O posicionamento institucional passa a ser: "infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil".
 **Por quê:** A tese de longo prazo do projeto sempre foi maior que apenas boletos — a categoria comum entre boleto e outros instrumentos de pagamento brasileiros é "chaves que movem dinheiro". Adotar a marca-mãe agora resolve quatro problemas: (1) permite expansão futura sem perder marca acumulada; (2) facilita o pitch internacional, em que "boleto" exige explicação; (3) dá ao programa Stellar 37 Degrees uma narrativa de empresa, não só de produto; (4) cria um sistema visual coerente para futuros produtos da família. Decisão tomada com base na lógica de holding/conglomerado em fase early — adotar nome forte de família agora custa pouco e abre muito.
 
+### D-012 · Persona alvo nomeada como Camila
+
+**Data:** 08/05/2026
+**Decisão:** Adotar "Camila" como nome representativo da persona alvo do Boleto Guardian — Gerente Financeira / Controller de PME brasileira, mulher entre 35-42 anos. A dor da Camila tem duas dimensões: (a) a fraude eventual com alto impacto reputacional e operacional, descoberta apenas quando o protesto/cobrança revela que o cliente já tinha pago um boleto adulterado; e (b) o atrito diário da operação atendendo clientes desconfiados que ligam para confirmar autenticidade ou pedir reenvio.
+**Por quê:** Em discovery inicial (Sprint 1), 95% das pessoas entrevistadas correspondendo ao perfil-alvo são mulheres entre 25-45 anos atuando em gestão financeira. O nome "Camila" foi escolhido por sua frequência demográfica na faixa etária (pico de nomes registrados entre 1985-2000), por funcionar em pitch internacional (pronúncia natural em inglês), e por reduzir a abstração no discurso interno do time e em pitch — em vez de "gestor financeiro de PME", o time passa a falar "a Camila". A separação entre dor pontual (fraude descoberta tardiamente) e dor contínua (atendimento de desconfiança) é importante porque cada uma sustenta uma proposta de valor diferente: a primeira é argumento de risco; a segunda é argumento de eficiência operacional.
+
 ---
 
 ## 6. Pesquisa em curso (entrevistas e descobertas)
@@ -267,6 +302,7 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 |---|---|---|
 | v1.0 | 08/05/2026 | Versão inicial: persona, arquitetura, decisões D-001 a D-010, hipóteses, riscos |
 | v1.1 | 08/05/2026 | Adoção da marca-mãe Guardian Labs (D-011); atualização da Seção 1 e do README |
+| v1.2 | 08/05/2026 | Persona alvo nomeada como Camila (D-012); Seção 2 reescrita com narrativa correta das duas dores |
 
 ---
 
