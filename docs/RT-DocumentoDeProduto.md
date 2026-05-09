@@ -190,7 +190,7 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 ### D-010 · Avaliação do protocolo x402 (pendente)
 
 **Data:** 06/05/2026
-**Decisão:** Avaliar formalmente até a Sprint 2 (16/05/2026) se o protocolo x402 da Coinbase faz sentido para o modelo de receita do Boleto Guardian.
+**Decisão:** Avaliar formalmente até a Sprint 2 (16/05/2026) se o protocolo x402 faz sentido para o modelo de receita do Boleto Guardian.
 **Por quê:** Entrega oficial da Sprint 2 exige commit no GitHub com x402 ou justificativa formal de N/A. Decisão depende do modelo de receita escolhido (D-009).
 
 ### D-011 · Adoção de marca-mãe Guardian Labs
