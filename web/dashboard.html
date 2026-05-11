@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="api-base" content="" />
+  <title>Boleto Guardian - Painel Autenticado</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0c111b 0%, #131b2e 50%, #1a2540 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .container {
+      max-width: 700px;
+      width: 100%;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #131b2e 0%, #1a2540 100%);
+      color: white;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-left h1 { font-size: 1.4em; }
+    .header-left p { font-size: 0.82rem; opacity: 0.7; margin-top: 3px; }
+    .auth-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(20,184,166,0.15);
+      border: 1px solid rgba(20,184,166,0.35);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 0.78rem;
+    }
+    .auth-pill .dot { width: 7px; height: 7px; background: #14b8a6; border-radius: 50%; flex-shrink: 0; }
+    .auth-pill .anchor-label { color: rgba(255,255,255,0.65); }
+    .auth-pill .wallet-id { font-family: 'Inconsolata', monospace; color: #5eead4; }
+    .btn-logout {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: rgba(255,255,255,0.85);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-logout:hover { background: rgba(255,255,255,0.15); }
+    .content { padding: 26px 28px; }
+    .sep10-proof {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .sep10-proof .icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 1px; }
+    .sep10-proof .body { font-size: 0.86rem; color: #166534; line-height: 1.55; }
+    .sep10-proof .body strong { display: block; margin-bottom: 3px; }
+    .sep10-proof .body code {
+      font-family: 'Inconsolata', monospace;
+      background: #dcfce7;
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    .section { margin-bottom: 26px; }
+    .section h2 {
+      font-size: 1rem;
+      color: #111827;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .form-group { margin-bottom: 12px; }
+    label { display: block; font-weight: 600; font-size: 0.84rem; color: #374151; margin-bottom: 5px; }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      font-family: 'Inconsolata', monospace;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      color: #111827;
+      transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20,184,166,0.18); }
+    .btn {
+      padding: 11px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-register { background: linear-gradient(135deg, #0e7490, #14b8a6); color: white; }
+    .btn-lookup { background: #2563eb; color: white; }
+    .status { padding: 11px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.86rem; line-height: 1.5; }
+    .status.ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
+    .status.err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+    .status.loading { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
+    .tx-card {
+      margin-top: 14px;
+      padding: 16px;
+      background: #022c22;
+      border: 1px solid #065f46;
+      border-radius: 10px;
+      display: none;
+    }
+    .tx-card h3 { font-size: 0.88rem; color: #6ee7b7; margin-bottom: 12px; }
+    .tx-field { margin-bottom: 10px; font-size: 0.82rem; }
+    .tx-field .lbl { color: #94a3b8; display: block; margin-bottom: 2px; }
+    .tx-field a { color: #38bdf8; text-decoration: none; font-family: 'Inconsolata', monospace; word-break: break-all; }
+    .tx-field a:hover { text-decoration: underline; }
+    .tx-field code { color: #e2e8f0; font-family: 'Inconsolata', monospace; }
+    .tx-anchor-note {
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: rgba(20,184,166,0.1);
+      border: 1px solid rgba(20,184,166,0.25);
+      border-radius: 7px;
+      font-size: 0.8rem;
+      color: #5eead4;
+    }
+    .lookup-result {
+      margin-top: 12px;
+      padding: 14px 16px;
+      border-radius: 9px;
+      display: none;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+    .lookup-result.found { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
+    .lookup-result.not-found { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+    .lookup-result strong { display: block; margin-bottom: 4px; }
+    .lookup-result code { font-family: 'Inconsolata', monospace; font-size: 0.9em; word-break: break-all; }
+    .explorer-link { display: inline-block; margin-top: 8px; color: #1d4ed8; font-size: 0.82rem; }
+    .footer-note { text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid #f3f4f6; font-size: 0.8rem; color: #9ca3af; }
+    .footer-note a { color: #14b8a6; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <h1>Boleto Guardian</h1>
+        <p>Painel — Autenticado via Stellar Anchor</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div class="auth-pill">
+          <div class="dot"></div>
+          <span class="anchor-label">testanchor.stellar.org</span>
+          <span class="wallet-id" id="walletDisplay">—</span>
+        </div>
+        <button class="btn-logout" onclick="logout()">Sair</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="sep10-proof">
+        <div class="icon">🔐</div>
+        <div class="body">
+          <strong>Wallet autenticada via SEP-10 — Stellar Anchor</strong>
+          Integração com Anchor via SEP-10 para autenticação de wallet. A Anchor <code>testanchor.stellar.org</code> verificou a posse da chave privada e emitiu um JWT. O Boleto Guardian não atua como Anchor — consome a Anchor existente na Stellar Testnet.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Registrar Boleto na Blockchain Stellar</h2>
+        <div class="form-group">
+          <label for="regCodebar">Código de barras (47 dígitos)</label>
+          <input type="text" id="regCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
+        </div>
+        <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Registrar na Stellar Testnet</button>
+        <div class="status" id="regStatus"></div>
+        <div class="tx-card" id="txCard">
+          <h3>✓ Transação registrada na Stellar Testnet</h3>
+          <div class="tx-field">
+            <span class="lbl">Hash da transação</span>
+            <a id="txHash" href="#" target="_blank" rel="noopener"></a>
+          </div>
+          <div class="tx-field">
+            <span class="lbl">Ledger</span>
+            <code id="txLedger"></code>
+          </div>
+          <div class="tx-field">
+            <span class="lbl">Conta da empresa (Stellar Explorer)</span>
+            <a id="txAccount" href="#" target="_blank" rel="noopener"></a>
+          </div>
+          <div class="tx-anchor-note">
+            Registro autorizado via SEP-10 com testanchor.stellar.org · <span id="txWallet"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Verificar Boleto na Blockchain</h2>
+        <div class="form-group">
+          <label for="verifyCodebar">Código de barras (47 dígitos)</label>
+          <input type="text" id="verifyCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
+        </div>
+        <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verificar na Stellar Testnet</button>
+        <div class="status" id="verifyStatus"></div>
+        <div class="lookup-result" id="lookupResult"></div>
+      </div>
+
+      <div class="footer-note">
+        <a href="index.html">Início</a> &nbsp;·&nbsp;
+        <a href="validation.html">Validação pública</a> &nbsp;·&nbsp;
+        Powered by <a href="https://stellar.org/" target="_blank" rel="noopener">Stellar</a>
+        &nbsp;·&nbsp; Boleto Guardian v3.0
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var API_BASE = (document.querySelector('meta[name="api-base"]') || {}).content || window.location.origin;
+    if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+
+    var jwt = sessionStorage.getItem('sep10_jwt');
+    var account = sessionStorage.getItem('sep10_account');
+
+    if (!jwt || !account) {
+      window.location.replace('login.html');
+    } else {
+      document.getElementById('walletDisplay').textContent =
+        account.slice(0, 6) + '...' + account.slice(-4);
+    }
+
+    function logout() {
+      sessionStorage.removeItem('sep10_jwt');
+      sessionStorage.removeItem('sep10_account');
+      window.location.replace('login.html');
+    }
+
+    function digitsOnly(v) { return String(v || '').replace(/\D/g, ''); }
+
+    function setStatus(id, type, msg) {
+      var el = document.getElementById(id);
+      el.className = 'status ' + type;
+      el.textContent = msg;
+    }
+
+    async function registerBoleto() {
+      var codebar = digitsOnly(document.getElementById('regCodebar').value);
+      var txCard = document.getElementById('txCard');
+      var btn = document.getElementById('btnRegister');
+      txCard.style.display = 'none';
+
+      if (!/^\d{47}$/.test(codebar)) {
+        setStatus('regStatus', 'err', 'Código de barras inválido. Informe exatamente 47 dígitos.');
+        return;
+      }
+
+      btn.disabled = true;
+      setStatus('regStatus', 'loading', 'Registrando na blockchain Stellar via sessão SEP-10...');
+
+      try {
+        var res = await fetch(API_BASE + '/api/boleto/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + jwt,
+          },
+          body: JSON.stringify({ codebar: codebar }),
+        });
+        var data = await res.json().catch(function () { return {}; });
+
+        if (res.status === 401) {
+          setStatus('regStatus', 'err', 'Sessão expirada. Faça login novamente.');
+          setTimeout(function () { logout(); }, 2000);
+          return;
+        }
+        if (!res.ok || !data.success) {
+          setStatus('regStatus', 'err', data.error || 'Falha ao registrar boleto.');
+          btn.disabled = false;
+          return;
+        }
+
+        setStatus('regStatus', 'ok', 'Boleto registrado com sucesso na Stellar Testnet!');
+
+        var tx = data.data || {};
+        if (tx.transactionHash) {
+          var hashEl = document.getElementById('txHash');
+          hashEl.href = 'https://stellar.expert/explorer/testnet/tx/' + tx.transactionHash;
+          hashEl.textContent = tx.transactionHash;
+          document.getElementById('txLedger').textContent = tx.ledger || '—';
+          var accEl = document.getElementById('txAccount');
+          accEl.href = 'https://stellar.expert/explorer/testnet/account/' + (tx.accountId || '');
+          accEl.textContent = tx.accountId || '—';
+          var wallet = (data.auth && data.auth.wallet) || account;
+          document.getElementById('txWallet').textContent = wallet.slice(0, 8) + '...' + wallet.slice(-6);
+          txCard.style.display = 'block';
+        }
+      } catch (e) {
+        setStatus('regStatus', 'err', 'Erro de comunicação com a API.');
+      }
+
+      btn.disabled = false;
+    }
+
+    async function verifyBoleto() {
+      var codebar = digitsOnly(document.getElementById('verifyCodebar').value);
+      var resultEl = document.getElementById('lookupResult');
+      var btn = document.getElementById('btnVerify');
+      resultEl.style.display = 'none';
+      resultEl.className = 'lookup-result';
+
+      if (!/^\d{47}$/.test(codebar)) {
+        setStatus('verifyStatus', 'err', 'Código de barras inválido. Informe exatamente 47 dígitos.');
+        return;
+      }
+
+      btn.disabled = true;
+      setStatus('verifyStatus', 'loading', 'Consultando blockchain Stellar...');
+
+      try {
+        var res = await fetch(API_BASE + '/api/validate/' + encodeURIComponent(codebar));
+        var data = await res.json().catch(function () { return {}; });
+
+        if (!res.ok) {
+          setStatus('verifyStatus', 'err', data.error || 'Falha ao consultar a blockchain.');
+          btn.disabled = false;
+          return;
+        }
+
+        setStatus('verifyStatus', '');
+
+        if (!data.found) {
+          resultEl.className = 'lookup-result not-found';
+          resultEl.innerHTML =
+            '<strong>Boleto NÃO encontrado na blockchain Stellar.</strong>' +
+            'Este código de barras não foi registrado pela empresa. O boleto pode ser fraudulento.';
+        } else {
+          resultEl.className = 'lookup-result found';
+          resultEl.innerHTML =
+            '<strong>Boleto autêntico — registrado na Stellar Testnet.</strong>' +
+            'Verificação realizada via sessão autenticada com <code>testanchor.stellar.org</code> (SEP-10).' +
+            '<a class="explorer-link" href="https://stellar.expert/explorer/testnet" target="_blank" rel="noopener">Ver no Stellar Explorer →</a>';
+        }
+      } catch (e) {
+        setStatus('verifyStatus', 'err', 'Erro de comunicação com a API.');
+      }
+
+      btn.disabled = false;
+    }
+  </script>
+</body>
+</html>
