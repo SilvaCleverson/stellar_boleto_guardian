@@ -3,7 +3,7 @@
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 08/05/2026
+**Última atualização:** 11/05/2026
 
 ---
 
@@ -26,6 +26,8 @@ O **Boleto Guardian** é uma camada pública de autenticidade para boletos brasi
 A empresa emissora registra cada boleto emitido na blockchain Stellar, e o pagador valida em segundos digitando os 47 números do próprio documento — sem app, sem cadastro, sem conhecimento técnico.
 
 Cada boleto vira uma prova pública e imutável de autenticidade, auditável por qualquer pessoa, a qualquer momento, sem depender de banco, cartório ou intermediário.
+
+Para o MVP do hackathon, o Boleto Guardian também passa a demonstrar integração com uma Anchor existente da Stellar Testnet por meio de SEP-10 (Stellar Web Authentication), usando autenticação de wallet antes dos fluxos de registro e consulta de boletos.
 
 ---
 
@@ -93,6 +95,8 @@ ZXH (tabela)              GET  /api/validate/          key:   codebar
                           (HTML público, Vercel)
                           validation.html
 ```
+
+Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A Anchor é usada para autenticação da wallet: o Boleto Guardian solicita o challenge, a wallet assina, a Anchor valida e retorna a sessão autenticada. O registro imutável dos boletos continua sendo feito pelo Boleto Guardian via Manage Data na conta Stellar da empresa emissora.
 
 ### Camada 1 — ERP (Protheus / ADVPL)
 
@@ -234,6 +238,12 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 **Decisão:** Adotar "Camila" como nome representativo da persona alvo do Boleto Guardian — Gerente Financeira / Controller de PME brasileira, mulher entre 35-42 anos. A dor da Camila tem duas dimensões: (a) a fraude eventual com alto impacto reputacional e operacional, descoberta apenas quando o protesto/cobrança revela que o cliente já tinha pago um boleto adulterado; e (b) o atrito diário da operação atendendo clientes desconfiados que ligam para confirmar autenticidade ou pedir reenvio.
 **Por quê:** Em discovery inicial (Sprint 1), 95% das pessoas entrevistadas correspondendo ao perfil-alvo são mulheres entre 25-45 anos atuando em gestão financeira. O nome "Camila" foi escolhido por sua frequência demográfica na faixa etária (pico de nomes registrados entre 1985-2000), por funcionar em pitch internacional (pronúncia natural em inglês), e por reduzir a abstração no discurso interno do time e em pitch — em vez de "gestor financeiro de PME", o time passa a falar "a Camila". A separação entre dor pontual (fraude descoberta tardiamente) e dor contínua (atendimento de desconfiança) é importante porque cada uma sustenta uma proposta de valor diferente: a primeira é argumento de risco; a segunda é argumento de eficiência operacional.
 
+### D-013 · Integração com Anchor existente via SEP-10
+
+**Data:** 11/05/2026
+**Decisão:** O Boleto Guardian passa a integrar uma Anchor existente da Stellar Testnet usando **SEP-10 (Stellar Web Authentication)** para autenticação de wallet. O usuário autentica sua wallet por meio de um challenge SEP-10 emitido pela Anchor, assina esse challenge, recebe uma sessão autenticada e, a partir daí, acessa os fluxos de registro e consulta de boletos dentro do Boleto Guardian.
+**Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública via Manage Data. SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a wallet autenticada a dados cadastrais da empresa emissora.
+
 ---
 
 ## 6. Pesquisa em curso (entrevistas e descobertas)
@@ -280,6 +290,23 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 | Preparação | 01 a 05/06/2026 | Polimento + ensaios | Pitch final em inglês, materiais físicos, lista de contatos |
 | Sprint 5 — Stellar Village | 09 a 12/06/2026 (RJ) | Apresentação + networking | Pitch ao vivo, demos 1:1, 30+ contatos qualificados |
 
+### Atualização de andamento · 11/05/2026
+
+A Sprint 1 — Bootcamp foi finalizada com sucesso. As três entregas avaliadas no painel do programa foram aprovadas:
+
+- Identificação do Produto
+- Primeira Transação Testnet
+- FLG e Entrevistas com Usuários
+
+A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
+
+| Desafio | Entrega exigida |
+|---|---|
+| MVP com Âncora no Testnet | Demonstrar 1 fluxo completo do app integrado com uma âncora na testnet e evidenciar commits |
+| Entrevistas com Usuários | Realizar 3 entrevistas gravadas validando as dores e a proposta de valor do produto |
+| Integração x402 | Implementar o protocolo x402 no produto, se aplicável ao modelo de negócio; caso contrário, registrar justificativa de N/A |
+| Entrega Final do Hackathon | Submissão completa do MVP com demo ao vivo, vídeo do produto, pitch deck de 5 slides e posts de divulgação |
+
 ---
 
 ## 9. Riscos críticos identificados
@@ -293,6 +320,7 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 | Migração mainnet com problemas de chave | Baixa | Crítico | HSM ou Secret Manager; nunca commitar chave; backup separado |
 | Custo de reserva XLM em escala | Baixa | Médio | Modelar custo com cenários antes da mainnet; repassar como setup ao cliente |
 | Concorrência institucional (banco/FEBRABAN lança equivalente) | Baixa | Alto | Reforçar diferencial de independência, transparência e auditoria pública |
+| Dependência de Anchor externa na Testnet para autenticação SEP-10 | Média | Médio | Escolher Anchor de referência estável; isolar a integração em módulo próprio; manter fallback documentado para troca de Anchor; deixar claro que a Anchor autentica a wallet, mas não registra boletos |
 
 ---
 
@@ -303,6 +331,8 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 | v1.0 | 08/05/2026 | Versão inicial: persona, arquitetura, decisões D-001 a D-010, hipóteses, riscos |
 | v1.1 | 08/05/2026 | Adoção da marca-mãe Guardian Labs (D-011); atualização da Seção 1 e do README |
 | v1.2 | 08/05/2026 | Persona alvo nomeada como Camila (D-012); Seção 2 reescrita com narrativa correta das duas dores |
+| v1.3 | 11/05/2026 | Integração com Anchor existente via SEP-10 (D-013); arquitetura atualizada para autenticação de wallet antes dos fluxos de registro e consulta |
+| v1.4 | 11/05/2026 | Sprint 1 marcada como finalizada com sucesso; Seção 8 atualizada com os quatro desafios oficiais da Sprint 2 — Hackathon |
 
 ---
 
