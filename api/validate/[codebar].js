@@ -11,7 +11,7 @@ module.exports = async function handler(req, res) {
   const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
 
   if (!isValidCodebar(codebar)) {
-    return res.status(400).json({ success: false, error: "Código de barras inválido. Deve conter exatamente 47 dígitos numéricos." });
+    return res.status(400).json({ success: false, error: "Código de barras inválido. Deve conter entre 44 e 47 dígitos numéricos." });
   }
 
   const accountId = req.query.account || COMPANY_ACCOUNT;

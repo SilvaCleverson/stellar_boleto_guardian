@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Required field: codebar' });
   }
   if (!isValidCodebar(codebar)) {
-    return res.status(400).json({ success: false, error: 'Invalid barcode: must be exactly 47 numeric digits' });
+    return res.status(400).json({ success: false, error: 'Invalid barcode: must be between 44 and 47 numeric digits' });
   }
 
   const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || '';

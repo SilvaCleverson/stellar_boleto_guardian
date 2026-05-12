@@ -197,7 +197,7 @@
       <div class="section">
         <h2>Registrar Boleto na Blockchain Stellar</h2>
         <div class="form-group">
-          <label for="regCodebar">Código de barras (47 dígitos)</label>
+          <label for="regCodebar">Código de barras (44–47 dígitos)</label>
           <input type="text" id="regCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
         </div>
         <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Registrar na Stellar Testnet</button>
@@ -225,7 +225,7 @@
       <div class="section">
         <h2>Verificar Boleto na Blockchain</h2>
         <div class="form-group">
-          <label for="verifyCodebar">Código de barras (47 dígitos)</label>
+          <label for="verifyCodebar">Código de barras (44–47 dígitos)</label>
           <input type="text" id="verifyCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
         </div>
         <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verificar na Stellar Testnet</button>
@@ -276,8 +276,8 @@
       var btn = document.getElementById('btnRegister');
       txCard.style.display = 'none';
 
-      if (!/^\d{47}$/.test(codebar)) {
-        setStatus('regStatus', 'err', 'Código de barras inválido. Informe exatamente 47 dígitos.');
+      if (!/^\d{44,47}$/.test(codebar)) {
+        setStatus('regStatus', 'err', 'Código de barras inválido. Informe entre 44 e 47 dígitos.');
         return;
       }
 
@@ -335,8 +335,8 @@
       resultEl.style.display = 'none';
       resultEl.className = 'lookup-result';
 
-      if (!/^\d{47}$/.test(codebar)) {
-        setStatus('verifyStatus', 'err', 'Código de barras inválido. Informe exatamente 47 dígitos.');
+      if (!/^\d{44,47}$/.test(codebar)) {
+        setStatus('verifyStatus', 'err', 'Código de barras inválido. Informe entre 44 e 47 dígitos.');
         return;
       }
 
