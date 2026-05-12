@@ -3,7 +3,7 @@
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 11/05/2026
+**Última atualização:** 12/05/2026 (v1.7)
 
 ---
 
@@ -19,7 +19,7 @@ Este é o **Documento de Produto** (RT — *Record of Thinking*) do Boleto Guard
 
 ## 1. O que está sendo ofertado
 
-O **Boleto Guardian** é o primeiro produto da **Guardian Labs** — uma marca-mãe que constrói infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil. Outros instrumentos de pagamento brasileiros estão no roadmap futuro da Guardian Labs.
+O **Boleto Guardian** é o primeiro produto da **Guardian Labs** — uma marca-mãe que constrói infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil. Outros instrumentos de pagamento brasileiros estão no roadmap da Guardian Labs.
 
 O **Boleto Guardian** é uma camada pública de autenticidade para boletos brasileiros, construída sobre a blockchain Stellar.
 
@@ -27,7 +27,9 @@ A empresa emissora registra cada boleto emitido na blockchain Stellar, e o pagad
 
 Cada boleto vira uma prova pública e imutável de autenticidade, auditável por qualquer pessoa, a qualquer momento, sem depender de banco, cartório ou intermediário.
 
-Para o MVP do hackathon, o Boleto Guardian também passa a demonstrar integração com uma Anchor existente da Stellar Testnet por meio de SEP-10 (Stellar Web Authentication), usando autenticação de wallet antes dos fluxos de registro e consulta de boletos.
+Para o MVP do hackathon, o Boleto Guardian também passa a demonstrar integração com uma Anchor existente da Stellar Testnet por meio de SEP-10 (Stellar Web Authentication), usando autenticação de wallet antes dos fluxos de **registro e gestão** de boletos no **painel web** da empresa (login SEP-10). Isso não altera a validação pública do pagador (D-004: `validation.html` e `GET /api/validate/:codebar` permanecem sem login).
+
+A camada de autenticidade do Boleto Guardian opera em duas dimensões: (a) cada boleto é registrado publicamente na blockchain Stellar pela empresa emissora e (b) o acesso aos fluxos de **registro e gestão** no aplicativo web (painel) é autenticado via SEP-10 contra uma Anchor consolidada da Stellar Testnet (`testanchor.stellar.org`), provando posse da wallet antes de escrita on-chain pelos fluxos autenticados. O Boleto Guardian **não atua como Anchor** — atua como *relying party* da Anchor existente, aproveitando a infraestrutura de identidade já estabelecida no ecossistema Stellar.
 
 ---
 
@@ -94,9 +96,12 @@ ZXH (tabela)              GET  /api/validate/          key:   codebar
                           Página de validação
                           (HTML público, Vercel)
                           validation.html
+
+                          Painel web (SEP-10)
+                          login.html / dashboard.html
 ```
 
-Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A Anchor é usada para autenticação da wallet: o Boleto Guardian solicita o challenge, a wallet assina, a Anchor valida e retorna a sessão autenticada. O registro imutável dos boletos continua sendo feito pelo Boleto Guardian via Manage Data na conta Stellar da empresa emissora.
+Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A Anchor autentica a wallet no fluxo do painel; o registro imutável dos boletos continua sendo feito pelo Boleto Guardian via Manage Data na conta Stellar da empresa emissora. Resumo da superfície SEP-10 na **Camada 4** abaixo; implementação completa em **D-013** / **D-014**.
 
 ### Camada 1 — ERP (Protheus / ADVPL)
 
@@ -120,11 +125,12 @@ API REST que recebe os dados do boleto, assina a transação Stellar com a chave
 |---|---|
 | `GET /` | Status da API |
 | `POST /api/wallet` | Cria conta Stellar de uma nova empresa cliente |
-| `POST /api/blockchain` | Registra um boleto via Manage Data |
-| `GET /api/validate/:codebar` | Consulta a autenticidade de um boleto pelos 47 dígitos |
-| `GET /api/account/:id/data` | Lista todos os boletos registrados por uma empresa |
+| `POST /api/blockchain` | Registra um boleto via Manage Data; **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
+| `POST /api/boleto/register` | Registro pelo fluxo web autenticado; exige `Authorization: Bearer <sep10-jwt>`; detalhes em **D-013** |
+| `GET /api/validate/:codebar` | Consulta pública de autenticidade pelos 47 dígitos (pagador; sem login; D-004) |
+| `GET /api/account/:id/data` | Lista boletos registrados por uma conta (uso operacional; conforme implantação) |
 
-A página pública de validação (`validation.html`) consome o endpoint `validate/:codebar` para que o pagador final confira o boleto sem cadastro.
+A página pública de validação (`validation.html`) consome o endpoint `validate/:codebar` para que o pagador final confira o boleto sem cadastro. O painel (`dashboard.html`) usa os endpoints SEP-10 e `POST /api/boleto/register` descritos em **D-013**.
 
 ### Camada 3 — Blockchain Stellar
 
@@ -139,6 +145,10 @@ Modelo: **uma conta Stellar por empresa emissora.**
 | Custo da transação | aprox. 0,00001 XLM por operação |
 | Rede atual | **Testnet** |
 | Migração planejada | **Mainnet** até 30/05/2026 (Sprint 4 do programa) |
+
+### Camada 4 — Autenticação SEP-10
+
+Implementada em 11/05/2026 como parte do MVP do hackathon Sprint 2. O Boleto Guardian **não atua como Anchor** — consome `testanchor.stellar.org` (Anchor oficial da SDF na Testnet) como *relying party*, via proxy no backend para evitar restrições CORS no browser. A chave privada do usuário é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba). Implementação completa (endpoints, frontend, biblioteca e decisões de proxy) em **D-013** e **D-014**.
 
 ---
 
@@ -244,11 +254,37 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 **Decisão:** O Boleto Guardian passa a integrar uma Anchor existente da Stellar Testnet usando **SEP-10 (Stellar Web Authentication)** para autenticação de wallet. O usuário autentica sua wallet por meio de um challenge SEP-10 emitido pela Anchor, assina esse challenge, recebe uma sessão autenticada e, a partir daí, acessa os fluxos de registro e consulta de boletos dentro do Boleto Guardian.
 **Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública via Manage Data. SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a wallet autenticada a dados cadastrais da empresa emissora.
 
+**Implementação (11/05/2026):** Anchor escolhida: `testanchor.stellar.org` (Anchor oficial da SDF na Testnet, endpoint `https://testanchor.stellar.org/auth`). O Boleto Guardian **não atua como Anchor** — consome a Anchor existente via proxy no backend para evitar restrições CORS no browser. Chave privada do usuário é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões).
+
+| Arquivo | Função |
+|---|---|
+| `lib/sep10.js` | Biblioteca utilitária central: `getChallenge()`, `exchangeToken()`, `validateAnchorJwt()` |
+| `api/sep10/challenge.js` | `GET /api/sep10/challenge?account=G...` — proxy para `testanchor.stellar.org/auth` |
+| `api/sep10/token.js` | `POST /api/sep10/token` — proxy para troca de XDR assinado por JWT |
+| `api/sep10/verify.js` | `POST /api/sep10/verify` — valida JWT e retorna `{ valid, account, anchor, exp }` |
+| `api/boleto/register.js` | `POST /api/boleto/register` — exige `Authorization: Bearer <sep10-jwt>`; usa `COMPANY_SECRET` server-side para assinar a transação Stellar |
+| `web/login.html` | Fluxo SEP-10 de 4 etapas: Carteira → Assinatura → Token JWT → Painel |
+| `web/dashboard.html` | Painel autenticado; usa JWT do `sessionStorage` como Bearer token; auto-logout em HTTP 401 |
+
+Validação JWT: trust-based — verifica `iss === 'testanchor.stellar.org'`, expiração e formato do `sub` (endereço G de 56 chars). Sem necessidade do segredo de assinatura da Anchor. Compatibilidade retroativa: `api/blockchain.js` existente não foi alterado; integração Protheus/ERP continua funcionando via chave de admin.
+
+### D-014 · Padrão de proxy SEP-10 e validação JWT por confiança
+
+**Data:** 11/05/2026
+**Decisão:** Implementar o fluxo SEP-10 usando o Boleto Guardian como **proxy reverso** para `testanchor.stellar.org`, evitando restrições CORS no browser. A validação do JWT emitido pela Anchor usa abordagem **trust-based** — verificando `iss`, `exp` e formato do `sub` — sem necessidade do segredo de assinatura da Anchor. O JWT é armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões) para reduzir exposição em caso de XSS por scripts de terceiros.
+**Por quê:** (1) O browser não pode chamar `testanchor.stellar.org` diretamente por restrições CORS — o proxy no backend (`api/sep10/challenge.js` e `api/sep10/token.js`) resolve sem comprometer a experiência do usuário e sem expor a URL da Anchor no frontend. (2) A validação trust-based é adequada porque o campo `iss` identifica unicamente a Anchor de confiança e o `sub` confirma a carteira autenticada; obter o segredo de assinatura exigiria acesso privilegiado não fornecido por design pelo `testanchor.stellar.org`. (3) `sessionStorage` é preferível a `localStorage` porque isola a sessão por aba — se o usuário fechar a aba o token expira automaticamente, reduzindo a janela de exposição. (4) A chave privada da carteira é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura — nunca armazenada, nunca enviada ao servidor.
+
+### D-015 · Identidade visual no site e alinhamento com o RT
+
+**Data:** 12/05/2026
+**Decisão:** Adotar o logotipo oficial do Boleto Guardian (arquivos em `docs/logo/`, cópia servida em `web/assets/brand/`) no cabeçalho das páginas públicas (`index*.html`, `validation*.html`, `login.html`, `dashboard.html`) e atualizar a paleta CSS para refletir o selo: azul-marinho **#0B1F3A**, azul **#1A7FD4** e destaque **#F4C842** (conforme SVG do logo). O conteúdo do whitepaper/landing em PT, EN e ES passa a mencionar explicitamente **Guardian Labs**, o posicionamento de infraestrutura pública de autenticidade, a persona **Camila** (duas dores), **SEP-10** com `testanchor.stellar.org` e link para o fluxo do painel.
+**Por quê:** (1) D-011 já consolidou Guardian Labs como marca-mãe — o site precisava refletir isso visual e textualmente. (2) Cores do logo substituem a paleta genérica "Stellar teal" para reforçar reconhecimento de marca e coerência com materiais gráficos. (3) Visitantes internacionais e investidores (Sprint 4 / Village) enxergam em uma tela produto, holding e prova técnica (47 dígitos + SEP-10) alinhados ao RT.
+
 ---
 
 ## 6. Pesquisa em curso (entrevistas e descobertas)
 
-A Sprint 1 do programa exige entrevistas qualificadas com a persona alvo, seguindo metodologia *Mom Test*. O roteiro completo está em `docs/entrevistas.md` e a tabulação em planilha externa.
+A Sprint 1 do programa exigiu entrevistas qualificadas com a persona alvo, seguindo metodologia *Mom Test*. O roteiro completo está em `docs/entrevistas.md` e a tabulação em planilha externa.
 
 ### Hipóteses principais sob teste
 
@@ -333,6 +369,8 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | v1.2 | 08/05/2026 | Persona alvo nomeada como Camila (D-012); Seção 2 reescrita com narrativa correta das duas dores |
 | v1.3 | 11/05/2026 | Integração com Anchor existente via SEP-10 (D-013); arquitetura atualizada para autenticação de wallet antes dos fluxos de registro e consulta |
 | v1.4 | 11/05/2026 | Sprint 1 marcada como finalizada com sucesso; Seção 8 atualizada com os quatro desafios oficiais da Sprint 2 — Hackathon |
+| v1.5 | 11/05/2026 | SEP-10 implementado end-to-end (D-013, D-014): `lib/sep10.js`, endpoints proxy `challenge`/`token`/`verify`, `web/login.html` (4 etapas), `web/dashboard.html` autenticado, `POST /api/boleto/register` exigindo Bearer JWT; Seção 1 corrigida — Boleto Guardian é *relying party* de `testanchor.stellar.org`, **não** Anchor |
+| v1.6 | 12/05/2026 | Identidade visual no site: logo em `web/assets/brand/`, paleta #0B1F3A / #1A7FD4 / #F4C842; whitepaper PT/EN/ES e fluxos web alinhados ao RT (Guardian Labs, Camila, SEP-10, link painel); decisão D-015 |
 
 ---
 

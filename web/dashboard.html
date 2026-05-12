@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="api-base" content="" />
-  <title>Boleto Guardian - Painel Autenticado</title>
+  <title>Boleto Guardian — Painel | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0c111b 0%, #131b2e 50%, #1a2540 100%);
+      background: linear-gradient(145deg, #040d18 0%, #0B1F3A 50%, #102a4a 100%);
       min-height: 100vh;
       padding: 20px;
       display: flex;
@@ -28,7 +28,8 @@
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #131b2e 0%, #1a2540 100%);
+      background: linear-gradient(135deg, #0B1F3A 0%, #061428 100%);
+      border-bottom: 2px solid rgba(244, 200, 66, 0.3);
       color: white;
       padding: 24px 28px;
       display: flex;
@@ -43,15 +44,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(20,184,166,0.15);
-      border: 1px solid rgba(20,184,166,0.35);
+      background: rgba(26,127,212,0.12);
+      border: 1px solid rgba(244,200,66,0.35);
       border-radius: 20px;
       padding: 7px 14px;
       font-size: 0.78rem;
     }
-    .auth-pill .dot { width: 7px; height: 7px; background: #14b8a6; border-radius: 50%; flex-shrink: 0; }
+    .auth-pill .dot { width: 7px; height: 7px; background: #F4C842; border-radius: 50%; flex-shrink: 0; }
     .auth-pill .anchor-label { color: rgba(255,255,255,0.65); }
-    .auth-pill .wallet-id { font-family: 'Inconsolata', monospace; color: #5eead4; }
+    .auth-pill .wallet-id { font-family: 'Inconsolata', monospace; color: #7ec8ff; }
     .btn-logout {
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.18);
@@ -105,7 +106,7 @@
       color: #111827;
       transition: border-color 0.2s;
     }
-    input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20,184,166,0.18); }
+    input:focus { outline: none; border-color: #1A7FD4; box-shadow: 0 0 0 3px rgba(26,127,212,0.2); }
     .btn {
       padding: 11px 20px;
       border: none;
@@ -118,7 +119,7 @@
     }
     .btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-register { background: linear-gradient(135deg, #0e7490, #14b8a6); color: white; }
+    .btn-register { background: linear-gradient(135deg, #0d4a82, #1A7FD4); color: white; }
     .btn-lookup { background: #2563eb; color: white; }
     .status { padding: 11px 14px; border-radius: 8px; margin-top: 12px; display: none; font-size: 0.86rem; line-height: 1.5; }
     .status.ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
@@ -141,11 +142,11 @@
     .tx-anchor-note {
       margin-top: 12px;
       padding: 8px 12px;
-      background: rgba(20,184,166,0.1);
-      border: 1px solid rgba(20,184,166,0.25);
+      background: rgba(26,127,212,0.12);
+      border: 1px solid rgba(244,200,66,0.28);
       border-radius: 7px;
       font-size: 0.8rem;
-      color: #5eead4;
+      color: #a8d4ff;
     }
     .lookup-result {
       margin-top: 12px;
@@ -161,15 +162,18 @@
     .lookup-result code { font-family: 'Inconsolata', monospace; font-size: 0.9em; word-break: break-all; }
     .explorer-link { display: inline-block; margin-top: 8px; color: #1d4ed8; font-size: 0.82rem; }
     .footer-note { text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid #f3f4f6; font-size: 0.8rem; color: #9ca3af; }
-    .footer-note a { color: #14b8a6; text-decoration: none; }
+    .footer-note a { color: #1A7FD4; text-decoration: none; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <div class="header-left">
+      <div class="header-left" style="display:flex;align-items:center;gap:12px;">
+        <img src="assets/brand/boleto_guardian_logo_dark_200px.png" alt="" width="48" height="48" style="height:44px;width:auto;border-radius:8px;" decoding="async" />
+        <div>
         <h1>Boleto Guardian</h1>
-        <p>Painel — Autenticado via Stellar Anchor</p>
+        <p>Painel — Autenticado via SEP-10 (Anchor Testnet)</p>
+        </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <div class="auth-pill">
@@ -183,7 +187,7 @@
 
     <div class="content">
       <div class="sep10-proof">
-        <div class="icon">🔐</div>
+        <div class="icon">🔝</div>
         <div class="body">
           <strong>Wallet autenticada via SEP-10 — Stellar Anchor</strong>
           Integração com Anchor via SEP-10 para autenticação de wallet. A Anchor <code>testanchor.stellar.org</code> verificou a posse da chave privada e emitiu um JWT. O Boleto Guardian não atua como Anchor — consome a Anchor existente na Stellar Testnet.

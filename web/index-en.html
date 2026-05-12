@@ -3,21 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Boleto Guardian — Whitepaper v1.0. Immutable bank slip authentication on Stellar blockchain. Security and trust in every slip.">
-  <title>Boleto Guardian — Whitepaper v1.0</title>
+  <meta name="description" content="Boleto Guardian — first Guardian Labs product. Public authenticity layer for Brazilian bank slips on Stellar. Validate in seconds with 47 digits.">
+  <title>Boleto Guardian — Whitepaper | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0c111b;
-      --surface: #131b2e;
-      --card: #1a2540;
-      --primary: #14b8a6;
-      --primary-dim: #0d9488;
-      --accent: #0e7490;
-      --text: #e2e8f0;
+      --bg: #040d18;
+      --surface: #0B1F3A;
+      --card: #102a4a;
+      --primary: #1A7FD4;
+      --primary-dim: #1568b8;
+      --accent: #0d4a82;
+      --gold: #F4C842;
+      --text: #e8eef5;
       --muted: #94a3b8;
       --border: rgba(148, 163, 184, 0.12);
       --prose: 720px;
@@ -40,7 +41,7 @@
       top: 0;
       z-index: 100;
       padding: 16px 0;
-      background: rgba(12, 17, 27, 0.85);
+      background: rgba(4, 13, 24, 0.88);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
     }
@@ -64,8 +65,10 @@
       text-decoration: none;
       letter-spacing: -0.02em;
     }
-    .logo svg.stellar-icon { flex-shrink: 0; color: var(--primary); }
-    .logo span { color: var(--primary); }
+    .logo .brand-mark { flex-shrink: 0; display: inline-flex; align-items: center; }
+    .logo .brand-mark img { height: 38px; width: auto; display: block; }
+    .logo .wordmark { font-weight: 700; color: var(--text); }
+    .logo .wordmark span { color: var(--gold); }
     nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
     nav a {
       color: var(--muted);
@@ -110,7 +113,7 @@
       background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
       color: #fff;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(20, 184, 166, 0.35); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26, 127, 212, 0.4); }
 
     .hero {
       padding: 64px 0 56px;
@@ -150,8 +153,16 @@
       flex-wrap: wrap;
       margin-top: 32px;
     }
-    .hero-logo { margin-bottom: 16px; }
-    .hero-logo svg { color: var(--primary); vertical-align: middle; }
+    .hero-logo { margin-bottom: 12px; }
+    .hero-logo .brand-mark-hero img { height: 96px; width: auto; vertical-align: middle; }
+    .hero-labs {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
     .hero .badge {
       padding: 6px 12px;
       border-radius: 6px;
@@ -228,7 +239,7 @@
       border-left: 4px solid var(--primary);
       padding: 16px 20px;
       margin: 24px 0;
-      background: rgba(20, 184, 166, 0.06);
+      background: rgba(26, 127, 212, 0.08);
       border-radius: 0 10px 10px 0;
       font-size: 1.05rem;
     }
@@ -267,7 +278,7 @@
       font-weight: 600;
     }
     tr:last-child td { border-bottom: none; }
-    tr:hover td { background: rgba(20, 184, 166, 0.04); }
+    tr:hover td { background: rgba(26, 127, 212, 0.06); }
     .phase-list { list-style: none; margin-left: 0; }
     .phase-list li {
       margin-bottom: 16px;
@@ -289,7 +300,7 @@
       text-align: center;
       padding: 32px 24px;
       margin: 40px 0;
-      background: linear-gradient(135deg, var(--card) 0%, rgba(14, 116, 144, 0.15) 100%);
+      background: linear-gradient(135deg, var(--card) 0%, rgba(26, 127, 212, 0.12) 100%);
       border-radius: 16px;
       border: 1px solid var(--border);
     }
@@ -321,8 +332,8 @@
   <header>
     <div class="header-inner">
       <a href="index-en.html" class="logo">
-        <svg class="stellar-icon" width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><title>Stellar</title><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
-        Boleto <span>Guardian</span>
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/boleto_guardian_logo_dark_200px.png" width="120" height="120" alt="" decoding="async" /></span>
+        <span class="wordmark">Boleto <span>Guardian</span></span>
       </a>
       <nav>
         <div class="lang-switch">
@@ -336,6 +347,7 @@
         <a href="#arquitetura">Architecture</a>
         <a href="#stellar">Stellar</a>
         <a href="#visao">Vision</a>
+        <a href="login.html">Dashboard (SEP-10)</a>
         <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
       </nav>
     </div>
@@ -343,19 +355,22 @@
 
   <section class="hero">
     <div class="wrap">
-      <p class="hero-logo" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/><path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></p>
-      <h1>Stellar Boleto Guardian</h1>
+      <p class="hero-logo"><span class="brand-mark-hero"><img src="assets/brand/boleto_guardian_logo_dark_200px.png" width="160" height="160" alt="Boleto Guardian logo" decoding="async" /></span></p>
+      <p class="hero-labs">Guardian Labs</p>
+      <h1>Boleto Guardian</h1>
       <p class="version">Whitepaper v1.0</p>
-      <p class="tagline">Immutable bank slip authentication via Stellar blockchain</p>
+      <p class="tagline">Public authenticity infrastructure for Brazilian bank slips — immutable proof on Stellar; validate in seconds with the 47-digit barcode.</p>
       <p class="meta"><strong>Author:</strong> Equipe Guardian · <strong>Date:</strong> March 2026</p>
       <div class="hero-cta">
         <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
         <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-primary" target="_blank" rel="noopener" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">GitHub</a>
       </div>
       <div class="badges">
+        <span class="badge">Guardian Labs</span>
         <span class="badge">Stellar</span>
         <span class="badge">Manage Data</span>
         <span class="badge">47 digits</span>
+        <span class="badge">SEP-10</span>
         <span class="badge">Privacy</span>
       </div>
     </div>
@@ -382,9 +397,10 @@
 
       <section class="sec" id="resumo">
         <h2>1. Executive summary</h2>
-        <p>Brazil issues more than <strong>4 billion bank slips per year</strong>, making the boleto one of the most used payment instruments in the country. However, this volume coexists with an alarming reality: estimates point to losses between <strong>R$ 25 and 29 billion annually</strong> in digital fraud involving slips and other electronic payment methods (ClearSale, 2024; Finsiders, 2024).</p>
-        <p><strong>Stellar Boleto Guardian</strong> is a solution that records the barcode of each issued slip on the Stellar blockchain, creating a public, immutable and auditable proof of authenticity. The key differentiator is the end-user experience: <strong>to validate a slip, simply type the numbers printed on the document</strong>. No need to know hashes, cryptographic keys or any technical concept.</p>
-        <p>The solution integrates with any ERP system via a middleware API, making it platform-agnostic. In this whitepaper we use TOTVS Protheus as an implementation reference, but the architecture is replicable for any ERP on the market.</p>
+        <p><strong>Boleto Guardian</strong> is the first product of <strong>Guardian Labs</strong> — a parent brand focused on public authenticity infrastructure for the keys that move money in Brazil (bank slips today; other instruments on the roadmap). The issuer registers each slip on the Stellar blockchain; the payer validates in seconds with the <strong>47-digit</strong> barcode, with no app, signup or jargon.</p>
+        <p>Brazil issues more than <strong>4 billion bank slips per year</strong>. This volume coexists with large losses from digital fraud involving slips and other methods (ClearSale, 2024; Finsiders, 2024).</p>
+        <p>Boleto Guardian creates a <strong>public, immutable, auditable</strong> proof of authenticity. For the Stellar 37 Degrees MVP, the product also demonstrates <strong>SEP-10</strong> against a Testnet anchor (<code style="font-size:0.95em;">testanchor.stellar.org</code>): Guardian is a <em>relying party</em> — not an anchor — and still registers slips via <strong>Manage Data</strong>.</p>
+        <p>Integration is via REST API with any ERP; this whitepaper uses TOTVS Protheus as reference, replicable to Sankhya, Omie and others.</p>
       </section>
 
       <section class="sec" id="problema">
@@ -427,8 +443,10 @@
         <div class="blockquote">
           <p>The question is not "how do I use Stellar?". It is: <strong>what real financial problem do we solve best?</strong> The product starts from the <strong>pain</strong>, not from the blockchain.</p>
         </div>
-        <p><strong>Pains (P1→P4):</strong> (1) not knowing if the slip matches what the company issued; (2) paying and money going to a fraudster; (3) company wrongly accused of sending a fake slip; (4) ERP/bank not giving the payer simple proof.</p>
-        <p><strong>Personas:</strong> <em>Payer</em> (B2C/sole trader) — validate before paying with the 47 digits; <em>B2B treasury</em> — trust in the slip sent; <em>IT/ERP</em> — REST API, key off the client, HSM path; <em>Compliance</em> (secondary) — traceability without personal data on-chain.</p>
+        <p><strong>Pains (P1?P4):</strong> (1) not knowing if the slip matches what the company issued; (2) paying and money going to a fraudster; (3) company wrongly accused of sending a fake slip; (4) ERP/bank not giving the payer simple proof.</p>
+        <h3>2.6 Target persona: Camila (SME finance)</h3>
+        <p><strong>Camila</strong> (representative name) is a Finance Manager or Controller at a Brazilian SME that issues thousands of slips per month (e.g. Protheus, Sankhya, Omie). Her pains stack: <strong>late-discovered fraud</strong> — customer paid a tampered slip, collections, crisis with leadership — and <strong>daily friction</strong> — hours confirming authenticity with distrustful customers. Boleto Guardian addresses both reputational risk and operational efficiency.</p>
+        <p><strong>Other personas:</strong> <em>Payer</em> — validate with 47 digits; <em>IT/ERP</em> — API and integration; <em>Compliance</em> — traceability without personal data on-chain.</p>
       </section>
 
       <section class="sec" id="solucao">
@@ -470,7 +488,8 @@
       <section class="sec" id="arquitetura">
         <h2>4. Conceptual architecture</h2>
         <h3>4.1 Overview</h3>
-        <p>Three layers: ERP → API Middleware → Stellar Network. The end user queries via GET (types the barcode and validates).</p>
+        <p>Three layers: ERP ? Boleto Guardian API ? Stellar network. The payer uses the public validation page (47 digits). For <strong>authenticated register and lookup</strong> in the web MVP, the API integrates <strong>SEP-10</strong> with anchor <code>testanchor.stellar.org</code> (wallet signs the challenge; JWT in session). ERP-style integration remains available via administrative endpoints.</p>
+        <p><a href="login.html" style="color:var(--primary);font-weight:600;">Open SEP-10 login flow (dashboard)</a></p>
         <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
 |    ERP SYSTEM     |       |  API MIDDLEWARE   |       | STELLAR NETWORK    |
 | Generates slips   | POST  | Receives,        |  TX   | Manage Data       |
@@ -554,7 +573,7 @@
 
       <section class="sec" id="visao">
         <h2>9. Future vision</h2>
-        <p>Boleto Guardian is the first step of a broader digital trust platform. The same architecture can be extended to other critical documents:</p>
+        <p>Boleto Guardian is the first product of <strong>Guardian Labs</strong>; the same public-authenticity approach can extend to other critical documents:</p>
         <ul class="phase-list">
           <li><strong>Next step — Settlement in Boleto Guardian:</strong> Evolve so that <strong>slip settlement</strong> (payment confirmation and closing the lifecycle) happens in the <strong>product's own environment</strong>, integrated with validation and on-chain registration.</li>
           <li><strong>Security — HSM signing (HSM2):</strong> Roadmap for a version where Stellar transactions are signed via <strong>HSM</strong> (Hardware Security Module), including compliance profiles such as <strong>FIPS 140-2 Level 2</strong>, without keeping the private key in software on the API.</li>
@@ -594,7 +613,7 @@
 
   <footer>
     <div class="wrap">
-      <p><strong>Stellar Boleto Guardian</strong> — Security, transparency and trust in every slip.</p>
+      <p><strong>Guardian Labs</strong> · <strong>Boleto Guardian</strong> — public authenticity for bank slips on Stellar.</p>
       <p class="footer-links">
         <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> ·
         <a href="validation-en.html">Validate slip</a> ·

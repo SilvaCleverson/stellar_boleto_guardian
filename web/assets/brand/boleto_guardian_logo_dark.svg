@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <title>Boleto Guardian</title>
+  <desc>Selo de autenticidade com código de barras estilizado em fundo escuro</desc>
+  <circle cx="200" cy="190" r="180" fill="#0B1F3A" stroke="#1A7FD4" stroke-width="8"/>
+  <circle cx="200" cy="190" r="146" fill="none" stroke="#F4C842" stroke-width="2.2" opacity="0.5"/>
+  <g transform="translate(200, 190)">
+    <rect x="-52" y="-68" width="6.5" height="136" fill="#F4C842"/>
+    <rect x="-39" y="-68" width="3.7" height="136" fill="#F4C842"/>
+    <rect x="-28" y="-68" width="9.3" height="136" fill="#F4C842"/>
+    <rect x="-11" y="-68" width="3.7" height="136" fill="#F4C842"/>
+    <rect x="0" y="-68" width="6.5" height="136" fill="#F4C842"/>
+    <rect x="13" y="-68" width="3.7" height="136" fill="#F4C842"/>
+    <rect x="24" y="-68" width="9.3" height="136" fill="#F4C842"/>
+    <rect x="41" y="-68" width="6.5" height="136" fill="#F4C842"/>
+  </g>
+  <text x="200" y="298" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="500" fill="#F4C842" letter-spacing="6">GUARDIAN</text>
+</svg>

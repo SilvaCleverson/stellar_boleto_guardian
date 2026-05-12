@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="api-base" content="" />
-  <title>Boleto Guardian - Login com Anchor Stellar</title>
+  <title>Boleto Guardian — Login SEP-10 | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: linear-gradient(135deg, #0c111b 0%, #131b2e 50%, #1a2540 100%);
+      background: linear-gradient(145deg, #040d18 0%, #0B1F3A 50%, #102a4a 100%);
       min-height: 100vh;
       padding: 20px;
       display: flex;
@@ -28,7 +28,8 @@
       overflow: hidden;
     }
     .header {
-      background: linear-gradient(135deg, #131b2e 0%, #1a2540 100%);
+      background: linear-gradient(135deg, #0B1F3A 0%, #061428 100%);
+      border-bottom: 2px solid rgba(244, 200, 66, 0.35);
       color: white;
       padding: 32px 30px;
       text-align: center;
@@ -50,12 +51,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(20,184,166,0.18);
-      border: 1px solid rgba(20,184,166,0.4);
+      background: rgba(26,127,212,0.15);
+      border: 1px solid rgba(244,200,66,0.45);
       border-radius: 20px;
       padding: 5px 14px;
       font-size: 0.78rem;
-      color: #5eead4;
+      color: #e8f4ff;
       margin-top: 12px;
     }
     .content { padding: 28px 30px; }
@@ -79,7 +80,7 @@
     .step:last-child { border-right: none; }
     .step-num { display: block; font-size: 1rem; margin-bottom: 2px; }
     .step.active { background: #f0fdf4; color: #166534; }
-    .step.done { background: #14b8a6; color: white; }
+    .step.done { background: #1A7FD4; color: white; }
     .info-box {
       background: #eff6ff;
       border: 1px solid #bfdbfe;
@@ -103,7 +104,7 @@
       color: #111827;
       transition: border-color 0.2s;
     }
-    input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20,184,166,0.18); }
+    input:focus { outline: none; border-color: #1A7FD4; box-shadow: 0 0 0 3px rgba(26,127,212,0.22); }
     .pubkey-display {
       margin-top: 8px;
       padding: 10px 12px;
@@ -131,7 +132,7 @@
     .btn:hover { opacity: 0.91; transform: translateY(-1px); }
     .btn:active { transform: translateY(0); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-primary { background: linear-gradient(135deg, #0e7490, #14b8a6); color: white; margin-bottom: 10px; }
+    .btn-primary { background: linear-gradient(135deg, #0d4a82, #1A7FD4); color: white; margin-bottom: 10px; }
     .btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; }
     .divider { border: none; border-top: 1px solid #e5e7eb; margin: 20px 0; }
     .status { padding: 12px 14px; border-radius: 8px; margin-top: 14px; display: none; font-size: 0.87rem; line-height: 1.5; }
@@ -139,20 +140,18 @@
     .status.err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
     .status.loading { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
     .footer-note { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #9ca3af; }
-    .footer-note a { color: #14b8a6; text-decoration: none; }
+    .footer-note a { color: #1A7FD4; text-decoration: none; }
     .security-note { font-size: 0.78rem; color: #6b7280; margin-top: 8px; line-height: 1.5; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <a href="index.html" class="back">← Início</a>
-      <p style="margin-bottom:8px;">
-        <svg width="34" height="34" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
-          <path d="M12 10c2 2 4 6 4 6s2 4 4 6c2 2 4 2 4 2M20 22c-2-2-4-6-4-6s-2-4-4-6c-2-2-4-2-4-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        </svg>
+      <a href="index.html" class="back">↝ Início</a>
+      <p style="margin-bottom:4px;">
+        <img src="assets/brand/boleto_guardian_logo_dark_200px.png" alt="Boleto Guardian" width="120" height="120" style="height:64px;width:auto;display:inline-block;" decoding="async" />
       </p>
+      <p style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:#F4C842;font-weight:600;margin-bottom:4px;">Guardian Labs</p>
       <h1>Boleto Guardian</h1>
       <p>Login com Anchor Stellar</p>
       <div style="display:flex;justify-content:center;margin-top:10px;">
