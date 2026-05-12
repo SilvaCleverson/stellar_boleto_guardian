@@ -1,6 +1,6 @@
 /**
  * Registra boleto na conta Stellar da empresa via Manage Data.
- * Chave = c√≥digo de barras (47 d√≠gitos), Valor = payload (at√© 64 bytes).
+ * Chave = cÛdigo de barras (44 a 47 dÌgitos), Valor = payload (atÈ 64 bytes).
  */
 const {
   Horizon,
@@ -24,7 +24,7 @@ function getNetworkPassphrase() {
 function isValidCodebar(codebar) {
   if (!codebar || typeof codebar !== "string") return false;
   const digits = codebar.replace(/[.\s-]/g, "");
-  return /^\d{47}$/.test(digits);
+  return /^\d{44,47}$/.test(digits);
 }
 
 function normalizeCodebar(codebar) {
@@ -50,7 +50,7 @@ async function sendBoletoToBlockchain(companySecret, payload) {
   const normalizedCodebar = normalizeCodebar(codebar);
   if (!isValidCodebar(normalizedCodebar)) {
     throw new Error(
-      "C√≥digo de barras inv√°lido. Deve conter exatamente 47 d√≠gitos num√©ricos."
+      "CÛdigo de barras inv·lido. Deve conter entre 44 e 47 dÌgitos numÈricos."
     );
   }
 

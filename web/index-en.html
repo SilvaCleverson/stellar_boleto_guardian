@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Boleto Guardian — first Guardian Labs product. Public authenticity layer for Brazilian bank slips on Stellar. Validate in seconds with 47 digits.">
+  <meta name="description" content="Boleto Guardian — first Guardian Labs product. Public authenticity layer for Brazilian bank slips on Stellar. Validate in seconds with 44 to 47 barcode digits.">
   <title>Boleto Guardian — Whitepaper | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -359,7 +359,7 @@
       <p class="hero-labs">Guardian Labs</p>
       <h1>Boleto Guardian</h1>
       <p class="version">Whitepaper v1.0</p>
-      <p class="tagline">Public authenticity infrastructure for Brazilian bank slips — immutable proof on Stellar; validate in seconds with the 47-digit barcode.</p>
+      <p class="tagline">Public authenticity infrastructure for Brazilian bank slips — immutable proof on Stellar; validate in seconds with the 44–47-digit barcode.</p>
       <p class="meta"><strong>Author:</strong> Equipe Guardian · <strong>Date:</strong> March 2026</p>
       <div class="hero-cta">
         <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
@@ -369,7 +369,7 @@
         <span class="badge">Guardian Labs</span>
         <span class="badge">Stellar</span>
         <span class="badge">Manage Data</span>
-        <span class="badge">47 digits</span>
+        <span class="badge">44–47 digits</span>
         <span class="badge">SEP-10</span>
         <span class="badge">Privacy</span>
       </div>
@@ -397,7 +397,7 @@
 
       <section class="sec" id="resumo">
         <h2>1. Executive summary</h2>
-        <p><strong>Boleto Guardian</strong> is the first product of <strong>Guardian Labs</strong> — a parent brand focused on public authenticity infrastructure for the keys that move money in Brazil (bank slips today; other instruments on the roadmap). The issuer registers each slip on the Stellar blockchain; the payer validates in seconds with the <strong>47-digit</strong> barcode, with no app, signup or jargon.</p>
+        <p><strong>Boleto Guardian</strong> is the first product of <strong>Guardian Labs</strong> — a parent brand focused on public authenticity infrastructure for the keys that move money in Brazil (bank slips today; other instruments on the roadmap). The issuer registers each slip on the Stellar blockchain; the payer validates in seconds with the <strong>44 to 47 digit</strong> barcode, with no app, signup or jargon.</p>
         <p>Brazil issues more than <strong>4 billion bank slips per year</strong>. This volume coexists with large losses from digital fraud involving slips and other methods (ClearSale, 2024; Finsiders, 2024).</p>
         <p>Boleto Guardian creates a <strong>public, immutable, auditable</strong> proof of authenticity. For the Stellar 37 Degrees MVP, the product also demonstrates <strong>SEP-10</strong> against a Testnet anchor (<code style="font-size:0.95em;">testanchor.stellar.org</code>): Guardian is a <em>relying party</em> — not an anchor — and still registers slips via <strong>Manage Data</strong>.</p>
         <p>Integration is via REST API with any ERP; this whitepaper uses TOTVS Protheus as reference, replicable to Sankhya, Omie and others.</p>
@@ -446,7 +446,7 @@
         <p><strong>Pains (P1?P4):</strong> (1) not knowing if the slip matches what the company issued; (2) paying and money going to a fraudster; (3) company wrongly accused of sending a fake slip; (4) ERP/bank not giving the payer simple proof.</p>
         <h3>2.6 Target persona: Camila (SME finance)</h3>
         <p><strong>Camila</strong> (representative name) is a Finance Manager or Controller at a Brazilian SME that issues thousands of slips per month (e.g. Protheus, Sankhya, Omie). Her pains stack: <strong>late-discovered fraud</strong> — customer paid a tampered slip, collections, crisis with leadership — and <strong>daily friction</strong> — hours confirming authenticity with distrustful customers. Boleto Guardian addresses both reputational risk and operational efficiency.</p>
-        <p><strong>Other personas:</strong> <em>Payer</em> — validate with 47 digits; <em>IT/ERP</em> — API and integration; <em>Compliance</em> — traceability without personal data on-chain.</p>
+        <p><strong>Other personas:</strong> <em>Payer</em> — validate with 44 to 47 digits; <em>IT/ERP</em> — API and integration; <em>Compliance</em> — traceability without personal data on-chain.</p>
       </section>
 
       <section class="sec" id="solucao">
@@ -457,7 +457,7 @@
           <p><strong>Received a slip? Type the numbers. If it exists on the blockchain, it's authentic.</strong></p>
         </div>
         <h3>3.2 Why the barcode as key?</h3>
-        <p>A Brazilian bank slip barcode has <strong>47 digits</strong>. This sequence is unique per slip, printed on the document, standardized by FEBRABAN and compact (fits in Stellar's 64-byte Manage Data). This choice eliminates the need for the user to know any technical information. <strong>The slip is the query credential itself.</strong></p>
+        <p>A Brazilian bank slip numeric barcode has <strong>between 44 and 47 digits</strong>, per FEBRABAN layouts. The sequence is unique per slip, printed on the document and compact (fits in Stellar's 64-byte Manage Data). This eliminates the need for the user to know any technical information. <strong>The slip is the query credential itself.</strong></p>
         <div class="table-wrap">
           <table>
             <thead>
@@ -465,7 +465,7 @@
             </thead>
             <tbody>
               <tr><td>Traditional (hash)</td><td>Slip hash</td><td>Account ID + SHA1 hash</td><td>Complex, technical</td></tr>
-              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Barcode (47 digits)</strong></td><td><strong>Nothing but the slip</strong></td><td><strong>Simple, intuitive</strong></td></tr>
+              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Barcode (44–47 digits)</strong></td><td><strong>Nothing but the slip</strong></td><td><strong>Simple, intuitive</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -482,13 +482,13 @@
   |               ... (all company slips)             |
   +--------------------------------------------------+</pre>
         <h3>3.5 Zero-friction validation</h3>
-        <p>1) The payer receives the slip. 2) Accesses the validation page (or QR code). 3) Types the 47 digits. 4) The system queries Stellar and displays the original data. 5) If the data matches, the slip is authentic. <strong>If the barcode does not exist on the blockchain, the slip was not issued by the company — potential fraud.</strong></p>
+        <p>1) The payer receives the slip. 2) Accesses the validation page (or QR code). 3) Types the 44 to 47 digits. 4) The system queries Stellar and displays the original data. 5) If the data matches, the slip is authentic. <strong>If that code does not exist on the blockchain, the slip was not issued by the company — potential fraud.</strong></p>
       </section>
 
       <section class="sec" id="arquitetura">
         <h2>4. Conceptual architecture</h2>
         <h3>4.1 Overview</h3>
-        <p>Three layers: ERP ? Boleto Guardian API ? Stellar network. The payer uses the public validation page (47 digits). For <strong>authenticated register and lookup</strong> in the web MVP, the API integrates <strong>SEP-10</strong> with anchor <code>testanchor.stellar.org</code> (wallet signs the challenge; JWT in session). ERP-style integration remains available via administrative endpoints.</p>
+        <p>Three layers: ERP ? Boleto Guardian API ? Stellar network. The payer uses the public validation page (44 to 47 digits). For <strong>authenticated register and dashboard</strong> in the web MVP, the API integrates <strong>SEP-10</strong> with anchor <code>testanchor.stellar.org</code> (wallet signs the challenge; JWT in session). ERP-style integration remains available via administrative endpoints.</p>
         <p><a href="login.html" style="color:var(--primary);font-weight:600;">Open SEP-10 login flow (dashboard)</a></p>
         <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
 |    ERP SYSTEM     |       |  API MIDDLEWARE   |       | STELLAR NETWORK    |

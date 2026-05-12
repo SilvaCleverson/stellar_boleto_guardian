@@ -31,8 +31,8 @@ Boleto adulterado e uma fraude classica no Brasil: o codigo de barras e alterado
 
 **O Boleto Guardian resolve isso de forma simples:**
 
-1. A empresa registra o codigo de barras (47 digitos) na blockchain Stellar ao emitir o boleto
-2. O pagador digita os mesmos 47 numeros em qualquer navegador
+1. A empresa registra o codigo de barras (44 a 47 digitos) na blockchain Stellar ao emitir o boleto
+2. O pagador digita os mesmos 44 a 47 numeros em qualquer navegador
 3. O sistema consulta a Stellar e responde na hora: autentico ou nao encontrado
 
 Nenhum app. Nenhum cadastro. So os numeros do boleto.
@@ -54,7 +54,7 @@ Nenhum app. Nenhum cadastro. So os numeros do boleto.
 ```
  EMPRESA (registro.html ou ERP)    API SERVERLESS (Vercel)      STELLAR (Blockchain)
  +-----------------------------+   +----------------------+     +--------------------+
- | Digita codebar (47 digitos) |   | POST /api/blockchain |     | Manage Data        |
+ | Digita codebar (44 a 47 digitos) |   | POST /api/blockchain |     | Manage Data        |
  | Informa ADMIN_API_KEY       |-->| Valida chave admin   |---->| key  = codebar     |
  |                             |   | Assina transacao     |     | value = payload    |
  +-----------------------------+   +----------------------+     +--------------------+
@@ -215,7 +215,7 @@ Resposta:
 
 | Campo | Conteudo | Limite |
 |-------|----------|--------|
-| **key** | Codigo de barras (47 digitos) | 64 bytes |
+| **key** | Codigo de barras (44 a 47 digitos) | 64 bytes |
 | **value** | `nosso_num\|valor\|vencto\|status` | 64 bytes |
 
 ---

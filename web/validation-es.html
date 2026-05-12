@@ -116,7 +116,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="index-es.html" class="back">↝ Inicio</a>
+            <a href="index-es.html" class="back">← Inicio</a>
             <div class="lang-switch">
                 <a href="validation.html" title="Português">🇧🇷 PT</a>
                 <a href="validation-en.html" title="English">🇺🇸 EN</a>
@@ -135,12 +135,12 @@
                 La validación en tiempo real depende de la <strong>API Boleto Guardian</strong> configurada por la empresa que emitió el boleto. En este sitio la API puede no estar disponible aún. Si recibió un boleto de una empresa que usa Boleto Guardian, utilice el enlace de validación que le proporcionaron.
             </div>
             <div class="instruction">
-                ¿Recibió un boleto? Ingrese los <strong>47 números</strong> del código de barras.<br>
+                ¿Recibió un boleto? Ingrese los <strong>44 a 47 números</strong> del código de barras.<br>
                 Si existe en la blockchain, el boleto es auténtico.
             </div>
-            <input type="text" id="codebar" class="codebar-input" placeholder="Ingrese los 47 dígitos del código de barras" maxlength="54" autocomplete="off" inputmode="numeric" />
+            <input type="text" id="codebar" class="codebar-input" placeholder="Ingrese los 44 a 47 dígitos del código de barras" maxlength="54" autocomplete="off" inputmode="numeric" />
             <div class="char-count">
-                <span id="digitCount" class="count">0</span>/47 dígitos
+                <span id="digitCount" class="count">0</span> dígitos <span class="digit-hint">(aceptados: 44 a 47)</span>
             </div>
             <button class="btn-validate" id="btnValidate" onclick="validateBoleto()">Validar boleto</button>
             <div class="loading" id="loading">
@@ -175,14 +175,15 @@
         codebarInput.addEventListener('input', function () {
             const digits = this.value.replace(/\D/g, '');
             digitCountEl.textContent = digits.length;
-            digitCountEl.className = 'count ' + (digits.length === 47 ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
+            var ok = digits.length >= 44 && digits.length <= 47;
+            digitCountEl.className = 'count ' + (ok ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
         });
         async function validateBoleto() {
             const raw = codebarInput.value.trim();
             const digits = raw.replace(/[.\s-]/g, '');
             hideAll();
-            if (!/^\d{47}$/.test(digits)) {
-                showError('Código de barras inválido. Debe contener exactamente 47 dígitos numéricos.');
+            if (!/^\d{44,47}$/.test(digits)) {
+                showError('Código de barras inválido. Ingrese entre 44 y 47 dígitos numéricos.');
                 return;
             }
             showLoading(true);

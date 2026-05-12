@@ -34,7 +34,7 @@
 ```
  COMPANY (registro.html)         SERVERLESS API (Vercel)       STELLAR (Blockchain)
  +---------------------------+   +----------------------+      +--------------------+
- | Enter codebar (47 digits) |   | POST /api/blockchain |      | Manage Data        |
+ | Enter codebar (44 to 47 digits) |   | POST /api/blockchain |      | Manage Data        |
  | Provide ADMIN_API_KEY     |-->| Verify admin key     |----> | key  = codebar     |
  |                           |   | Sign transaction     |      | value = payload    |
  +---------------------------+   +----------------------+      +--------------------+

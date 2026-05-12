@@ -121,7 +121,7 @@
       <h2>Registrar boleto</h2>
       <div class="row one" style="margin-top: 10px;">
         <div>
-          <label for="regCodebar">Código de barras (47 dígitos)</label>
+          <label for="regCodebar">Código de barras (44 a 47 dígitos)</label>
           <input id="regCodebar" type="text" placeholder="Somente números" maxlength="47" inputmode="numeric" />
         </div>
       </div>
@@ -148,7 +148,7 @@
       <h2>Buscar boleto registrado</h2>
       <div class="row one" style="margin-top: 10px;">
         <div>
-          <label for="searchCodebar">Código de barras (47 dígitos)</label>
+          <label for="searchCodebar">Código de barras (44 a 47 dígitos)</label>
           <input id="searchCodebar" type="text" placeholder="Somente números" maxlength="47" inputmode="numeric" />
         </div>
       </div>
@@ -214,8 +214,8 @@
 
       const codebar = digitsOnly(document.getElementById("regCodebar").value);
 
-      if (!/^\d{47}$/.test(codebar)) {
-        setStatus(status, false, "Código de barras inválido. Deve conter 47 dígitos.");
+      if (!/^\d{44,47}$/.test(codebar)) {
+        setStatus(status, false, "Código de barras inválido. Informe entre 44 e 47 dígitos.");
         return;
       }
 
@@ -270,8 +270,8 @@
       }
 
       const codebar = digitsOnly(document.getElementById("searchCodebar").value);
-      if (!/^\d{47}$/.test(codebar)) {
-        setStatus(status, false, "Código de barras inválido. Deve conter 47 dígitos.");
+      if (!/^\d{44,47}$/.test(codebar)) {
+        setStatus(status, false, "Código de barras inválido. Informe entre 44 e 47 dígitos.");
         return;
       }
 

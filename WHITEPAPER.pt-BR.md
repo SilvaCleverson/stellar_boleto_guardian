@@ -131,7 +131,7 @@ O Boleto Guardian parte **da dor**, nao da blockchain. Abaixo estao as dores **p
 
 | Persona | Perfil | O que precisa | Como o Boleto Guardian ajuda |
 |---------|--------|---------------|------------------------------|
-| **Pagador (B2C ou MEI)** | Recebe boleto por e-mail, portal ou papel; nao e tecnico. | Confirmar em segundos se o titulo e autentico **antes** de pagar, sem conta no banco emissor. | Digita os **47 digitos** (ou usa o link da empresa); verifica na blockchain se o registro existe. |
+| **Pagador (B2C ou MEI)** | Recebe boleto por e-mail, portal ou papel; nao e tecnico. | Confirmar em segundos se o titulo e autentico **antes** de pagar, sem conta no banco emissor. | Digita os **44 a 47 digitos** (ou usa o link da empresa); verifica na blockchain se o registro existe. |
 | **Tesouraria / cobranca (B2B)** | Emite alto volume de boletos; responde por inadimplencia e fraude. | Reduzir "paguei no lugar errado" e dar **confianca** ao cliente sobre o boleto enviado. | Registro imutavel por emissao; mensagem clara de validacao alinhada a marca. |
 | **TI / integracao (ERP)** | Implanta APIs; cuida de segredos e compliance. | Integracao **REST** simples; chave de assinatura **fora** do cliente final; caminho para **HSM** no roadmap. | Middleware agnostico ao ERP; documentacao de seguranca (sem expor chave no browser). |
 | **Auditoria / compliance (secundaria)** | Exige rastreabilidade e politicas de dados. | Prova de integridade sem LGPD excessiva on-chain. | Apenas metadados necessarios; sem dados pessoais do pagador na rede. |
@@ -152,19 +152,19 @@ A validacao e tao simples quanto:
 
 ### 3.2 Por que a linha digitavel como chave?
 
-A linha digitavel (codigo de barras numerico) de um boleto bancario brasileiro possui **47 digitos**. Essa sequencia e:
+A linha digitavel (codigo de barras numerico) de um boleto bancario brasileiro possui **44 a 47 digitos**. Essa sequencia e:
 
 - **Unica** por boleto -- nao existem dois boletos com a mesma linha digitavel
 - **Impressa** no documento fisico e digital -- o pagador sempre tem acesso a ela
 - **Padronizada** pela FEBRABAN -- formato consistente em todo o sistema bancario
-- **Compacta** -- 47 caracteres cabem confortavelmente nos 64 bytes do Manage Data da Stellar
+- **Compacta** -- sequencias de 44 a 47 caracteres cabem confortavelmente nos 64 bytes do Manage Data da Stellar
 
 Essa escolha elimina a necessidade de o usuario conhecer qualquer informacao tecnica. Nao ha hashes, chaves publicas ou identificadores de conta. **O boleto e a propria credencial de consulta.**
 
 | Abordagem | Chave de consulta | O que o usuario precisa saber | Experiencia |
 |-----------|-------------------|-------------------------------|-------------|
 | Tradicional (hash) | Hash criptografico do boleto | Account ID + Hash SHA1 | Complexa, tecnica |
-| **Boleto Guardian** | **Linha digitavel (47 digitos)** | **Nada alem do proprio boleto** | **Simples, intuitiva** |
+| **Boleto Guardian** | **Linha digitavel (44 a 47 digitos)** | **Nada alem do proprio boleto** | **Simples, intuitiva** |
 
 ### 3.3 Stellar Manage Data
 
@@ -204,7 +204,7 @@ A experiencia do usuario final e o ponto central da solucao:
 
 1. O pagador recebe um boleto (por e-mail, correio ou portal)
 2. Acessa a pagina de validacao da empresa (ou escaneia um QR Code)
-3. Digita os **47 numeros** da linha digitavel
+3. Digita os **44 a 47 numeros** da linha digitavel
 4. O sistema consulta a blockchain Stellar e exibe os dados originais
 5. O pagador compara: se os dados batem, o boleto e autentico
 
@@ -356,7 +356,7 @@ A API intermediaria e a unica camada que acessa a chave privada para assinar tra
 
 ### 7.3 Nao subir dados financeiros completos
 
-O Boleto Guardian **nao** envia nem armazena documentos financeiros completos ou dados financeiros sensiveis. Apenas o **minimo necessario para a verificacao de autenticidade** e enviado à API e registrado na blockchain: o codigo de barras (47 digitos), nosso numero, valor, vencimento e status. O sistema **nao** recebe nem armazena: texto completo do boleto, dados bancarios, historico financeiro do cliente ou qualquer informacao alem do estritamente necessario para comprovar que um dado codigo de barras foi emitido pela empresa. Isso reduz exposicao e mantem a solucao alinhada a minimizacao de dados e expectativas regulatorias.
+O Boleto Guardian **nao** envia nem armazena documentos financeiros completos ou dados financeiros sensiveis. Apenas o **minimo necessario para a verificacao de autenticidade** e enviado à API e registrado na blockchain: o codigo de barras (44 a 47 digitos), nosso numero, valor, vencimento e status. O sistema **nao** recebe nem armazena: texto completo do boleto, dados bancarios, historico financeiro do cliente ou qualquer informacao alem do estritamente necessario para comprovar que um dado codigo de barras foi emitido pela empresa. Isso reduz exposicao e mantem a solucao alinhada a minimizacao de dados e expectativas regulatorias.
 
 ### 7.4 Privacy by Design -- LGPD
 

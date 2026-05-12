@@ -140,7 +140,7 @@ app.post("/api/blockchain", requireAdmin, async (req, res) => {
       return res.status(400).json({
         success: false,
         error:
-          "Código de barras inválido. Deve conter exatamente 47 dígitos numéricos.",
+          "Código de barras inválido. Deve conter entre 44 e 47 dígitos numéricos.",
       });
     }
 
@@ -202,7 +202,7 @@ app.get("/api/validate/:codebar", async (req, res) => {
       return res.status(400).json({
         success: false,
         error:
-          "Código de barras inválido. Deve conter exatamente 47 dígitos numéricos.",
+          "Código de barras inválido. Deve conter entre 44 e 47 dígitos numéricos.",
       });
     }
 
@@ -250,7 +250,7 @@ app.get("/api/admin/boletos/:codebar", requireAdmin, async (req, res) => {
       return res.status(400).json({
         success: false,
         error:
-          "C\u00f3digo de barras inv\u00e1lido. Deve conter exatamente 47 d\u00edgitos num\u00e9ricos.",
+          "C\u00f3digo de barras inv\u00e1lido. Deve conter entre 44 e 47 d\u00edgitos num\u00e9ricos.",
       });
     }
 

@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
   const { codebar } = req.query;
 
   if (!isValidCodebar(codebar)) {
-    return res.status(400).json({ success: false, error: "C√≥digo de barras inv√°lido. Deve conter exatamente 47 d√≠gitos num√©ricos." });
+    return res.status(400).json({ success: false, error: "CÛdigo de barras inv·lido. Deve conter entre 44 e 47 dÌgitos numÈricos." });
   }
 
   const accountId = req.query.account || COMPANY_ACCOUNT;

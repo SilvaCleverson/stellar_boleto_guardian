@@ -29,7 +29,7 @@ Meet **DS2U**, a company that uses Protheus ERP and issues hundreds of bank slip
 
 **Stellar Boleto Guardian solves this simply:**
 
-1. When issuing the slip, Protheus sends the **barcode** (47 digits) to the API
+1. When issuing the slip, Protheus sends the **barcode** (44 to 47 digits) to the API
 2. The API records those numbers on the Stellar blockchain -- immutable, public, permanent
 3. The payer types the digits in any browser and sees instantly: authentic or fraud
 
@@ -49,7 +49,7 @@ Meet **DS2U**, a company that uses Protheus ERP and issues hundreds of bank slip
 
 Stellar allows storing data on-chain using the **Manage Data** operation: a key (up to 64 bytes) and a value (up to 64 bytes).
 
-A Brazilian bank slip barcode has **47 digits** -- fits perfectly in 64 bytes.
+A Brazilian bank slip barcode has **44 to 47 digits** -- fits perfectly in 64 bytes.
 
 | Approach | Key | What the user needs | Experience |
 |----------|-----|---------------------|------------|
@@ -60,7 +60,7 @@ The barcode is:
 - **Unique** per slip
 - **Printed** on the physical document
 - **Readable** by scanner or manual entry
-- **47 digits** -- fits in 64 bytes of Manage Data
+- **44 to 47 digits** -- fits in 64 bytes of Manage Data
 
 ---
 
@@ -131,7 +131,7 @@ U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
 ### 5. Validate a slip (end user experience)
 
 1. Open `http://ds2u.com/validate` (or scan the QR Code)
-2. Type the **47 barcode digits**
+2. Type the **44 to 47 barcode digits**
 3. The system queries Stellar and shows: original amount, due date, status
 4. **If data matches the printed slip, it's authentic. If not on chain, it's fraud.**
 

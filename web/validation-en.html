@@ -116,7 +116,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="index-en.html" class="back">↝ Home</a>
+            <a href="index-en.html" class="back">← Home</a>
             <div class="lang-switch">
                 <a href="validation.html" title="Português">🇧🇷 PT</a>
                 <a href="validation-en.html" class="active" title="English">🇺🇸 EN</a>
@@ -135,12 +135,12 @@
                 Real-time validation depends on the <strong>Boleto Guardian API</strong> configured by the company that issued the slip. On this site the API may not be available yet. If you received a slip from a company that uses Boleto Guardian, use the validation link they provided.
             </div>
             <div class="instruction">
-                Received a bank slip? Enter the <strong>47 digits</strong> of the barcode.<br>
+                Received a bank slip? Enter the <strong>44 to 47 digits</strong> of the barcode (Brazilian bank slip line).<br>
                 If it exists on the blockchain, the slip is authentic.
             </div>
-            <input type="text" id="codebar" class="codebar-input" placeholder="Enter the 47 digits of the barcode" maxlength="54" autocomplete="off" inputmode="numeric" />
+            <input type="text" id="codebar" class="codebar-input" placeholder="Enter 44 to 47 digits of the barcode" maxlength="54" autocomplete="off" inputmode="numeric" />
             <div class="char-count">
-                <span id="digitCount" class="count">0</span>/47 digits
+                <span id="digitCount" class="count">0</span> digits <span class="digit-hint">(accepted: 44 to 47)</span>
             </div>
             <button class="btn-validate" id="btnValidate" onclick="validateBoleto()">Validate slip</button>
             <div class="loading" id="loading">
@@ -175,14 +175,15 @@
         codebarInput.addEventListener('input', function () {
             const digits = this.value.replace(/\D/g, '');
             digitCountEl.textContent = digits.length;
-            digitCountEl.className = 'count ' + (digits.length === 47 ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
+            var ok = digits.length >= 44 && digits.length <= 47;
+            digitCountEl.className = 'count ' + (ok ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
         });
         async function validateBoleto() {
             const raw = codebarInput.value.trim();
             const digits = raw.replace(/[.\s-]/g, '');
             hideAll();
-            if (!/^\d{47}$/.test(digits)) {
-                showError('Invalid barcode. It must contain exactly 47 numeric digits.');
+            if (!/^\d{44,47}$/.test(digits)) {
+                showError('Invalid barcode. Enter between 44 and 47 numeric digits.');
                 return;
             }
             showLoading(true);

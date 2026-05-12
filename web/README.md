@@ -28,5 +28,5 @@ A página **validation.html** chama a API em `GET /api/validate/:codebar`. Por p
 | Arquivo | Descrição |
 |---------|-----------|
 | `index.html` | Landing page |
-| `validation.html` | Validador de boleto (47 dígitos) |
+| `validation.html` | Validador de boleto (44 a 47 dígitos) |
 | `vercel.json` | Configuração mínima para o Vercel |
