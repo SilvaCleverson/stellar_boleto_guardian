@@ -371,6 +371,7 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | v1.4 | 11/05/2026 | Sprint 1 marcada como finalizada com sucesso; Seção 8 atualizada com os quatro desafios oficiais da Sprint 2 — Hackathon |
 | v1.5 | 11/05/2026 | SEP-10 implementado end-to-end (D-013, D-014): `lib/sep10.js`, endpoints proxy `challenge`/`token`/`verify`, `web/login.html` (4 etapas), `web/dashboard.html` autenticado, `POST /api/boleto/register` exigindo Bearer JWT; Seção 1 corrigida — Boleto Guardian é *relying party* de `testanchor.stellar.org`, **não** Anchor |
 | v1.6 | 12/05/2026 | Identidade visual no site: logo em `web/assets/brand/`, paleta #0B1F3A / #1A7FD4 / #F4C842; whitepaper PT/EN/ES e fluxos web alinhados ao RT (Guardian Labs, Camila, SEP-10, link painel); decisão D-015 |
+| v1.7 | 12/05/2026 | Arquitetura: Camada 4 (SEP-10) adicionada à Seção 3; tabela de endpoints distingue rota legada `/api/blockchain` de rota autenticada `/api/boleto/register`; D-013 expandida com tabela de arquivos e detalhes de implementação; D-014 adicionada (proxy SEP-10, validação JWT trust-based); Seção 1 reescrita para deixar explícito que o Boleto Guardian é *relying party*, não Anchor; voz da Seção 7 ajustada para primeira pessoa direta |
 
 ---
 
