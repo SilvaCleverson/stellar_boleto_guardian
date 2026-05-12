@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="api-base" content="" />
-  <title>Boleto Guardian — Painel | Guardian Labs</title>
+  <title>Boleto Guardian — Dashboard | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
@@ -172,13 +172,13 @@
         <img src="assets/brand/boleto_guardian_logo_dark_200px.png" alt="" width="48" height="48" style="height:44px;width:auto;border-radius:8px;" decoding="async" />
         <div>
         <h1>Boleto Guardian</h1>
-        <p>Painel — Autenticado via SEP-10 (Anchor Testnet)</p>
+        <p>Dashboard — Authenticated via SEP-10 (Anchor Testnet)</p>
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
         <div style="display:flex;gap:4px;align-items:center;">
-          <a href="dashboard.html" style="padding:3px 9px;border-radius:12px;font-size:0.7rem;text-decoration:none;color:#fff;border:1px solid rgba(255,255,255,0.12);background:rgba(26,127,212,0.35);font-weight:600;">🇧🇷 PT</a>
-          <a href="dashboard-en.html" style="padding:3px 9px;border-radius:12px;font-size:0.7rem;text-decoration:none;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);">🇺🇸 EN</a>
+          <a href="dashboard.html" style="padding:3px 9px;border-radius:12px;font-size:0.7rem;text-decoration:none;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);">🇧🇷 PT</a>
+          <a href="dashboard-en.html" style="padding:3px 9px;border-radius:12px;font-size:0.7rem;text-decoration:none;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);background:rgba(26,127,212,0.35);color:#fff;font-weight:600;">🇺🇸 EN</a>
           <a href="dashboard-es.html" style="padding:3px 9px;border-radius:12px;font-size:0.7rem;text-decoration:none;color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.12);">🇪🇸 ES</a>
         </div>
         <div class="auth-pill">
@@ -186,7 +186,7 @@
           <span class="anchor-label">testanchor.stellar.org</span>
           <span class="wallet-id" id="walletDisplay">—</span>
         </div>
-        <button class="btn-logout" onclick="logout()">Sair</button>
+        <button class="btn-logout" onclick="logout()">Sign out</button>
       </div>
     </div>
 
@@ -194,23 +194,23 @@
       <div class="sep10-proof">
         <div class="icon">🔝</div>
         <div class="body">
-          <strong>Wallet autenticada via SEP-10 — Stellar Anchor</strong>
-          Integração com Anchor via SEP-10 para autenticação de wallet. A Anchor <code>testanchor.stellar.org</code> verificou a posse da chave privada e emitiu um JWT. O Boleto Guardian não atua como Anchor — consome a Anchor existente na Stellar Testnet.
+          <strong>Wallet authenticated via SEP-10 — Stellar Anchor</strong>
+          Anchor integration via SEP-10 for wallet authentication. The Anchor <code>testanchor.stellar.org</code> verified ownership of the private key and issued a JWT. Boleto Guardian does not act as an Anchor — it consumes the existing Anchor on Stellar Testnet.
         </div>
       </div>
 
       <div class="section">
-        <h2>Registrar Boleto na Blockchain Stellar</h2>
+        <h2>Register Boleto on Stellar Blockchain</h2>
         <div class="form-group">
-          <label for="regCodebar">Código de barras (44–47 dígitos)</label>
-          <input type="text" id="regCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
+          <label for="regCodebar">Barcode (44–47 digits)</label>
+          <input type="text" id="regCodebar" placeholder="Numbers only" maxlength="47" inputmode="numeric" />
         </div>
-        <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Registrar na Stellar Testnet</button>
+        <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Register on Stellar Testnet</button>
         <div class="status" id="regStatus"></div>
         <div class="tx-card" id="txCard">
-          <h3>✓ Transação registrada na Stellar Testnet</h3>
+          <h3>✓ Transaction registered on Stellar Testnet</h3>
           <div class="tx-field">
-            <span class="lbl">Hash da transação</span>
+            <span class="lbl">Transaction hash</span>
             <a id="txHash" href="#" target="_blank" rel="noopener"></a>
           </div>
           <div class="tx-field">
@@ -218,29 +218,29 @@
             <code id="txLedger"></code>
           </div>
           <div class="tx-field">
-            <span class="lbl">Conta da empresa (Stellar Explorer)</span>
+            <span class="lbl">Company account (Stellar Explorer)</span>
             <a id="txAccount" href="#" target="_blank" rel="noopener"></a>
           </div>
           <div class="tx-anchor-note">
-            Registro autorizado via SEP-10 com testanchor.stellar.org · <span id="txWallet"></span>
+            Registration authorized via SEP-10 with testanchor.stellar.org · <span id="txWallet"></span>
           </div>
         </div>
       </div>
 
       <div class="section">
-        <h2>Verificar Boleto na Blockchain</h2>
+        <h2>Verify Boleto on Blockchain</h2>
         <div class="form-group">
-          <label for="verifyCodebar">Código de barras (44–47 dígitos)</label>
-          <input type="text" id="verifyCodebar" placeholder="Somente números" maxlength="47" inputmode="numeric" />
+          <label for="verifyCodebar">Barcode (44–47 digits)</label>
+          <input type="text" id="verifyCodebar" placeholder="Numbers only" maxlength="47" inputmode="numeric" />
         </div>
-        <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verificar na Stellar Testnet</button>
+        <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verify on Stellar Testnet</button>
         <div class="status" id="verifyStatus"></div>
         <div class="lookup-result" id="lookupResult"></div>
       </div>
 
       <div class="footer-note">
-        <a href="index.html">Início</a> &nbsp;·&nbsp;
-        <a href="validation.html">Validação pública</a> &nbsp;·&nbsp;
+        <a href="index.html">Home</a> &nbsp;·&nbsp;
+        <a href="validation-en.html">Public validation</a> &nbsp;·&nbsp;
         Powered by <a href="https://stellar.org/" target="_blank" rel="noopener">Stellar</a>
         &nbsp;·&nbsp; Boleto Guardian v3.0
       </div>
@@ -255,7 +255,7 @@
     var account = sessionStorage.getItem('sep10_account');
 
     if (!jwt || !account) {
-      window.location.replace('login.html');
+      window.location.replace('login-en.html');
     } else {
       document.getElementById('walletDisplay').textContent =
         account.slice(0, 6) + '...' + account.slice(-4);
@@ -264,7 +264,7 @@
     function logout() {
       sessionStorage.removeItem('sep10_jwt');
       sessionStorage.removeItem('sep10_account');
-      window.location.replace('login.html');
+      window.location.replace('login-en.html');
     }
 
     function digitsOnly(v) { return String(v || '').replace(/\D/g, ''); }
@@ -282,12 +282,12 @@
       txCard.style.display = 'none';
 
       if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('regStatus', 'err', 'Código de barras inválido. Informe entre 44 e 47 dígitos.');
+        setStatus('regStatus', 'err', 'Invalid barcode. Enter between 44 and 47 digits.');
         return;
       }
 
       btn.disabled = true;
-      setStatus('regStatus', 'loading', 'Registrando na blockchain Stellar via sessão SEP-10...');
+      setStatus('regStatus', 'loading', 'Registering on Stellar blockchain via SEP-10 session...');
 
       try {
         var res = await fetch(API_BASE + '/api/boleto/register', {
@@ -301,18 +301,18 @@
         var data = await res.json().catch(function () { return {}; });
 
         if (res.status === 401) {
-          var errDetail = (data && data.error) ? data.error : 'Sessão inválida.';
-          setStatus('regStatus', 'err', errDetail + ' Faça login novamente.');
+          var errDetail = (data && data.error) ? data.error : 'Invalid session.';
+          setStatus('regStatus', 'err', errDetail + ' Please log in again.');
           setTimeout(function () { logout(); }, 3000);
           return;
         }
         if (!res.ok || !data.success) {
-          setStatus('regStatus', 'err', data.error || 'Falha ao registrar boleto.');
+          setStatus('regStatus', 'err', data.error || 'Failed to register boleto.');
           btn.disabled = false;
           return;
         }
 
-        setStatus('regStatus', 'ok', 'Boleto registrado com sucesso na Stellar Testnet!');
+        setStatus('regStatus', 'ok', 'Boleto successfully registered on Stellar Testnet!');
 
         var tx = data.data || {};
         if (tx.transactionHash) {
@@ -328,7 +328,7 @@
           txCard.style.display = 'block';
         }
       } catch (e) {
-        setStatus('regStatus', 'err', 'Erro de comunicação com a API.');
+        setStatus('regStatus', 'err', 'API communication error.');
       }
 
       btn.disabled = false;
@@ -342,19 +342,19 @@
       resultEl.className = 'lookup-result';
 
       if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('verifyStatus', 'err', 'Código de barras inválido. Informe entre 44 e 47 dígitos.');
+        setStatus('verifyStatus', 'err', 'Invalid barcode. Enter between 44 and 47 digits.');
         return;
       }
 
       btn.disabled = true;
-      setStatus('verifyStatus', 'loading', 'Consultando blockchain Stellar...');
+      setStatus('verifyStatus', 'loading', 'Querying Stellar blockchain...');
 
       try {
         var res = await fetch(API_BASE + '/api/validate/' + encodeURIComponent(codebar));
         var data = await res.json().catch(function () { return {}; });
 
         if (!res.ok) {
-          setStatus('verifyStatus', 'err', data.error || 'Falha ao consultar a blockchain.');
+          setStatus('verifyStatus', 'err', data.error || 'Failed to query blockchain.');
           btn.disabled = false;
           return;
         }
@@ -365,17 +365,17 @@
         if (!data.found) {
           resultEl.className = 'lookup-result not-found';
           resultEl.innerHTML =
-            '<strong>Boleto NÃO encontrado na blockchain Stellar.</strong>' +
-            'Este código de barras não foi registrado pela empresa. O boleto pode ser fraudulento.';
+            '<strong>Boleto NOT found on Stellar blockchain.</strong>' +
+            'This barcode was not registered by the company. The boleto may be fraudulent.';
         } else {
           resultEl.className = 'lookup-result found';
           resultEl.innerHTML =
-            '<strong>Boleto autêntico — registrado na Stellar Testnet.</strong>' +
-            'Verificação realizada via sessão autenticada com <code>testanchor.stellar.org</code> (SEP-10).' +
-            '<a class="explorer-link" href="https://stellar.expert/explorer/testnet" target="_blank" rel="noopener">Ver no Stellar Explorer →</a>';
+            '<strong>Authentic boleto — registered on Stellar Testnet.</strong>' +
+            'Verification performed via authenticated session with <code>testanchor.stellar.org</code> (SEP-10).' +
+            '<a class="explorer-link" href="https://stellar.expert/explorer/testnet" target="_blank" rel="noopener">View on Stellar Explorer →</a>';
         }
       } catch (e) {
-        setStatus('verifyStatus', 'err', 'Erro de comunicação com a API.');
+        setStatus('verifyStatus', 'err', 'API communication error.');
       }
 
       btn.disabled = false;

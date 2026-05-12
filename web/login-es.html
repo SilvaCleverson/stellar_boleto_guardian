@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="api-base" content="" />
-  <title>Boleto Guardian — Login SEP-10 | Guardian Labs</title>
+  <title>Boleto Guardian — Inicio de sesión SEP-10 | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
@@ -173,13 +173,13 @@
 <body>
   <div class="container">
     <div class="header">
-      <a href="index.html" class="back">← Início</a>
+      <a href="index.html" class="back">← Inicio</a>
       <p style="margin-bottom:4px;">
         <img src="assets/brand/boleto_guardian_logo_dark_200px.png" alt="Boleto Guardian" width="120" height="120" style="height:64px;width:auto;display:inline-block;" decoding="async" />
       </p>
       <p style="font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;color:#F4C842;font-weight:600;margin-bottom:4px;">Guardian Labs</p>
       <h1>Boleto Guardian</h1>
-      <p>Login com Anchor Stellar</p>
+      <p>Iniciar sesión con Stellar Anchor</p>
       <div style="display:flex;justify-content:center;margin-top:10px;">
         <span class="anchor-badge">
           <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 6l1.8 1.8L8.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -187,50 +187,52 @@
         </span>
       </div>
       <div style="display:flex;justify-content:center;gap:6px;margin-top:10px;">
-        <a href="login.html" style="padding:3px 10px;border-radius:12px;font-size:0.72rem;text-decoration:none;color:#e8f4ff;border:1px solid rgba(255,255,255,0.15);background:rgba(26,127,212,0.35);font-weight:600;">🇧🇷 PT</a>
+        <a href="login.html" style="padding:3px 10px;border-radius:12px;font-size:0.72rem;text-decoration:none;color:#e8f4ff;border:1px solid rgba(255,255,255,0.15);">🇧🇷 PT</a>
         <a href="login-en.html" style="padding:3px 10px;border-radius:12px;font-size:0.72rem;text-decoration:none;color:#e8f4ff;border:1px solid rgba(255,255,255,0.15);">🇺🇸 EN</a>
-        <a href="login-es.html" style="padding:3px 10px;border-radius:12px;font-size:0.72rem;text-decoration:none;color:#e8f4ff;border:1px solid rgba(255,255,255,0.15);">🇪🇸 ES</a>
+        <a href="login-es.html" style="padding:3px 10px;border-radius:12px;font-size:0.72rem;text-decoration:none;color:#e8f4ff;border:1px solid rgba(255,255,255,0.15);background:rgba(26,127,212,0.35);font-weight:600;">🇪🇸 ES</a>
       </div>
     </div>
 
     <div class="content">
       <div class="steps">
-        <div class="step active" id="step1"><span class="step-num">1</span>Carteira</div>
-        <div class="step" id="step2"><span class="step-num">2</span>Assinatura</div>
+        <div class="step active" id="step1"><span class="step-num">1</span>Cartera</div>
+        <div class="step" id="step2"><span class="step-num">2</span>Firma</div>
         <div class="step" id="step3"><span class="step-num">3</span>Token JWT</div>
-        <div class="step" id="step4"><span class="step-num">4</span>Painel</div>
+        <div class="step" id="step4"><span class="step-num">4</span>Panel</div>
       </div>
 
       <div class="info-box">
-        <strong>Integração com Anchor via SEP-10 para autenticação de wallet</strong>
-        O Boleto Guardian não atua como Anchor. Este app consome <strong>testanchor.stellar.org</strong> — Anchor real na Stellar Testnet — para autenticar sua wallet via SEP-10 (Stellar Web Authentication). A Anchor emite um JWT que comprova o controle da chave privada.
+        <strong>Integración con Anchor vía SEP-10 para autenticación de wallet</strong>
+        Boleto Guardian no actúa como Anchor. Esta app consume <strong>testanchor.stellar.org</strong> — un Anchor real en la Stellar Testnet — para autenticar tu wallet vía SEP-10 (Stellar Web Authentication). El Anchor emite un JWT que prueba el control de la clave privada.
       </div>
 
       <div class="form-group">
-        <label for="secretKey">Chave secreta Stellar (começa com S)</label>
+        <label for="secretKey">Clave secreta Stellar (comienza con S)</label>
         <input type="password" id="secretKey" placeholder="SXXXXXXXXXXXXXXXXXX..." autocomplete="off" spellcheck="false" />
         <div class="pubkey-display" id="pubkeyDisplay">
-          <span class="label">Chave pública derivada</span>
+          <span class="label">Clave pública derivada</span>
           <span id="pubkeyValue"></span>
         </div>
-        <p class="security-note">A chave secreta é usada apenas em memória para assinar o desafio da Anchor e nunca é armazenada ou enviada ao servidor.</p>
+        <p class="security-note">La clave secreta se usa solo en memoria para firmar el desafío del Anchor y nunca se almacena ni se envía al servidor.</p>
       </div>
 
       <hr class="divider" />
 
-      <button class="btn btn-primary" onclick="authenticate()" id="btnAuth">Autenticar com Anchor Stellar (SEP-10)</button>
+      <button class="btn btn-primary" onclick="authenticate()" id="btnAuth">Autenticar con Stellar Anchor (SEP-10)</button>
 
       <div class="status" id="authStatus"></div>
 
       <div class="tech-footer">
-        <div class="tf-title">Detalhes técnicos — SEP-10 Flow</div>
+        <div class="tf-title">Detalles técnicos — SEP-10 Flow</div>
         <div class="tf-row"><span class="tf-label">Protocolo</span><span class="tf-val">SEP-10 Stellar Web Authentication (challenge / sign / token)</span></div>
         <div class="tf-row"><span class="tf-label">Anchor</span><span class="tf-val">testanchor.stellar.org &rarr; /api/sep10/challenge &amp; /api/sep10/token (proxy CORS)</span></div>
-        <div class="tf-row"><span class="tf-label">Assinatura</span><span class="tf-val">Ed25519 in-memory · chave descartada imediatamente após tx.sign()</span></div>
-        <div class="tf-row"><span class="tf-label">JWT</span><span class="tf-val">trust-based (iss + exp + sub) · armazenado em sessionStorage (escopo de aba)</span></div>
+        <div class="tf-row"><span class="tf-label">Firma</span><span class="tf-val">Ed25519 en memoria · clave descartada inmediatamente después de tx.sign()</span></div>
+        <div class="tf-row"><span class="tf-label">JWT</span><span class="tf-val">basado en confianza (iss + exp + sub) · almacenado en sessionStorage (ámbito de pestaña)</span></div>
         <div class="tf-row"><span class="tf-label">SDK</span><span class="tf-val">@stellar/stellar-sdk@13 · Horizon Testnet</span></div>
         <div class="tf-links">
-          <a href="https://stellar.org/protocol/sep-10" target="_blank" rel="noopener">SEP-10 spec</a>
+          <a href="index.html">Inicio</a>
+          <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
+          <a href="https://stellar.org/protocol/sep-10" target="_blank" rel="noopener">Especificación SEP-10</a>
           <a href="https://stellar.expert/explorer/testnet" target="_blank" rel="noopener">Stellar Expert (testnet)</a>
           <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
         </div>
@@ -244,7 +246,7 @@
     if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
 
     if (sessionStorage.getItem('sep10_jwt')) {
-      window.location.replace('dashboard.html');
+      window.location.replace('dashboard-es.html');
     }
 
     function setStatus(type, msg) {
@@ -287,9 +289,9 @@
         document.getElementById('secretKey').value = kp.secret();
         document.getElementById('pubkeyValue').textContent = kp.publicKey();
         document.getElementById('pubkeyDisplay').style.display = 'block';
-        setStatus('ok', 'Carteira gerada. Chave pública: ' + kp.publicKey().slice(0, 8) + '...' + kp.publicKey().slice(-6) + '. Copie a chave secreta antes de prosseguir.');
+        setStatus('ok', 'Cartera generada. Clave pública: ' + kp.publicKey().slice(0, 8) + '...' + kp.publicKey().slice(-6) + '. Copia la clave secreta antes de continuar.');
       } catch (e) {
-        setStatus('err', 'Erro ao gerar carteira: ' + e.message);
+        setStatus('err', 'Error al generar la cartera: ' + e.message);
       }
       btn.disabled = false;
     }
@@ -300,7 +302,7 @@
       var btn = document.getElementById('btnAuth');
 
       if (!secretKey) {
-        setStatus('err', 'Informe ou gere uma chave secreta Stellar.');
+        setStatus('err', 'Ingresa o genera una clave secreta Stellar.');
         return;
       }
 
@@ -308,7 +310,7 @@
       try {
         keypair = StellarSdk.Keypair.fromSecret(secretKey);
       } catch (e) {
-        setStatus('err', 'Chave secreta inválida. Deve começar com S e ter 56 caracteres.');
+        setStatus('err', 'Clave secreta inválida. Debe comenzar con S y tener 56 caracteres.');
         return;
       }
 
@@ -317,46 +319,41 @@
       setStep(2);
 
       try {
-        // 1. Get challenge from Anchor
-        setStatus('loading', '1/3 — Obtendo desafio da Anchor (testanchor.stellar.org)...');
+        setStatus('loading', '1/3 — Solicitando desafío al Anchor (testanchor.stellar.org)...');
         var challengeRes = await fetch(API_BASE + '/api/sep10/challenge?account=' + encodeURIComponent(publicKey));
         var challengeData = await challengeRes.json();
-        if (!challengeRes.ok) throw new Error(challengeData.error || 'Falha ao obter desafio da Anchor');
+        if (!challengeRes.ok) throw new Error(challengeData.error || 'Error al obtener desafío del Anchor');
 
-        // 2. Sign challenge with private key (in memory only)
-        setStatus('loading', '2/3 — Assinando desafio com a chave privada...');
+        setStatus('loading', '2/3 — Firmando desafío con la clave privada...');
         var networkPassphrase = challengeData.network_passphrase || StellarSdk.Networks.TESTNET;
         var tx = new StellarSdk.Transaction(challengeData.transaction, networkPassphrase);
         tx.sign(keypair);
         var signedXdr = tx.toEnvelope().toXDR('base64');
 
-        // Clear secret key from DOM immediately after signing
         secretKeyInput.value = '';
         keypair = null;
 
         setStep(3);
 
-        // 3. Exchange signed challenge for JWT
-        setStatus('loading', '3/3 — Trocando assinatura por token JWT com a Anchor...');
+        setStatus('loading', '3/3 — Intercambiando firma por token JWT con el Anchor...');
         var tokenRes = await fetch(API_BASE + '/api/sep10/token', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ transaction: signedXdr }),
         });
         var tokenData = await tokenRes.json();
-        if (!tokenRes.ok) throw new Error(tokenData.error || 'Falha ao obter token JWT da Anchor');
+        if (!tokenRes.ok) throw new Error(tokenData.error || 'Error al obtener token JWT del Anchor');
 
-        // Store JWT in session (not localStorage — tab-scoped only)
         sessionStorage.setItem('sep10_jwt', tokenData.token);
         sessionStorage.setItem('sep10_account', publicKey);
 
         setStep(4);
-        setStatus('ok', 'Autenticado via SEP-10. Redirecionando para o painel...');
-        setTimeout(function () { window.location.replace('dashboard.html'); }, 3000);
+        setStatus('ok', 'Autenticado vía SEP-10. Redirigiendo al panel...');
+        setTimeout(function () { window.location.replace('dashboard-es.html'); }, 3000);
 
       } catch (e) {
         setStep(1);
-        setStatus('err', 'Erro na autenticação: ' + (e.message || 'Falha desconhecida'));
+        setStatus('err', 'Error de autenticación: ' + (e.message || 'Fallo desconocido'));
         btn.disabled = false;
       }
     }

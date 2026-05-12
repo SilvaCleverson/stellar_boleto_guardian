@@ -347,7 +347,7 @@
         <a href="#arquitetura">Architecture</a>
         <a href="#stellar">Stellar</a>
         <a href="#visao">Vision</a>
-        <a href="login.html">Dashboard (SEP-10)</a>
+        <a href="login-en.html">Dashboard (SEP-10)</a>
         <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
       </nav>
     </div>
@@ -489,7 +489,7 @@
         <h2>4. Conceptual architecture</h2>
         <h3>4.1 Overview</h3>
         <p>Three layers: ERP ? Boleto Guardian API ? Stellar network. The payer uses the public validation page (44 to 47 digits). For <strong>authenticated register and dashboard</strong> in the web MVP, the API integrates <strong>SEP-10</strong> with anchor <code>testanchor.stellar.org</code> (wallet signs the challenge; JWT in session). ERP-style integration remains available via administrative endpoints.</p>
-        <p><a href="login.html" style="color:var(--primary);font-weight:600;">Open SEP-10 login flow (dashboard)</a></p>
+        <p><a href="login-en.html" style="color:var(--primary);font-weight:600;">Open SEP-10 login flow (dashboard)</a></p>
         <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
 |    ERP SYSTEM     |       |  API MIDDLEWARE   |       | STELLAR NETWORK    |
 | Generates slips   | POST  | Receives,        |  TX   | Manage Data       |

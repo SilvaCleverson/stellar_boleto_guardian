@@ -347,7 +347,7 @@
         <a href="#arquitetura">Arquitectura</a>
         <a href="#stellar">Stellar</a>
         <a href="#visao">Visión</a>
-        <a href="login.html">Panel (SEP-10)</a>
+        <a href="login-es.html">Panel (SEP-10)</a>
         <a href="validation-es.html" class="btn btn-primary">Validar boleto</a>
       </nav>
     </div>
@@ -489,7 +489,7 @@
         <h2>4. Arquitectura conceptual</h2>
         <h3>4.1 Visión general</h3>
         <p>Tres capas: ERP ? API Boleto Guardian ? red Stellar. El pagador usa la página pública de validación (44 a 47 dígitos). Para <strong>registro y panel autenticados</strong> en el MVP web, la API integra <strong>SEP-10</strong> con el ancla <code>testanchor.stellar.org</code> (la wallet firma el desafío; JWT en sesión). La integración estilo ERP sigue disponible por endpoints administrativos.</p>
-        <p><a href="login.html" style="color:var(--primary);font-weight:600;">Abrir flujo de login SEP-10 (panel)</a></p>
+        <p><a href="login-es.html" style="color:var(--primary);font-weight:600;">Abrir flujo de login SEP-10 (panel)</a></p>
         <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
 |   SISTEMA ERP     |       |  API MIDDLEWARE   |       | REDE STELLAR      |
 | Genera boletos    | POST  | Recibe, valida,   |  TX   | Manage Data       |
