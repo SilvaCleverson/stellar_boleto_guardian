@@ -142,12 +142,38 @@
     .footer-note { text-align: center; margin-top: 20px; font-size: 0.8rem; color: #9ca3af; }
     .footer-note a { color: #1A7FD4; text-decoration: none; }
     .security-note { font-size: 0.78rem; color: #6b7280; margin-top: 8px; line-height: 1.5; }
+    .tech-footer {
+      margin-top: 24px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      color: #64748b;
+      line-height: 1.7;
+      font-family: 'Inconsolata', monospace;
+    }
+    .tech-footer .tf-title {
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      margin-bottom: 8px;
+    }
+    .tech-footer .tf-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 3px; }
+    .tech-footer .tf-label { color: #94a3b8; min-width: 70px; flex-shrink: 0; }
+    .tech-footer .tf-val { color: #334155; }
+    .tech-footer .tf-links { margin-top: 10px; padding-top: 8px; border-top: 1px solid #e2e8f0; text-align: center; }
+    .tech-footer .tf-links a { color: #1A7FD4; text-decoration: none; margin: 0 6px; font-family: 'Inter', sans-serif; }
+    .tech-footer .tf-links a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
-      <a href="index.html" class="back">↝ Início</a>
+      <a href="index.html" class="back">← Início</a>
       <p style="margin-bottom:4px;">
         <img src="assets/brand/boleto_guardian_logo_dark_200px.png" alt="Boleto Guardian" width="120" height="120" style="height:64px;width:auto;display:inline-block;" decoding="async" />
       </p>
@@ -185,18 +211,24 @@
         <p class="security-note">A chave secreta é usada apenas em memória para assinar o desafio da Anchor e nunca é armazenada ou enviada ao servidor.</p>
       </div>
 
-      <button class="btn btn-secondary" onclick="generateWallet()" id="btnGenerate">Gerar nova carteira testnet</button>
-
       <hr class="divider" />
 
       <button class="btn btn-primary" onclick="authenticate()" id="btnAuth">Autenticar com Anchor Stellar (SEP-10)</button>
 
       <div class="status" id="authStatus"></div>
 
-      <div class="footer-note">
-        <a href="index.html">Início</a> &nbsp;·&nbsp;
-        Powered by <a href="https://stellar.org/" target="_blank" rel="noopener">Stellar</a> &nbsp;·&nbsp;
-        <a href="https://stellar.org/protocol/sep-10" target="_blank" rel="noopener">SEP-10 spec</a>
+      <div class="tech-footer">
+        <div class="tf-title">Detalhes técnicos — SEP-10 Flow</div>
+        <div class="tf-row"><span class="tf-label">Protocolo</span><span class="tf-val">SEP-10 Stellar Web Authentication (challenge / sign / token)</span></div>
+        <div class="tf-row"><span class="tf-label">Anchor</span><span class="tf-val">testanchor.stellar.org &rarr; /api/sep10/challenge &amp; /api/sep10/token (proxy CORS)</span></div>
+        <div class="tf-row"><span class="tf-label">Assinatura</span><span class="tf-val">Ed25519 in-memory · chave descartada imediatamente após tx.sign()</span></div>
+        <div class="tf-row"><span class="tf-label">JWT</span><span class="tf-val">trust-based (iss + exp + sub) · armazenado em sessionStorage (escopo de aba)</span></div>
+        <div class="tf-row"><span class="tf-label">SDK</span><span class="tf-val">@stellar/stellar-sdk@13 · Horizon Testnet</span></div>
+        <div class="tf-links">
+          <a href="https://stellar.org/protocol/sep-10" target="_blank" rel="noopener">SEP-10 spec</a>
+          <a href="https://stellar.expert/explorer/testnet" target="_blank" rel="noopener">Stellar Expert (testnet)</a>
+          <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
+        </div>
       </div>
     </div>
   </div>
@@ -315,7 +347,7 @@
 
         setStep(4);
         setStatus('ok', 'Autenticado via SEP-10. Redirecionando para o painel...');
-        setTimeout(function () { window.location.replace('dashboard.html'); }, 1000);
+        setTimeout(function () { window.location.replace('dashboard.html'); }, 3000);
 
       } catch (e) {
         setStep(1);
