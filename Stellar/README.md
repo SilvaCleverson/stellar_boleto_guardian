@@ -79,7 +79,7 @@ Acesse `http://localhost:3000`.
 
 | Campo | Conteudo | Limite |
 |-------|----------|--------|
-| **key** | Codigo de barras (44 a 47 digitos) | 64 bytes |
+| **key** | Codigo de barras (44 a 48 digitos) | 64 bytes |
 | **value** | `nosso_num\|valor\|vencto\|status` | 64 bytes |
 
 Exemplo: `000000040|120.50|20250805|pendente` (35 bytes)

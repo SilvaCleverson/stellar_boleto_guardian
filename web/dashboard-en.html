@@ -202,8 +202,8 @@
       <div class="section">
         <h2>Register Boleto on Stellar Blockchain</h2>
         <div class="form-group">
-          <label for="regCodebar">Barcode (44–47 digits)</label>
-          <input type="text" id="regCodebar" placeholder="Numbers only" maxlength="47" inputmode="numeric" />
+          <label for="regCodebar">Barcode (44–48 digits)</label>
+          <input type="text" id="regCodebar" placeholder="Numbers only" maxlength="48" inputmode="numeric" />
         </div>
         <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Register on Stellar Testnet</button>
         <div class="status" id="regStatus"></div>
@@ -230,8 +230,8 @@
       <div class="section">
         <h2>Verify Boleto on Blockchain</h2>
         <div class="form-group">
-          <label for="verifyCodebar">Barcode (44–47 digits)</label>
-          <input type="text" id="verifyCodebar" placeholder="Numbers only" maxlength="47" inputmode="numeric" />
+          <label for="verifyCodebar">Barcode (44–48 digits)</label>
+          <input type="text" id="verifyCodebar" placeholder="Numbers only" maxlength="48" inputmode="numeric" />
         </div>
         <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verify on Stellar Testnet</button>
         <div class="status" id="verifyStatus"></div>
@@ -281,8 +281,8 @@
       var btn = document.getElementById('btnRegister');
       txCard.style.display = 'none';
 
-      if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('regStatus', 'err', 'Invalid barcode. Enter between 44 and 47 digits.');
+      if (!/^\d{44,48}$/.test(codebar)) {
+        setStatus('regStatus', 'err', 'Invalid barcode. Enter between 44 and 48 digits.');
         return;
       }
 
@@ -341,8 +341,8 @@
       resultEl.style.display = 'none';
       resultEl.className = 'lookup-result';
 
-      if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('verifyStatus', 'err', 'Invalid barcode. Enter between 44 and 47 digits.');
+      if (!/^\d{44,48}$/.test(codebar)) {
+        setStatus('verifyStatus', 'err', 'Invalid barcode. Enter between 44 and 48 digits.');
         return;
       }
 

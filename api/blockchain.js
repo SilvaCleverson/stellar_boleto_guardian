@@ -37,7 +37,7 @@ module.exports = async function handler(req, res) {
   }
 
   if (!isValidCodebar(codebar)) {
-    return res.status(400).json({ success: false, error: "Código de barras inválido. Deve conter entre 44 e 47 dígitos numéricos." });
+    return res.status(400).json({ success: false, error: "Código de barras inválido. Deve conter entre 44 e 48 dígitos numéricos." });
   }
 
   if (!COMPANY_SECRET) {

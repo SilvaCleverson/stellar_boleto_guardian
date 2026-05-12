@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Boleto Guardian — primer producto de Guardian Labs. Capa pública de autenticidad para boletos brasileños en Stellar. Validación en segundos con 44 a 47 dígitos del código de barras.">
+  <meta name="description" content="Boleto Guardian — primer producto de Guardian Labs. Capa pública de autenticidad para boletos brasileños en Stellar. Validación en segundos con 44 a 48 dígitos del código de barras.">
   <title>Boleto Guardian — Whitepaper | Guardian Labs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -359,7 +359,7 @@
       <p class="hero-labs">Guardian Labs</p>
       <h1>Boleto Guardian</h1>
       <p class="version">Whitepaper v1.0</p>
-      <p class="tagline">Infraestructura pública de autenticidad para boletos en Brasil — prueba inmutable en Stellar; validación en segundos con los 44 a 47 dígitos.</p>
+      <p class="tagline">Infraestructura pública de autenticidad para boletos en Brasil — prueba inmutable en Stellar; validación en segundos con los 44 a 48 dígitos.</p>
       <p class="meta"><strong>Autor:</strong> Equipe Guardian · <strong>Fecha:</strong> Marzo 2026</p>
       <div class="hero-cta">
         <a href="validation-es.html" class="btn btn-primary">Validar boleto</a>
@@ -369,7 +369,7 @@
         <span class="badge">Guardian Labs</span>
         <span class="badge">Stellar</span>
         <span class="badge">Manage Data</span>
-        <span class="badge">44–47 dígitos</span>
+        <span class="badge">44–48 dígitos</span>
         <span class="badge">SEP-10</span>
         <span class="badge">Privacidad</span>
       </div>
@@ -397,7 +397,7 @@
 
       <section class="sec" id="resumo">
         <h2>1. Resumen ejecutivo</h2>
-        <p><strong>Boleto Guardian</strong> es el primer producto de <strong>Guardian Labs</strong> — marca matriz enfocada en infraestructura pública de autenticidad para las claves que mueven dinero en Brasil (boletos hoy; otros instrumentos en la hoja de ruta). La empresa emisora registra cada boleto en la blockchain Stellar; el pagador valida en segundos con los <strong>44 a 47 dígitos</strong> del código de barras o de la línea digitável, sin app, registro ni jerga técnica.</p>
+        <p><strong>Boleto Guardian</strong> es el primer producto de <strong>Guardian Labs</strong> — marca matriz enfocada en infraestructura pública de autenticidad para las claves que mueven dinero en Brasil (boletos hoy; otros instrumentos en la hoja de ruta). La empresa emisora registra cada boleto en la blockchain Stellar; el pagador valida en segundos con los <strong>44 a 48 dígitos</strong> del código de barras o de la línea digitável, sin app, registro ni jerga técnica.</p>
         <p>Brasil emite más de <strong>4 mil millones de boletos bancarios al año</strong>. Ese volumen convive con pérdidas elevadas por fraude digital que incluye boletos y otros medios (ClearSale, 2024; Finsiders, 2024).</p>
         <p>Boleto Guardian crea una <strong>prueba pública, inmutable y auditable</strong> de autenticidad. Para el MVP del programa Stellar 37 Degrees, el producto también demuestra <strong>SEP-10</strong> contra un ancla en Testnet (<code style="font-size:0.95em;">testanchor.stellar.org</code>): Guardian actúa como <em>relying party</em> — no es un ancla — y sigue registrando boletos vía <strong>Manage Data</strong>.</p>
         <p>La integración es por API REST con cualquier ERP; en este whitepaper usamos TOTVS Protheus como referencia, replicable a Sankhya, Omie y otros.</p>
@@ -446,7 +446,7 @@
         <p><strong>Dolores (P1?P4):</strong> (1) no saber si el boleto es el mismo que emitió la empresa; (2) pagar y el dinero ir al estafador; (3) empresa acusada injustamente de boleto falso; (4) ERP/banco no dan prueba simple al pagador.</p>
         <h3>2.6 Persona objetivo: Camila (finanzas de PYME)</h3>
         <p><strong>Camila</strong> (nombre representativo) es gerente financiera o controller en una PYME brasileña que emite miles de boletos al mes (p. ej. Protheus, Sankhya, Omie). Sus dolores se suman: <strong>fraude descubierta tarde</strong> — el cliente pagó un boleto adulterado, cobranza, crisis con la dirección — y <strong>fricción diaria</strong> — horas confirmando autenticidad con clientes desconfiados. Boleto Guardian ataca ambos: riesgo reputacional y eficiencia operativa.</p>
-        <p><strong>Otras personas:</strong> <em>Pagador</em> — validar con 44 a 47 dígitos; <em>TI/ERP</em> — API e integración; <em>Compliance</em> — trazabilidad sin datos personales on-chain.</p>
+        <p><strong>Otras personas:</strong> <em>Pagador</em> — validar con 44 a 48 dígitos; <em>TI/ERP</em> — API e integración; <em>Compliance</em> — trazabilidad sin datos personales on-chain.</p>
       </section>
 
       <section class="sec" id="solucao">
@@ -456,8 +456,7 @@
         <div class="blockquote">
           <p><strong>¿Recibió un boleto? Digite los números. Si existe en la blockchain, es auténtico.</strong></p>
         </div>
-        <h3>3.2 ¿Por qué la línea digitável como clave?</h3>
-        <p>El código de barras numérico (y la línea digitável asociada) de un boleto bancario brasileño tiene <strong>entre 44 y 47 dígitos</strong>, según el estándar FEBRABAN. La secuencia es única por boleto, impresa en el documento y compacta (cabe en los 64 bytes del Manage Data de Stellar). Esto elimina la necesidad de que el usuario conozca información técnica. <strong>El boleto es la propia credencial de consulta.</strong></p>
+        <p>El <strong>código de barras</strong> numérico tiene <strong>44 dígitos</strong>. La <strong>línea digitável</strong> suele tener <strong>47 dígitos</strong> en boletos bancarios o <strong>48</strong> en boletos de concesionaria o de recaudación (layouts FEBRABAN). La validación acepta <strong>de 44 a 48 dígitos</strong> porque el pagador puede informar solo el código o la línea completa. La secuencia es única por boleto, impresa en el documento y compacta (cabe en los 64 bytes del Manage Data de Stellar). Esto elimina la necesidad de que el usuario conozca información técnica. <strong>El boleto es la propia credencial de consulta.</strong></p>
         <div class="table-wrap">
           <table>
             <thead>
@@ -465,7 +464,7 @@
             </thead>
             <tbody>
               <tr><td>Tradicional (hash)</td><td>Hash del boleto</td><td>Account ID + Hash SHA1</td><td>Compleja, técnica</td></tr>
-              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Código de barras (44–47 dígitos)</strong></td><td><strong>Nada más que el boleto</strong></td><td><strong>Simple, intuitiva</strong></td></tr>
+              <tr><td><strong>Boleto Guardian</strong></td><td><strong>Código de barras (44–48 dígitos)</strong></td><td><strong>Nada más que el boleto</strong></td><td><strong>Simple, intuitiva</strong></td></tr>
             </tbody>
           </table>
         </div>
@@ -482,13 +481,13 @@
   |               ... (todos los boletos de la empresa)
   +--------------------------------------------------+</pre>
         <h3>3.5 Validación sin fricción</h3>
-        <p>1) El pagador recibe el boleto. 2) Accede a la página de validación (o código QR). 3) Digita los 44 a 47 números del código de barras. 4) El sistema consulta Stellar y muestra los datos originales. 5) Si los datos coinciden, el boleto es auténtico. <strong>Si el código no existe en la blockchain, el boleto no fue emitido por la empresa — posible fraude.</strong></p>
+        <p>1) El pagador recibe el boleto. 2) Accede a la página de validación (o código QR). 3) Digita los 44 a 48 números del código de barras. 4) El sistema consulta Stellar y muestra los datos originales. 5) Si los datos coinciden, el boleto es auténtico. <strong>Si el código no existe en la blockchain, el boleto no fue emitido por la empresa — posible fraude.</strong></p>
       </section>
 
       <section class="sec" id="arquitetura">
         <h2>4. Arquitectura conceptual</h2>
         <h3>4.1 Visión general</h3>
-        <p>Tres capas: ERP ? API Boleto Guardian ? red Stellar. El pagador usa la página pública de validación (44 a 47 dígitos). Para <strong>registro y panel autenticados</strong> en el MVP web, la API integra <strong>SEP-10</strong> con el ancla <code>testanchor.stellar.org</code> (la wallet firma el desafío; JWT en sesión). La integración estilo ERP sigue disponible por endpoints administrativos.</p>
+        <p>Tres capas: ERP ? API Boleto Guardian ? red Stellar. El pagador usa la página pública de validación (44 a 48 dígitos). Para <strong>registro y panel autenticados</strong> en el MVP web, la API integra <strong>SEP-10</strong> con el ancla <code>testanchor.stellar.org</code> (la wallet firma el desafío; JWT en sesión). La integración estilo ERP sigue disponible por endpoints administrativos.</p>
         <p><a href="login-es.html" style="color:var(--primary);font-weight:600;">Abrir flujo de login SEP-10 (panel)</a></p>
         <pre class="diagram">+-------------------+       +-------------------+       +-------------------+
 |   SISTEMA ERP     |       |  API MIDDLEWARE   |       | REDE STELLAR      |

@@ -29,7 +29,7 @@ Conoce a **DS2U**, una empresa que usa Protheus ERP y emite cientos de boletos d
 
 **Stellar Boleto Guardian lo resuelve de forma simple:**
 
-1. Al emitir el boleto, Protheus envia el **codigo de barras** (44 a 47 digitos) a la API
+1. Al emitir el boleto, Protheus envia el **codigo de barras** (44 a 48 digitos) a la API
 2. La API graba esos numeros en la blockchain Stellar -- inmutable, publico, permanente
 3. El pagador digita los numeros en cualquier navegador y ve al instante: autentico o fraude
 
@@ -49,7 +49,7 @@ Conoce a **DS2U**, una empresa que usa Protheus ERP y emite cientos de boletos d
 
 Stellar permite grabar datos en la blockchain usando la operacion **Manage Data**: una clave (hasta 64 bytes) y un valor (hasta 64 bytes).
 
-La linea digitalizadora de un boleto bancario tiene **44 a 47 digitos** -- cabe perfectamente en 64 bytes.
+La linea digitalizadora de un boleto bancario tiene **44 a 48 digitos** -- cabe perfectamente en 64 bytes.
 
 | Enfoque | Clave | Que necesita el usuario | Experiencia |
 |---------|-------|------------------------|-------------|
@@ -125,7 +125,7 @@ U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
 ### 5. Validar boleto (experiencia del usuario final)
 
 1. Abrir `http://ds2u.com/validar` (o escanear el codigo QR)
-2. Digitar los **44 a 47 numeros** del codigo de barras
+2. Digitar los **44 a 48 numeros** del codigo de barras
 3. El sistema consulta Stellar y muestra: monto original, vencimiento, estado
 4. **Si los datos coinciden con el boleto impreso, es autentico. Si no existe en la chain, es fraude.**
 

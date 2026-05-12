@@ -3,7 +3,7 @@
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 12/05/2026 (v1.7)
+**Última atualização:** 12/05/2026 (v1.8)
 
 ---
 
@@ -23,7 +23,7 @@ O **Boleto Guardian** é o primeiro produto da **Guardian Labs** — uma marca-m
 
 O **Boleto Guardian** é uma camada pública de autenticidade para boletos brasileiros, construída sobre a blockchain Stellar.
 
-A empresa emissora registra cada boleto emitido na blockchain Stellar, e o pagador valida em segundos digitando os **44 a 47 números** do código de barras (ou linha digitável) do próprio documento — sem app, sem cadastro, sem conhecimento técnico.
+A empresa emissora registra cada boleto emitido na blockchain Stellar, e o pagador valida em segundos digitando os **44 a 48 números** do código de barras (ou linha digitável) do próprio documento — sem app, sem cadastro, sem conhecimento técnico.
 
 Cada boleto vira uma prova pública e imutável de autenticidade, auditável por qualquer pessoa, a qualquer momento, sem depender de banco, cartório ou intermediário.
 
@@ -127,7 +127,7 @@ API REST que recebe os dados do boleto, assina a transação Stellar com a chave
 | `POST /api/wallet` | Cria conta Stellar de uma nova empresa cliente |
 | `POST /api/blockchain` | Registra um boleto via Manage Data; **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
 | `POST /api/boleto/register` | Registro pelo fluxo web autenticado; exige `Authorization: Bearer <sep10-jwt>`; detalhes em **D-013** |
-| `GET /api/validate/:codebar` | Consulta pública de autenticidade pelos 44 a 47 dígitos do código de barras (pagador; sem login; D-004) |
+| `GET /api/validate/:codebar` | Consulta pública de autenticidade pelos 44 a 48 dígitos do código de barras (pagador; sem login; D-004) |
 | `GET /api/account/:id/data` | Lista boletos registrados por uma conta (uso operacional; conforme implantação) |
 
 A página pública de validação (`validation.html`) consome o endpoint `validate/:codebar` para que o pagador final confira o boleto sem cadastro. O painel (`dashboard.html`) usa os endpoints SEP-10 e `POST /api/boleto/register` descritos em **D-013**.
@@ -139,7 +139,7 @@ Modelo: **uma conta Stellar por empresa emissora.**
 | Aspecto | Decisão |
 |---|---|
 | Operação utilizada | `Operation.manageData({ name, value })` |
-| `key` (até 64 bytes) | Código de barras numérico (44 a 47 dígitos), conforme FEBRABAN |
+| `key` (até 64 bytes) | Código de barras numérico (44 a 48 dígitos), conforme FEBRABAN |
 | `value` (até 64 bytes) | `nossonumero\|valor\|vencimento\|status` |
 | Reserva exigida | 1 XLM base + 0,5 XLM por subentry (cada boleto = 1 subentry) |
 | Custo da transação | aprox. 0,00001 XLM por operação |
@@ -192,7 +192,7 @@ Cada decisão segue o formato: **ID → Data → Decisão → Por quê**.
 ### D-004 · Validação pública sem cadastro
 
 **Data:** 15/03/2026
-**Decisão:** A página de validação não exige login, cadastro nem instalação de app. O pagador digita os 44 a 47 dígitos do código de barras (ou linha digitável).
+**Decisão:** A página de validação não exige login, cadastro nem instalação de app. O pagador digita os 44 a 48 dígitos do código de barras (ou linha digitável).
 **Por quê:** Diferencial central da UX. Toda solução existente de antifraude exige adesão prévia (DDA, app bancário). O Boleto Guardian aposta que a validação **só funciona em escala se for instantânea para o pagador**, sem barreira nenhuma.
 
 ### D-005 · Whitepaper público trilíngue
@@ -278,7 +278,13 @@ Validação JWT: trust-based — verifica `iss === 'testanchor.stellar.org'`, ex
 
 **Data:** 12/05/2026
 **Decisão:** Adotar o logotipo oficial do Boleto Guardian (arquivos em `docs/logo/`, cópia servida em `web/assets/brand/`) no cabeçalho das páginas públicas (`index*.html`, `validation*.html`, `login.html`, `dashboard.html`) e atualizar a paleta CSS para refletir o selo: azul-marinho **#0B1F3A**, azul **#1A7FD4** e destaque **#F4C842** (conforme SVG do logo). O conteúdo do whitepaper/landing em PT, EN e ES passa a mencionar explicitamente **Guardian Labs**, o posicionamento de infraestrutura pública de autenticidade, a persona **Camila** (duas dores), **SEP-10** com `testanchor.stellar.org` e link para o fluxo do painel.
-**Por quê:** (1) D-011 já consolidou Guardian Labs como marca-mãe — o site precisava refletir isso visual e textualmente. (2) Cores do logo substituem a paleta genérica "Stellar teal" para reforçar reconhecimento de marca e coerência com materiais gráficos. (3) Visitantes internacionais e investidores (Sprint 4 / Village) enxergam em uma tela produto, holding e prova técnica (44 a 47 dígitos + SEP-10) alinhados ao RT.
+**Por quê:** (1) D-011 já consolidou Guardian Labs como marca-mãe — o site precisava refletir isso visual e textualmente. (2) Cores do logo substituem a paleta genérica "Stellar teal" para reforçar reconhecimento de marca e coerência com materiais gráficos. (3) Visitantes internacionais e investidores (Sprint 4 / Village) enxergam em uma tela produto, holding e prova técnica (44 a 48 dígitos + SEP-10) alinhados ao RT.
+
+### D-016 · x402 — protocolo não aplicável ao fluxo principal (Sprint 2)
+
+**Data:** 12/05/2026
+**Decisão:** O protocolo x402 (HTTP 402 Pay Required com micropagamento por chamada de API) não será implementado no fluxo principal do Boleto Guardian na Sprint 2. Um endpoint de demonstração (`api/premium/[codebar].js`) e uma página interativa (`web/x402-demo.html`) foram criados para provar capacidade técnica de integração x402, cumprindo a exigência do desafio. A justificativa formal de N/A está documentada em `web/naoseaplica-x402.html`.
+**Por quê:** O modelo de negócio do Boleto Guardian é verificação pública gratuita para o pagador final — qualquer pessoa pode consultar a autenticidade de um boleto sem fricção e sem custo. Inserir uma barreira de micropagamento no fluxo de validação contraria diretamente o propósito central do produto, que é eliminar fricção no acesso à informação de autenticidade. A monetização ocorre no lado da emissora (empresa que paga para registrar boletos na blockchain), não no lado do pagador. x402 poderá ser avaliado na Sprint 3 como camada opcional para clientes B2B de alto volume que integram a API diretamente via sistema próprio, onde o modelo de pay-per-call faz sentido econômico sem prejudicar o usuário final. Esta decisão resolve formalmente a avaliação pendente desde D-010.
 
 ---
 
@@ -291,7 +297,7 @@ A Sprint 1 do programa exigiu entrevistas qualificadas com a persona alvo, segui
 | Hipótese | Status | Como testar |
 |---|---|---|
 | Empresa emissora sente dor financeira/reputacional suficiente com fraude para pagar pela prevenção | Em teste | Entrevistas qualitativas com 10+ gestores |
-| Pagadores adotarão a validação se tiver fricção zero (digitar 44 a 47 dígitos) | Em teste | Demos de usabilidade após entrevista de dor |
+| Pagadores adotarão a validação se tiver fricção zero (digitar 44 a 48 dígitos) | Em teste | Demos de usabilidade após entrevista de dor |
 | Empresas que usam Protheus aceitam integração via ADVPL sem resistência | Em teste | Conversa com analistas Protheus em entrevistas |
 | Custo de reserva XLM em escala (0,5 XLM por subentry) é aceitável | Em teste | Modelo financeiro com cenários de volume |
 

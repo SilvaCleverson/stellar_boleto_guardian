@@ -167,7 +167,7 @@
         </div>
         <div class="content">
             <div class="instruction">
-                Recebeu um boleto? Digite os <strong>44 a 47 numeros</strong> do codigo de barras (linha digitavel).<br>
+                Recebeu um boleto? Digite os <strong>44 a 48 numeros</strong> do codigo de barras (linha digitavel).<br>
                 Se existir na blockchain, o boleto e autentico.
             </div>
 
@@ -175,13 +175,13 @@
                 type="text"
                 id="codebar"
                 class="codebar-input"
-                placeholder="Digite os 44 a 47 digitos do codigo de barras"
+                placeholder="Digite os 44 a 48 digitos do codigo de barras"
                 maxlength="54"
                 autocomplete="off"
                 inputmode="numeric"
             />
             <div class="char-count">
-                <span id="digitCount" class="count">0</span> digitos <span class="digit-hint">(aceitos: 44 a 47)</span>
+                <span id="digitCount" class="count">0</span> digitos <span class="digit-hint">(aceitos: 44 a 48)</span>
             </div>
 
             <button class="btn-validate" id="btnValidate" onclick="validateBoleto()">
@@ -244,7 +244,7 @@
         codebarInput.addEventListener('input', function () {
             const digits = this.value.replace(/\D/g, '');
             digitCountEl.textContent = digits.length;
-            var ok = digits.length >= 44 && digits.length <= 47;
+            var ok = digits.length >= 44 && digits.length <= 48;
             digitCountEl.className = 'count ' + (ok ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
         });
 
@@ -254,8 +254,8 @@
 
             hideAll();
 
-            if (!/^\d{44,47}$/.test(digits)) {
-                showError('Codigo de barras invalido. Informe entre 44 e 47 digitos numericos.');
+            if (!/^\d{44,48}$/.test(digits)) {
+                showError('Codigo de barras invalido. Informe entre 44 e 48 digitos numericos.');
                 return;
             }
 

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="api-base" content="" />
+  <title>Boleto Guardian — x402 Demo | Guardian Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(145deg, #040d18 0%, #0B1F3A 50%, #102a4a 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .container { max-width: 680px; width: 100%; background: white; border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,0.25); overflow: hidden; }
+    .header {
+      background: linear-gradient(135deg, #0B1F3A 0%, #061428 100%);
+      border-bottom: 2px solid rgba(244, 200, 66, 0.35);
+      color: white; padding: 28px 30px; text-align: center;
+    }
+    .header a.back { display:inline-block; margin-bottom:10px; color:rgba(255,255,255,0.7); text-decoration:none; font-size:0.82rem; }
+    .header a.back:hover { color:white; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(244,200,66,0.12); border: 1px solid rgba(244,200,66,0.45);
+      border-radius: 20px; padding: 4px 14px; font-size: 0.75rem; color: #F4C842;
+      margin-bottom: 12px; font-family: 'Inconsolata', monospace;
+    }
+    .header h1 { font-size: 1.6em; margin-bottom: 4px; }
+    .header p { font-size: 0.88rem; opacity: 0.75; }
+    .content { padding: 28px 30px; }
+    .protocol-flow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0; margin-bottom: 26px; flex-wrap: wrap;
+    }
+    .pf-step {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;
+      padding: 10px 14px; text-align: center; font-size: 0.72rem;
+      color: #475569; min-width: 90px; flex-shrink: 0;
+    }
+    .pf-step .num { font-size: 1.1rem; display: block; margin-bottom: 3px; }
+    .pf-step.active { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+    .pf-step.done { background: #1A7FD4; border-color: #1A7FD4; color: white; }
+    .pf-step.paid { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .pf-arrow { color: #94a3b8; font-size: 1.1rem; padding: 0 6px; flex-shrink: 0; }
+    .info-box {
+      background: #fefce8; border: 1px solid #fde68a; border-radius: 10px;
+      padding: 14px 16px; margin-bottom: 22px; font-size: 0.84rem; color: #92400e; line-height: 1.6;
+    }
+    .info-box strong { display: block; margin-bottom: 4px; font-size: 0.88rem; color: #78350f; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; font-size: 0.84rem; color: #374151; margin-bottom: 5px; }
+    input[type="text"], input[type="password"] {
+      width: 100%; padding: 11px 12px;
+      border: 2px solid #d1d5db; border-radius: 8px;
+      font-family: 'Inconsolata', monospace; font-size: 0.95rem; color: #111827;
+      transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: #1A7FD4; box-shadow: 0 0 0 3px rgba(26,127,212,0.18); }
+    .btn {
+      width: 100%; padding: 12px; border: none; border-radius: 8px;
+      font-size: 0.93rem; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+    .btn-check { background: linear-gradient(135deg, #1e3a5f, #1A7FD4); color: white; margin-bottom: 10px; }
+    .btn-pay { background: linear-gradient(135deg, #14532d, #16a34a); color: white; display: none; }
+    .status {
+      padding: 12px 14px; border-radius: 8px; margin-top: 12px;
+      display: none; font-size: 0.84rem; line-height: 1.55;
+    }
+    .status.ok { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; display: block; }
+    .status.err { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; display: block; }
+    .status.loading { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; display: block; }
+    .status.warn { background: #fefce8; color: #92400e; border: 1px solid #fde68a; display: block; }
+    .response-card {
+      margin-top: 16px; border-radius: 10px; overflow: hidden; display: none;
+      border: 1px solid #e2e8f0;
+    }
+    .response-card .rc-header {
+      padding: 9px 14px; font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .response-card.r402 .rc-header { background: #fef2f2; color: #991b1b; border-bottom: 1px solid #fecaca; }
+    .response-card.r200 .rc-header { background: #f0fdf4; color: #166534; border-bottom: 1px solid #bbf7d0; }
+    .response-card .rc-body {
+      padding: 14px; background: #0f172a;
+      font-family: 'Inconsolata', monospace; font-size: 0.82rem;
+      color: #94a3b8; line-height: 1.6; white-space: pre-wrap; word-break: break-all;
+    }
+    .rc-body .key { color: #7dd3fc; }
+    .rc-body .val-str { color: #86efac; }
+    .rc-body .val-num { color: #fbbf24; }
+    .rc-body .val-bool { color: #f9a8d4; }
+    .payment-details {
+      margin-top: 14px; padding: 14px 16px;
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px;
+      font-size: 0.82rem; color: #475569; line-height: 1.8; display: none;
+      font-family: 'Inconsolata', monospace;
+    }
+    .payment-details .pd-title {
+      font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.78rem;
+      text-transform: uppercase; letter-spacing: 0.07em; color: #94a3b8; margin-bottom: 8px;
+    }
+    .payment-details .pd-row { display: flex; gap: 8px; margin-bottom: 2px; }
+    .payment-details .pd-label { color: #94a3b8; min-width: 80px; }
+    .payment-details .pd-val { color: #1e293b; font-weight: 500; word-break: break-all; }
+    .divider { border: none; border-top: 1px solid #f1f5f9; margin: 22px 0; }
+    .footer-note { text-align: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #f3f4f6; font-size: 0.79rem; color: #9ca3af; }
+    .footer-note a { color: #1A7FD4; text-decoration: none; }
+    .pubkey-hint { font-size: 0.76rem; color: #6b7280; margin-top: 5px; font-family: 'Inconsolata', monospace; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="back">↝ Home</a>
+      <div class="badge">HTTP 402 · x402 Protocol · Stellar Testnet</div>
+      <h1>x402 Payment Demo</h1>
+      <p>Pay-per-validation via micropayment on Stellar — Boleto Guardian</p>
+    </div>
+
+    <div class="content">
+
+      <div class="protocol-flow">
+        <div class="pf-step" id="pf1"><span class="num">1</span>Request</div>
+        <div class="pf-arrow">→</div>
+        <div class="pf-step" id="pf2"><span class="num">2</span>402</div>
+        <div class="pf-arrow">→</div>
+        <div class="pf-step" id="pf3"><span class="num">3</span>Pay XLM</div>
+        <div class="pf-arrow">→</div>
+        <div class="pf-step" id="pf4"><span class="num">4</span>Retry</div>
+        <div class="pf-arrow">→</div>
+        <div class="pf-step" id="pf5"><span class="num">5</span>Result</div>
+      </div>
+
+      <div class="info-box">
+        <strong>How x402 works here</strong>
+        The <code>/api/premium/:codebar</code> endpoint requires a Stellar payment before serving the result.
+        Step 1 shows the raw 402 response. After paying <strong>0.10 XLM</strong> on Testnet, the same request
+        is retried with the transaction hash in the <code>X-Payment</code> header — the server verifies on-chain and returns the validation.
+      </div>
+
+      <div class="form-group">
+        <label for="codebar">Barcode (44–48 digits)</label>
+        <input type="text" id="codebar" placeholder="Numbers only" maxlength="48" inputmode="numeric" />
+      </div>
+
+      <div class="form-group">
+        <label for="secretKey">Stellar secret key (for payment signing)</label>
+        <input type="password" id="secretKey" placeholder="SXXXXXXXXXXXXXXXXXX..." autocomplete="off" spellcheck="false" />
+        <div class="pubkey-hint" id="pubkeyHint"></div>
+        <p style="font-size:0.76rem;color:#6b7280;margin-top:5px;">Used only in memory to sign the payment transaction. Never stored.</p>
+      </div>
+
+      <button class="btn btn-check" onclick="step1Check()" id="btnCheck">Step 1 — Request endpoint (expect 402)</button>
+      <button class="btn btn-pay" onclick="step3Pay()" id="btnPay">Step 3 — Pay 0.10 XLM &amp; Validate</button>
+
+      <div class="status" id="mainStatus"></div>
+
+      <div class="response-card" id="responseCard">
+        <div class="rc-header" id="rcHeader"></div>
+        <div class="rc-body" id="rcBody"></div>
+      </div>
+
+      <div class="payment-details" id="paymentDetails">
+        <div class="pd-title">Payment instructions (from 402 response)</div>
+        <div class="pd-row"><span class="pd-label">Amount</span><span class="pd-val" id="pdAmount"></span></div>
+        <div class="pd-row"><span class="pd-label">Asset</span><span class="pd-val" id="pdAsset"></span></div>
+        <div class="pd-row"><span class="pd-label">Pay to</span><span class="pd-val" id="pdPayTo"></span></div>
+        <div class="pd-row"><span class="pd-label">Memo</span><span class="pd-val" id="pdMemo"></span></div>
+        <div class="pd-row"><span class="pd-label">Network</span><span class="pd-val" id="pdNetwork"></span></div>
+      </div>
+
+      <div class="footer-note">
+        <a href="dashboard.html">Dashboard (SEP-10)</a> &nbsp;·&nbsp;
+        <a href="validation.html">Public validation</a> &nbsp;·&nbsp;
+        Powered by <a href="https://stellar.org/" target="_blank" rel="noopener">Stellar</a>
+        &nbsp;·&nbsp; Boleto Guardian v3.0
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@13.0.0/dist/stellar-sdk.min.js"></script>
+  <script>
+    var API_BASE = (document.querySelector('meta[name="api-base"]') || {}).content || window.location.origin;
+    if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
+
+    var currentPaymentInstructions = null;
+    var currentCodebar = null;
+
+    function digitsOnly(v) { return String(v || '').replace(/\D/g, ''); }
+
+    function setStatus(type, msg) {
+      var el = document.getElementById('mainStatus');
+      el.className = 'status ' + type;
+      el.innerHTML = msg;
+    }
+
+    function setStep(active) {
+      for (var i = 1; i <= 5; i++) {
+        var el = document.getElementById('pf' + i);
+        el.className = 'pf-step' + (i < active ? ' done' : (i === active ? ' active' : ''));
+      }
+    }
+
+    function syntaxHighlight(obj) {
+      var json = JSON.stringify(obj, null, 2);
+      return json.replace(/("[\w@:.\/\s-]+")\s*:/g, '<span class="key">$1</span>:')
+                 .replace(/:\s*(".*?")/g, ': <span class="val-str">$1</span>')
+                 .replace(/:\s*(\d+\.?\d*)/g, ': <span class="val-num">$1</span>')
+                 .replace(/:\s*(true|false|null)/g, ': <span class="val-bool">$1</span>');
+    }
+
+    function showResponse(statusCode, data) {
+      var card = document.getElementById('responseCard');
+      var header = document.getElementById('rcHeader');
+      var body = document.getElementById('rcBody');
+      card.style.display = 'block';
+      if (statusCode === 402) {
+        card.className = 'response-card r402';
+        header.innerHTML = '⚠ HTTP 402 Payment Required';
+      } else {
+        card.className = 'response-card r200';
+        header.innerHTML = '✓ HTTP 200 OK';
+      }
+      body.innerHTML = syntaxHighlight(data);
+    }
+
+    document.getElementById('secretKey').addEventListener('input', function () {
+      var val = this.value.trim();
+      var hint = document.getElementById('pubkeyHint');
+      if (val.length === 56 && val.startsWith('S')) {
+        try {
+          var kp = StellarSdk.Keypair.fromSecret(val);
+          hint.textContent = 'Public key: ' + kp.publicKey();
+        } catch (e) { hint.textContent = ''; }
+      } else { hint.textContent = ''; }
+    });
+
+    async function step1Check() {
+      var codebar = digitsOnly(document.getElementById('codebar').value);
+      if (!/^\d{44,48}$/.test(codebar)) {
+        setStatus('err', 'Invalid barcode. Enter between 44 and 48 digits.');
+        return;
+      }
+      currentCodebar = codebar;
+      document.getElementById('btnCheck').disabled = true;
+      document.getElementById('responseCard').style.display = 'none';
+      document.getElementById('paymentDetails').style.display = 'none';
+      setStep(1);
+      setStatus('loading', 'Step 1 — Calling <code>/api/premium/' + codebar.slice(0,8) + '...</code> without payment...');
+
+      try {
+        var res = await fetch(API_BASE + '/api/premium/' + encodeURIComponent(codebar));
+        var data = await res.json();
+
+        if (res.status === 402) {
+          setStep(2);
+          setStatus('warn',
+            '<strong>HTTP 402 received.</strong> The server is requesting a payment before serving the result.<br>' +
+            'Payment required: <strong>' + (data.accepts && data.accepts[0] ? data.accepts[0].maxAmountRequired + ' ' + (data.accepts[0].asset === 'native' ? 'XLM' : data.accepts[0].asset) : '0.10 XLM') + '</strong> on Stellar Testnet.'
+          );
+          showResponse(402, data);
+
+          if (data.accepts && data.accepts[0]) {
+            var a = data.accepts[0];
+            currentPaymentInstructions = a;
+            document.getElementById('pdAmount').textContent = a.maxAmountRequired + ' XLM';
+            document.getElementById('pdAsset').textContent = 'XLM (native)';
+            document.getElementById('pdPayTo').textContent = a.payTo;
+            document.getElementById('pdMemo').textContent = a.memo || '—';
+            document.getElementById('pdNetwork').textContent = a.network;
+            document.getElementById('paymentDetails').style.display = 'block';
+            document.getElementById('btnPay').style.display = 'block';
+          }
+        } else {
+          showResponse(res.status, data);
+          setStatus('err', 'Unexpected response: HTTP ' + res.status);
+        }
+      } catch (e) {
+        setStatus('err', 'Request failed: ' + e.message);
+      }
+      document.getElementById('btnCheck').disabled = false;
+    }
+
+    async function step3Pay() {
+      var secretKey = document.getElementById('secretKey').value.trim();
+      if (!secretKey) {
+        setStatus('err', 'Enter your Stellar secret key to sign the payment.');
+        return;
+      }
+
+      var keypair;
+      try {
+        keypair = StellarSdk.Keypair.fromSecret(secretKey);
+      } catch (e) {
+        setStatus('err', 'Invalid secret key. Must start with S and be 56 characters.');
+        return;
+      }
+
+      if (!currentPaymentInstructions || !currentCodebar) {
+        setStatus('err', 'Run Step 1 first to get payment instructions.');
+        return;
+      }
+
+      var btn = document.getElementById('btnPay');
+      btn.disabled = true;
+      setStep(3);
+      setStatus('loading', 'Step 3 — Submitting payment of 0.10 XLM on Stellar Testnet...');
+
+      try {
+        var server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
+        var account = await server.loadAccount(keypair.publicKey());
+
+        var tx = new StellarSdk.TransactionBuilder(account, {
+          fee: StellarSdk.BASE_FEE,
+          networkPassphrase: StellarSdk.Networks.TESTNET,
+        })
+          .addOperation(StellarSdk.Operation.payment({
+            destination: currentPaymentInstructions.payTo,
+            asset: StellarSdk.Asset.native(),
+            amount: currentPaymentInstructions.maxAmountRequired,
+          }))
+          .addMemo(StellarSdk.Memo.text(currentPaymentInstructions.memo || 'x402-validate'))
+          .setTimeout(30)
+          .build();
+
+        tx.sign(keypair);
+        keypair = null;
+        document.getElementById('secretKey').value = '';
+
+        var result = await server.submitTransaction(tx);
+        var txHash = result.hash;
+
+        setStep(4);
+        setStatus('loading',
+          'Payment sent! TX: <code>' + txHash.slice(0, 16) + '...</code><br>' +
+          'Step 4 — Retrying validation with <code>X-Payment: ' + txHash.slice(0, 16) + '...</code>'
+        );
+
+        await step4Retry(txHash);
+
+      } catch (e) {
+        var msg = e.response && e.response.data && e.response.data.extras
+          ? JSON.stringify(e.response.data.extras.result_codes)
+          : e.message;
+        setStatus('err', 'Payment failed: ' + msg);
+        btn.disabled = false;
+      }
+    }
+
+    async function step4Retry(txHash) {
+      try {
+        var res = await fetch(API_BASE + '/api/premium/' + encodeURIComponent(currentCodebar), {
+          headers: { 'X-Payment': txHash },
+        });
+        var data = await res.json();
+
+        setStep(5);
+        showResponse(res.status, data);
+
+        if (res.ok && data.success) {
+          if (data.found) {
+            setStatus('ok',
+              '<strong>Authentic boleto — verified via x402 micropayment.</strong><br>' +
+              'Payment TX: <a href="https://stellar.expert/explorer/testnet/tx/' + txHash + '" target="_blank" rel="noopener" style="color:#166534;">' + txHash.slice(0, 16) + '...</a>'
+            );
+          } else {
+            setStatus('warn',
+              '<strong>Boleto NOT found on Stellar blockchain.</strong> May be fraudulent.<br>' +
+              'Payment TX: <a href="https://stellar.expert/explorer/testnet/tx/' + txHash + '" target="_blank" rel="noopener" style="color:#92400e;">' + txHash.slice(0, 16) + '...</a>'
+            );
+          }
+          document.getElementById('btnPay').style.display = 'none';
+        } else {
+          setStatus('err', 'Validation failed after payment: ' + (data.error || 'Unknown error'));
+          document.getElementById('btnPay').disabled = false;
+        }
+      } catch (e) {
+        setStatus('err', 'Retry request failed: ' + e.message);
+        document.getElementById('btnPay').disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>

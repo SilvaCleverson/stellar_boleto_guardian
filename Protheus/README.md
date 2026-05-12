@@ -4,7 +4,7 @@ Fontes Protheus para autenticacao imutavel de boletos via blockchain Stellar.
 
 ## Arquitetura: codebar como chave
 
-O **codigo de barras** (linha digitavel, 44 a 47 digitos) e usado como chave do Manage Data na Stellar. O usuario final valida o boleto digitando apenas os numeros impressos no documento.
+O **codigo de barras** (linha digitavel, 44 a 48 digitos) e usado como chave do Manage Data na Stellar. O usuario final valida o boleto digitando apenas os numeros impressos no documento.
 
 ```
 Protheus (Empresa)                  Stellar (Blockchain)
@@ -69,7 +69,7 @@ U_BolStlr(cCodebar, cNossoNum, nValor, dVencto)
 // Envia apenas codebar, nosso_numero, valor, vencimento (a API usa COMPANY_SECRET do servidor)
 // Grava na Stellar: key = codebar, value = nossonum|valor|vencto|status
 
-// 5. Validar boleto (usuario digita os 44 a 47 numeros)
+// 5. Validar boleto (usuario digita os 44 a 48 numeros)
 lValido := U_VldBolSt(cCodebar)
 // Consulta a API: GET /api/validate/{codebar}
 // Nao precisa de Account ID -- a conta da empresa e fixa

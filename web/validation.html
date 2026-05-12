@@ -195,7 +195,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <a href="index.html" class="back">← Início</a>
+            <a href="index.html" class="back">↝ Início</a>
             <div class="lang-switch">
                 <a href="validation.html" class="active" title="Português">🇧🇷 PT</a>
                 <a href="validation-en.html" title="English">🇺🇸 EN</a>
@@ -215,7 +215,7 @@
             </div>
 
             <div class="instruction">
-                Recebeu um boleto? Digite os <strong>44 a 47 números</strong> do código de barras (linha digitável).<br>
+                Recebeu um boleto? Digite os <strong>44 a 48 números</strong> do código de barras (linha digitável).<br>
                 Se existir na blockchain, o boleto é autêntico.
             </div>
 
@@ -223,13 +223,13 @@
                 type="text"
                 id="codebar"
                 class="codebar-input"
-                placeholder="Digite os 44 a 47 dígitos do código de barras"
+                placeholder="Digite os 44 a 48 dígitos do código de barras"
                 maxlength="54"
                 autocomplete="off"
                 inputmode="numeric"
             />
             <div class="char-count">
-                <span id="digitCount" class="count">0</span> dígitos <span class="digit-hint">(aceitos: 44 a 47)</span>
+                <span id="digitCount" class="count">0</span> dígitos <span class="digit-hint">(aceitos: 44 a 48)</span>
             </div>
 
             <button class="btn-validate" id="btnValidate" onclick="validateBoleto()">
@@ -274,7 +274,7 @@
         codebarInput.addEventListener('input', function () {
             const digits = this.value.replace(/\D/g, '');
             digitCountEl.textContent = digits.length;
-            var ok = digits.length >= 44 && digits.length <= 47;
+            var ok = digits.length >= 44 && digits.length <= 48;
             digitCountEl.className = 'count ' + (ok ? 'valid' : (digits.length > 47 ? 'invalid' : ''));
         });
 
@@ -284,8 +284,8 @@
 
             hideAll();
 
-            if (!/^\d{44,47}$/.test(digits)) {
-                showError('Código de barras inválido. Informe entre 44 e 47 dígitos numéricos.');
+            if (!/^\d{44,48}$/.test(digits)) {
+                showError('Código de barras inválido. Informe entre 44 e 48 dígitos numéricos.');
                 return;
             }
 

@@ -30,7 +30,7 @@ Documento vivo de tracking das entregas oficiais do programa **Stellar 37 Degree
 
 - [x] **Nome do produto:** Boleto Guardian
 - [x] **Descrição do produto** *(2-3 frases)*  
-  > Boleto Guardian é uma camada pública de autenticidade para boletos brasileiros, construída sobre a blockchain Stellar. A empresa registra cada boleto emitido na blockchain; o pagador valida em segundos digitando os 44 a 47 números impressos no próprio documento — sem app, sem cadastro. Cada boleto vira uma prova pública e imutável de autenticidade.
+  > Boleto Guardian é uma camada pública de autenticidade para boletos brasileiros, construída sobre a blockchain Stellar. A empresa registra cada boleto emitido na blockchain; o pagador valida em segundos digitando os 44 a 48 números impressos no próprio documento — sem app, sem cadastro. Cada boleto vira uma prova pública e imutável de autenticidade.
 - [x] **Premissa mais arriscada** *(versão sincera)*  
   > Estou apostando que a vergonha de ver um cliente protestado por culpa de um boleto adulterado dói o suficiente para a empresa pagar pela prevenção. Mas pode ser que não doa. Pode ser que o gestor financeiro encare como "azar do cliente" e siga em frente. Se for esse o caso, construí uma solução elegante para um problema que ninguém quer pagar para resolver.
 
@@ -84,7 +84,7 @@ Documento vivo de tracking das entregas oficiais do programa **Stellar 37 Degree
     1. Abertura (15s) — apresentação pessoal e do produto
     2. Cena 1 (45s) — empresa emitindo boleto (Protheus / API)
     3. Cena 2 (30s) — Stellar Expert confirmando registro
-    4. Cena 3 (45s) — pagador validando com os 44 a 47 dígitos
+    4. Cena 3 (45s) — pagador validando com os 44 a 48 dígitos
     5. Fechamento (15s) — call to action
   - Ferramenta: Loom (gratuito, 5 min limite por vídeo)
 - [ ] **3 commits no GitHub** *(no mínimo, evolução real do código)*

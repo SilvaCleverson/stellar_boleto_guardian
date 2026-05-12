@@ -202,8 +202,8 @@
       <div class="section">
         <h2>Registrar Boleto en la Blockchain Stellar</h2>
         <div class="form-group">
-          <label for="regCodebar">Código de barras (44–47 dígitos)</label>
-          <input type="text" id="regCodebar" placeholder="Solo números" maxlength="47" inputmode="numeric" />
+          <label for="regCodebar">Código de barras (44–48 dígitos)</label>
+          <input type="text" id="regCodebar" placeholder="Solo números" maxlength="48" inputmode="numeric" />
         </div>
         <button class="btn btn-register" onclick="registerBoleto()" id="btnRegister">Registrar en la Stellar Testnet</button>
         <div class="status" id="regStatus"></div>
@@ -230,8 +230,8 @@
       <div class="section">
         <h2>Verificar Boleto en la Blockchain</h2>
         <div class="form-group">
-          <label for="verifyCodebar">Código de barras (44–47 dígitos)</label>
-          <input type="text" id="verifyCodebar" placeholder="Solo números" maxlength="47" inputmode="numeric" />
+          <label for="verifyCodebar">Código de barras (44–48 dígitos)</label>
+          <input type="text" id="verifyCodebar" placeholder="Solo números" maxlength="48" inputmode="numeric" />
         </div>
         <button class="btn btn-lookup" onclick="verifyBoleto()" id="btnVerify">Verificar en la Stellar Testnet</button>
         <div class="status" id="verifyStatus"></div>
@@ -281,8 +281,8 @@
       var btn = document.getElementById('btnRegister');
       txCard.style.display = 'none';
 
-      if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('regStatus', 'err', 'Código de barras inválido. Ingrese entre 44 y 47 dígitos.');
+      if (!/^\d{44,48}$/.test(codebar)) {
+        setStatus('regStatus', 'err', 'Código de barras inválido. Ingrese entre 44 y 48 dígitos.');
         return;
       }
 
@@ -341,8 +341,8 @@
       resultEl.style.display = 'none';
       resultEl.className = 'lookup-result';
 
-      if (!/^\d{44,47}$/.test(codebar)) {
-        setStatus('verifyStatus', 'err', 'Código de barras inválido. Ingrese entre 44 y 47 dígitos.');
+      if (!/^\d{44,48}$/.test(codebar)) {
+        setStatus('verifyStatus', 'err', 'Código de barras inválido. Ingrese entre 44 y 48 dígitos.');
         return;
       }
 

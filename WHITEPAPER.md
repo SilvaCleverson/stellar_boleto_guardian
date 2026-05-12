@@ -131,7 +131,7 @@ Boleto Guardian starts **from the pain**, not from the blockchain. Below are **p
 
 | Persona | Profile | What they need | How Boleto Guardian helps |
 |---------|---------|----------------|---------------------------|
-| **Payer (B2C or sole trader)** | Receives boleto by email, portal, or paper; non-technical. | Confirm in seconds whether the slip is authentic **before** paying, without an account at the issuer's bank. | Types **44 to 47 digits** of the barcode (or uses the company validation link); checks on-chain whether the record exists. |
+| **Payer (B2C or sole trader)** | Receives boleto by email, portal, or paper; non-technical. | Confirm in seconds whether the slip is authentic **before** paying, without an account at the issuer's bank. | Types **44 to 48 digits** of the barcode (or uses the company validation link); checks on-chain whether the record exists. |
 | **Treasury / collections (B2B)** | High issuance volume; owns delinquency and fraud exposure. | Reduce "I paid the wrong account" and give **trust** about the slip sent. | Immutable record per issuance; clear validation messaging aligned with the brand. |
 | **IT / integration (ERP)** | Ships APIs; owns secrets and compliance. | Simple **REST** integration; signing key **not** in the end-user client; path to **HSM** on the roadmap. | ERP-agnostic middleware; security docs (no key in the browser). |
 | **Audit / compliance (secondary)** | Needs traceability and data policies. | Integrity proof without excessive personal data on-chain. | Only necessary metadata; no payer PII on the network. |
@@ -152,19 +152,20 @@ Validation is as simple as:
 
 ### 3.2 Why the barcode number as the key?
 
-The barcode number (linha digitavel) of a Brazilian bank slip has **between 44 and 47 digits**. This sequence is:
+The numeric **barcode** is **44 digits**. The **typable line (linha digitavel)** is usually **47 digits** on bank-issued slips or **48** on utility or tax-collection slips (FEBRABAN layouts). Validation accepts **44 to 48 digits** because the payer may type only the barcode or the full typable line. This sequence is:
 
 - **Unique** per boleto -- no two boletos share the same barcode number
 - **Printed** on the physical and digital document -- the payer always has access to it
 - **Standardized** by FEBRABAN -- consistent format across the entire banking system
-- **Compact** -- up to 47 characters fit comfortably within Stellar's Manage Data 64-byte limit
+- **Compact** -- up to 48 numeric characters fit comfortably within Stellar's Manage Data 64-byte limit
 
 This choice eliminates the need for the user to know any technical information. There are no hashes, public keys, or account identifiers. **The boleto itself is the lookup credential.**
 
 | Approach | Lookup key | What the user needs to know | Experience |
 |----------|-----------|----------------------------|------------|
 | Traditional (hash) | Cryptographic hash of the boleto | Account ID + SHA1 Hash | Complex, technical |
-| **Boleto Guardian** | **Barcode number (44–47 digits)** | **Nothing beyond the boleto itself** | **Simple, intuitive** |
+| **Boleto Guardian** | **Barcode / typable line (44â€“48 digits)** | **Nothing beyond the boleto itself** | **Simple, intuitive** |
+
 
 ### 3.3 Stellar Manage Data
 
@@ -204,7 +205,7 @@ The end-user experience is the central point of the solution:
 
 1. The payer receives a boleto (via email, mail, or portal)
 2. Accesses the company's validation page (or scans a QR Code)
-3. Types the **44 to 47 numbers** of the barcode
+3. Types the **44 to 48 numbers** of the barcode
 4. The system queries the Stellar blockchain and displays the original data
 5. The payer compares: if the data matches, the boleto is authentic
 
@@ -356,7 +357,7 @@ The intermediary API is the only layer that accesses the private key to sign tra
 
 ### 7.3 No upload of full financial data
 
-The Boleto Guardian does **not** upload or store full financial documents or sensitive financial data. Only the **minimum data required for authenticity verification** is sent to the API and recorded on the blockchain: the barcode (44 to 47 digits), nosso número, amount, due date, and status. The system does **not** receive or store: full boleto text, bank account details, customer financial history, or any data beyond what is necessary to prove that a given barcode was issued by the company. This limits exposure and keeps the solution aligned with data minimization and regulatory expectations.
+The Boleto Guardian does **not** upload or store full financial documents or sensitive financial data. Only the **minimum data required for authenticity verification** is sent to the API and recorded on the blockchain: the barcode (44 to 48 digits), nosso nÃƒÂºmero, amount, due date, and status. The system does **not** receive or store: full boleto text, bank account details, customer financial history, or any data beyond what is necessary to prove that a given barcode was issued by the company. This limits exposure and keeps the solution aligned with data minimization and regulatory expectations.
 
 ### 7.4 Privacy by Design -- LGPD
 

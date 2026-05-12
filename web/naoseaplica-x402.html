@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt-BR" id="root">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">x402 — Não se Aplica | Boleto Guardian</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #0b1f3a;
+      color: #f0f4f8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5vmin;
+    }
+    .topbar {
+      position: fixed; top: 12px; right: 16px; left: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.85rem; z-index: 10;
+    }
+    .topbar a { color: #93c5fd; text-decoration: none; }
+    .topbar a:hover { text-decoration: underline; color: #fff; }
+    .lang { display: flex; align-items: center; gap: 4px; }
+    .lang button {
+      background: none; border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 8px; padding: 4px 8px; cursor: pointer;
+      font-size: 0.85rem; color: #93c5fd; transition: background 0.15s;
+    }
+    .lang button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .lang button.active { background: rgba(26,127,212,0.5); font-weight: 600; color: #fff; border-color: rgba(26,127,212,0.6); }
+    .slide {
+      width: min(100%, 1200px);
+      min-height: min(100vw * 9/16, 90vh);
+      margin-top: 40px;
+      background: linear-gradient(145deg, #0b1f3a 0%, #102a4a 50%, #0b1f3a 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(244, 200, 66, 0.35);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+      padding: 4vmin 4.5vmin;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5vmin;
+    }
+    .kicker { font-size: clamp(0.65rem, 1.3vmin, 0.8rem); letter-spacing: 0.12em; text-transform: uppercase; color: #f4c842; font-weight: 600; }
+    h1 { font-size: clamp(1.2rem, 3.2vmin, 2rem); font-weight: 700; line-height: 1.2; }
+    h1 em { color: #7ec8ff; font-style: normal; }
+    .verdict {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: rgba(244,200,66,0.12); border: 1px solid rgba(244,200,66,0.35);
+      border-radius: 8px; padding: 0.55rem 1rem;
+      font-size: clamp(0.85rem, 1.9vmin, 1.1rem); font-weight: 700;
+      color: #f4c842; width: fit-content;
+    }
+    .verdict .icon { font-size: 1.2em; }
+    .reason {
+      font-size: clamp(0.78rem, 1.7vmin, 1rem);
+      color: rgba(240,244,248,0.92);
+      line-height: 1.6;
+      max-width: 95%;
+    }
+    .reason strong { color: #f4c842; }
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    @media (max-width: 800px) { .pillars { grid-template-columns: 1fr; } }
+    .pillar {
+      background: rgba(11,31,58,0.7); border: 1px solid rgba(26,127,212,0.35);
+      border-radius: 10px; padding: 0.7rem 0.75rem;
+    }
+    .pillar h2 { font-size: clamp(0.68rem, 1.5vmin, 0.88rem); font-weight: 600; color: #f4c842; margin-bottom: 0.3rem; }
+    .pillar p { font-size: clamp(0.62rem, 1.35vmin, 0.78rem); color: rgba(240,244,248,0.88); line-height: 1.4; }
+    .demo-note {
+      background: rgba(26,127,212,0.1); border: 1px solid rgba(26,127,212,0.3);
+      border-radius: 8px; padding: 0.65rem 0.9rem;
+      font-size: clamp(0.65rem, 1.35vmin, 0.8rem); color: rgba(240,244,248,0.8);
+      line-height: 1.45;
+    }
+    .demo-note strong { color: #7ec8ff; }
+    footer {
+      display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+      font-size: 0.72rem; color: rgba(240,244,248,0.55);
+      padding-top: 0.6rem; border-top: 1px solid rgba(255,255,255,0.08);
+    }
+    footer strong { color: #f4c842; font-weight: 600; }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <a id="back-link" href="index.html">&#8592; Boleto Guardian</a>
+    <div class="lang">
+      <button onclick="setLang('pt')" id="btn-pt" class="active">🇧🇷 PT</button>
+      <button onclick="setLang('en')" id="btn-en">🇺🇸 EN</button>
+      <button onclick="setLang('es')" id="btn-es">🇪🇸 ES</button>
+    </div>
+  </div>
+
+  <div class="slide">
+    <header>
+      <p class="kicker" id="kicker">Boleto Guardian / Sprint 2 — Desafio x402</p>
+      <h1 id="heading">Protocolo <em>x402</em>: por que não se aplica ao fluxo principal</h1>
+    </header>
+
+    <div class="verdict">
+      <span class="icon">⚠</span>
+      <span id="verdict-text">N/A — Não aplicável ao modelo de negócio atual</span>
+    </div>
+
+    <p class="reason" id="reason-text">
+      O modelo do Boleto Guardian é de <strong>verificação pública gratuita</strong> — qualquer pagador
+      pode consultar a autenticidade de um boleto sem fricção e sem custo. Inserir uma barreira de
+      micropagamento no fluxo de validação contraria diretamente o propósito central do produto,
+      que é <strong>eliminar a fricção no acesso à informação de autenticidade</strong>. A monetização
+      ocorre no lado da emissora (empresa que paga para registrar boletos na blockchain), não no lado
+      do pagador (que consulta livremente).
+    </p>
+
+    <div class="pillars" id="pillars">
+      <div class="pillar">
+        <h2 id="p1-title">Missão do produto</h2>
+        <p id="p1-body">Qualquer pessoa deve poder verificar se um boleto é genuíno — sem app, sem cadastro, sem custo. Cobrar por essa consulta seria cobrar pelo direito de não ser enganado.</p>
+      </div>
+      <div class="pillar">
+        <h2 id="p2-title">Onde a receita está</h2>
+        <p id="p2-body">A emissora paga pelo registro público de autenticidade. É ela quem tem incentivo financeiro e reputacional para provar que seus boletos são legítimos — não o pagador.</p>
+      </div>
+      <div class="pillar">
+        <h2 id="p3-title">Quando x402 faz sentido</h2>
+        <p id="p3-body">Pay-per-call será avaliado na Sprint 3 como camada opcional para clientes B2B de alto volume que integram a API diretamente via sistema próprio, sem envolver o usuário final.</p>
+      </div>
+    </div>
+
+    <div class="demo-note" id="demo-note">
+      <strong>Prova de capacidade técnica:</strong> Para demonstrar que a integração x402 foi estudada e é viável,
+      foram criados um endpoint protegido (<code>api/premium/[codebar].js</code>) e uma página interativa
+      (<a href="x402-demo.html" style="color:#7ec8ff;">x402-demo.html</a>) que demonstram o protocolo HTTP 402
+      com micropagamento em XLM na Stellar Testnet. A decisão de N/A é estratégica, não técnica.
+    </div>
+
+    <footer>
+      <span><strong>Boleto Guardian / Guardian Labs</strong> — Decisão D-016 · 12/05/2026</span>
+      <span id="footer-right">Testnet · Stellar 37 Degrees · Sprint 2</span>
+    </footer>
+  </div>
+
+  <script>
+    const content = {
+      pt: {
+        lang: 'pt-BR',
+        title: 'x402 — Não se Aplica | Boleto Guardian',
+        kicker: 'Boleto Guardian / Sprint 2 — Desafio x402',
+        heading: 'Protocolo <em>x402</em>: por que não se aplica ao fluxo principal',
+        verdictText: 'N/A — Não aplicável ao modelo de negócio atual',
+        reason: `O modelo do Boleto Guardian é de <strong>verificação pública gratuita</strong> — qualquer pagador
+          pode consultar a autenticidade de um boleto sem fricção e sem custo. Inserir uma barreira de
+          micropagamento no fluxo de validação contraria diretamente o propósito central do produto,
+          que é <strong>eliminar a fricção no acesso à informação de autenticidade</strong>. A monetização
+          ocorre no lado da emissora (empresa que paga para registrar boletos na blockchain), não no lado
+          do pagador (que consulta livremente).`,
+        p1Title: 'Missão do produto',
+        p1Body: 'Qualquer pessoa deve poder verificar se um boleto é genuíno — sem app, sem cadastro, sem custo. Cobrar por essa consulta seria cobrar pelo direito de não ser enganado.',
+        p2Title: 'Onde a receita está',
+        p2Body: 'A emissora paga pelo registro público de autenticidade. É ela quem tem incentivo financeiro e reputacional para provar que seus boletos são legítimos — não o pagador.',
+        p3Title: 'Quando x402 faz sentido',
+        p3Body: 'Pay-per-call será avaliado na Sprint 3 como camada opcional para clientes B2B de alto volume que integram a API diretamente via sistema próprio, sem envolver o usuário final.',
+        demoNote: `<strong>Prova de capacidade técnica:</strong> Para demonstrar que a integração x402 foi estudada e é viável,
+          foram criados um endpoint protegido (<code>api/premium/[codebar].js</code>) e uma página interativa
+          (<a href="x402-demo.html" style="color:#7ec8ff;">x402-demo.html</a>) que demonstram o protocolo HTTP 402
+          com micropagamento em XLM na Stellar Testnet. A decisão de N/A é estratégica, não técnica.`,
+        footerRight: 'Testnet · Stellar 37 Degrees · Sprint 2',
+        backLink: '← Boleto Guardian',
+      },
+      en: {
+        lang: 'en',
+        title: 'x402 — Not Applicable | Boleto Guardian',
+        kicker: 'Boleto Guardian / Sprint 2 — x402 Challenge',
+        heading: 'Protocol <em>x402</em>: why it does not apply to the main flow',
+        verdictText: 'N/A — Not applicable to the current business model',
+        reason: `Boleto Guardian's core value proposition is <strong>frictionless public verification</strong> — any payer
+          can check boleto authenticity for free. Adding a payment gate to the validation flow would
+          directly contradict the product's purpose of <strong>eliminating barriers to fraud detection</strong>.
+          Monetization targets the issuer side (companies paying to register boletos on-chain), not the
+          payer side (who consults freely).`,
+        p1Title: 'Product mission',
+        p1Body: 'Anyone must be able to verify whether a boleto is genuine — no app, no sign-up, no cost. Charging for that query would mean charging for the right not to be defrauded.',
+        p2Title: 'Where the revenue is',
+        p2Body: 'The issuer pays for public authenticity registration. They have the financial and reputational incentive to prove their boletos are legitimate — not the payer.',
+        p3Title: 'When x402 makes sense',
+        p3Body: 'Pay-per-call will be evaluated in Sprint 3 as an optional layer for high-volume B2B API consumers integrating directly from their own systems, without impacting end users.',
+        demoNote: `<strong>Proof of technical capability:</strong> To demonstrate that x402 integration was studied and is feasible,
+          a protected endpoint (<code>api/premium/[codebar].js</code>) and an interactive page
+          (<a href="x402-demo.html" style="color:#7ec8ff;">x402-demo.html</a>) were created, showcasing the HTTP 402
+          protocol with XLM micropayments on Stellar Testnet. The N/A decision is strategic, not technical.`,
+        footerRight: 'Testnet · Stellar 37 Degrees · Sprint 2',
+        backLink: '← Boleto Guardian',
+      },
+      es: {
+        lang: 'es',
+        title: 'x402 — No Aplica | Boleto Guardian',
+        kicker: 'Boleto Guardian / Sprint 2 — Desafío x402',
+        heading: 'Protocolo <em>x402</em>: por qué no aplica al flujo principal',
+        verdictText: 'N/A — No aplicable al modelo de negocio actual',
+        reason: `La propuesta de valor central de Boleto Guardian es la <strong>verificación pública sin fricción</strong> — cualquier
+          pagador puede comprobar la autenticidad de un boleto de forma gratuita. Agregar una barrera de pago
+          al flujo de validación contradiría directamente el propósito del producto de
+          <strong>eliminar barreras para la detección de fraudes</strong>. La monetización se dirige al lado del
+          emisor (empresas que pagan para registrar boletos en la blockchain), no al lado del pagador (que consulta libremente).`,
+        p1Title: 'Misión del producto',
+        p1Body: 'Cualquier persona debe poder verificar si un boleto es genuino — sin app, sin registro, sin costo. Cobrar por esa consulta significaría cobrar por el derecho a no ser estafado.',
+        p2Title: 'Dónde está la facturación',
+        p2Body: 'El emisor paga por el registro público de autenticidad. Ellos tienen el incentivo financiero y reputacional para demostrar que sus boletos son legítimos — no el pagador.',
+        p3Title: 'Cuándo x402 tiene sentido',
+        p3Body: 'Pay-per-call será evaluado en el Sprint 3 como capa opcional para consumidores de API B2B de alto volumen que integran directamente desde sus propios sistemas, sin afectar a los usuarios finales.',
+        demoNote: `<strong>Prueba de capacidad técnica:</strong> Para demostrar que la integración x402 fue estudiada y es viable,
+          se crearon un endpoint protegido (<code>api/premium/[codebar].js</code>) y una página interactiva
+          (<a href="x402-demo.html" style="color:#7ec8ff;">x402-demo.html</a>) que demuestran el protocolo HTTP 402
+          con micropagos en XLM en Stellar Testnet. La decisión de N/A es estratégica, no técnica.`,
+        footerRight: 'Testnet · Stellar 37 Degrees · Sprint 2',
+        backLink: '← Boleto Guardian',
+      }
+    };
+
+    function setLang(lang) {
+      const c = content[lang];
+      document.getElementById('root').lang = c.lang;
+      document.getElementById('page-title').textContent = c.title;
+      document.title = c.title;
+      document.getElementById('kicker').textContent = c.kicker;
+      document.getElementById('heading').innerHTML = c.heading;
+      document.getElementById('verdict-text').textContent = c.verdictText;
+      document.getElementById('reason-text').innerHTML = c.reason;
+      document.getElementById('p1-title').textContent = c.p1Title;
+      document.getElementById('p1-body').textContent = c.p1Body;
+      document.getElementById('p2-title').textContent = c.p2Title;
+      document.getElementById('p2-body').textContent = c.p2Body;
+      document.getElementById('p3-title').textContent = c.p3Title;
+      document.getElementById('p3-body').textContent = c.p3Body;
+      document.getElementById('demo-note').innerHTML = c.demoNote;
+      document.getElementById('footer-right').textContent = c.footerRight;
+      document.getElementById('back-link').textContent = c.backLink;
+      ['pt','en','es'].forEach(l => {
+        document.getElementById('btn-' + l).classList.toggle('active', l === lang);
+      });
+    }
+  </script>
+</body>
+</html>
