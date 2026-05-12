@@ -296,8 +296,9 @@
         var data = await res.json().catch(function () { return {}; });
 
         if (res.status === 401) {
-          setStatus('regStatus', 'err', 'Sessão expirada. Faça login novamente.');
-          setTimeout(function () { logout(); }, 2000);
+          var errDetail = (data && data.error) ? data.error : 'Sessão inválida.';
+          setStatus('regStatus', 'err', errDetail + ' Faça login novamente.');
+          setTimeout(function () { logout(); }, 3000);
           return;
         }
         if (!res.ok || !data.success) {
@@ -354,6 +355,7 @@
         }
 
         setStatus('verifyStatus', '');
+        resultEl.style.display = 'block';
 
         if (!data.found) {
           resultEl.className = 'lookup-result not-found';
