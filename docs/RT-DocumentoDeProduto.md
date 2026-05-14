@@ -1,15 +1,15 @@
-# RT — Documento de Produto
+﻿# RT — Documento de Produto
 
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 13/05/2026 (v1.9)
+**Última atualização:** 14/05/2026 (v1.11)
 
 ---
 
 ## Sobre este documento
 
-Este é o **Documento de Produto** (RT — *Record of Thinking*) do Boleto Guardian. Ele consolida em um único lugar **todas as decisões importantes** já tomadas sobre o produto: o que está sendo construído, para quem, como, com quais tecnologias, e por quais motivos.
+Este é o **Documento de Produto** (RT — *Registro do raciocínio*) do Boleto Guardian. Ele consolida em um único lugar **todas as decisões importantes** já tomadas sobre o produto: o que está sendo construído, para quem, como, com quais tecnologias, e por quais motivos.
 
 É atualizado a cada nova decisão, aprendizado ou pivô. O histórico de mudanças é preservado pelos commits do GitHub.
 
@@ -27,9 +27,9 @@ A empresa emissora registra cada boleto emitido na blockchain Stellar, e o pagad
 
 Cada boleto vira uma prova pública e imutável de autenticidade, auditável por qualquer pessoa, a qualquer momento, sem depender de banco, cartório ou intermediário.
 
-Para o MVP do hackathon, o Boleto Guardian também passa a demonstrar integração com uma Anchor existente da Stellar Testnet por meio de SEP-10 (Stellar Web Authentication), usando autenticação de wallet antes dos fluxos de **registro e gestão** de boletos no **painel web** da empresa (login SEP-10). Isso não altera a validação pública do pagador (D-004: `validation.html` e `GET /api/validate/:codebar` permanecem sem login).
+Para o MVP do hackathon, o Boleto Guardian também passa a demonstrar integração com uma Anchor existente da Stellar Testnet por meio de SEP-10 (Stellar Web Authentication), usando autenticação de carteira (*wallet*) antes dos fluxos de **registro e gestão** de boletos no **painel web** da empresa (login SEP-10). Isso não altera a validação pública do pagador (D-004: `validation.html` e `GET /api/validate/:codebar` permanecem sem login).
 
-A camada de autenticidade do Boleto Guardian opera em duas dimensões: (a) cada boleto é registrado publicamente na blockchain Stellar pela empresa emissora e (b) o acesso aos fluxos de **registro e gestão** no aplicativo web (painel) é autenticado via SEP-10 contra uma Anchor consolidada da Stellar Testnet (`testanchor.stellar.org`), provando posse da wallet antes de escrita on-chain pelos fluxos autenticados. O Boleto Guardian **não atua como Anchor** — atua como *relying party* da Anchor existente, aproveitando a infraestrutura de identidade já estabelecida no ecossistema Stellar.
+A camada de autenticidade do Boleto Guardian opera em duas dimensões: (a) cada boleto é registrado publicamente na blockchain Stellar pela empresa emissora e (b) o acesso aos fluxos de **registro e gestão** no aplicativo web (painel) é autenticado via SEP-10 contra uma Anchor consolidada da Stellar Testnet (`testanchor.stellar.org`), provando posse da carteira (*wallet*) antes de escrita on-chain pelos fluxos autenticados. O Boleto Guardian **não atua como Anchor** — atua como **parte confiante** (*relying party*, termo SEP) da âncora (Anchor) existente, aproveitando a infraestrutura de identidade já estabelecida no ecossistema Stellar.
 
 ---
 
@@ -101,7 +101,7 @@ ZXH (tabela)              GET  /api/validate/          `STORAGE_BACKEND` (padrã
                           login.html / dashboard.html
 ```
 
-Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A Anchor autentica a wallet no fluxo do painel; o registro imutável dos boletos é feito pelo Boleto Guardian na conta Stellar da empresa emissora via **Soroban** (padrão desde Sprint 3) ou **Manage Data** se `STORAGE_BACKEND=managedata` (**D-017**). Resumo da superfície SEP-10 na **Camada 4** abaixo; implementação completa em **D-013** / **D-014**.
+Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A âncora (Anchor) autentica a carteira (*wallet*) no fluxo do painel; o registro imutável dos boletos é feito pelo Boleto Guardian na conta Stellar da empresa emissora via **Soroban** (padrão desde Sprint 3) ou **Manage Data** se `STORAGE_BACKEND=managedata` (**D-017**). Resumo da superfície SEP-10 na **Camada 4** abaixo; implementação completa em **D-013** / **D-014**.
 
 ### Camada 1 — ERP (Protheus / ADVPL)
 
@@ -113,7 +113,9 @@ A integração foi desenhada para Protheus (TOTVS) por ser o ERP brasileiro mais
 | `U_ZXH()` | Cria a tabela ZXH no banco do Protheus (executa uma vez) |
 | `U_CriWltSt()` | Cria a conta Stellar da empresa via Friendbot e grava chaves na ZXH |
 | `U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)` | Função executada a cada emissão de boleto, registra na blockchain |
-| Parâmetros do sistema | `MV_XURLST` (URL da API) e `MV_XURLVL` (URL da página de validação) |
+| `Protheus/guardian_lib/FI040ROT.prw` | Ponto de entrada: inclui em **Outras ações** do contas a receber (**SE1**) as opções *Registrar no Boleto Guardian* e *Consultar no Boleto Guardian* usando `SE1->E1_CODBAR` quando preenchido (**D-018**). |
+| `Protheus/guardian_lib/Guardian.prw` | Classe `Guardian` (`FWRest`): `Send()` → `POST /api/blockchain` com JSON `{"codebar"}`; `Verify()` → `GET /api/admin/boletos/:codebar`; envia o cabeçalho HTTP `x-admin-key` a partir do parâmetro **`MV_GUARDKY`** (SX6); base da API configurável no fonte (ex.: `https://www.boletoguardian.xyz` em produção) (**D-018**). |
+| Parâmetros do sistema | `MV_XURLST` (URL da API) e `MV_XURLVL` (URL da página de validação); **`MV_GUARDKY`** (valor do cabeçalho HTTP `x-admin-key` para chamadas admin do Protheus — **D-018**). |
 
 A arquitetura é **agnóstica ao ERP** — o mesmo padrão pode ser implementado em Sankhya, Omie, Bling, ou qualquer outro sistema que emita boletos. Protheus é o primeiro caso de uso, não o único.
 
@@ -125,9 +127,10 @@ API REST que recebe os dados do boleto, assina a transação Stellar com a chave
 |---|---|
 | `GET /` | Status da API |
 | `POST /api/wallet` | Cria conta Stellar de uma nova empresa cliente |
-| `POST /api/blockchain` | Registra um boleto on-chain (backend padrão Soroban, **D-017**; fallback Manage Data conforme `STORAGE_BACKEND`); **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
+| `POST /api/blockchain` | Registra um boleto na blockchain (servidor padrão Soroban, **D-017**; *fallback* Manage Data conforme `STORAGE_BACKEND`); **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
 | `POST /api/boleto/register` | Registro pelo fluxo web autenticado; exige `Authorization: Bearer <sep10-jwt>`; detalhes em **D-013** |
 | `GET /api/validate/:codebar` | Consulta pública de autenticidade pelos 44 a 48 dígitos do código de barras (pagador; sem login; D-004) |
+| `GET /api/admin/boletos/:codebar` | Consulta admin: verifica se o código de barras está registrado na API (JSON com `success` / `found`); exige autenticação de serviço (cabeçalho HTTP `x-admin-key` alinhado à variável de ambiente do servidor). Usado pelo Protheus `Guardian:Verify()` (**D-018**). |
 | `GET /api/account/:id/data` | Lista boletos registrados por uma conta (uso operacional; conforme implantação) |
 
 A página pública de validação (`validation.html`) consome o endpoint `validate/:codebar` para que o pagador final confira o boleto sem cadastro. O painel (`dashboard.html`) usa os endpoints SEP-10 e `POST /api/boleto/register` descritos em **D-013**.
@@ -138,17 +141,17 @@ Modelo: **uma conta Stellar por empresa emissora.**
 
 | Aspecto | Decisão |
 |---|---|
-| Backend padrão (Sprint 3) | **Soroban** persistent storage — contrato `contract/src/lib.rs`; assinatura e orquestração no backend via `lib/soroban.js` (**D-017**). |
+| Backend padrão (Sprint 3) | **Soroban** persistent storage — contrato `contract/src/lib.rs`; assinatura e orquestração no servidor (back-end) via `lib/soroban.js` (**D-017**). |
 | Fallback | `STORAGE_BACKEND=managedata` — `Operation.manageData({ name, value })`; `key` = código de barras (44 a 48 dígitos); `value` até 64 bytes (`nossonumero\|valor\|vencimento\|status`) — modelo **D-003**. |
 | Reserva / custo (Manage Data) | 1 XLM base + 0,5 XLM por subentry (cada boleto = 1 subentry); fee por operação conforme rede. |
 | Rede atual | **Testnet** |
 | Migração planejada | **Mainnet** até 30/05/2026 (Sprint 4 do programa) |
 
-Detalhes da migração, limitações de 64 bytes no modo legado e superseding formal de D-003 estão em **D-017**.
+Detalhes da migração, limitações de 64 bytes no modo legado e substituição formal de D-003 estão em **D-017**.
 
 ### Camada 4 — Autenticação SEP-10
 
-Implementada em 11/05/2026 como parte do MVP do hackathon Sprint 2. O Boleto Guardian **não atua como Anchor** — consome `testanchor.stellar.org` (Anchor oficial da SDF na Testnet) como *relying party*, via proxy no backend para evitar restrições CORS no browser. A chave privada do usuário é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba). Implementação completa (endpoints, frontend, biblioteca e decisões de proxy) em **D-013** e **D-014**.
+Implementada em 11/05/2026 como parte do MVP do hackathon Sprint 2. O Boleto Guardian **não atua como Anchor** — consome `testanchor.stellar.org` (Anchor oficial da SDF na Testnet) como **parte confiante** (*relying party*), via proxy no servidor (back-end) para evitar restrições CORS no navegador. A chave privada do usuário é usada apenas em memória no navegador para assinar o desafio (*challenge*) e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba). Implementação completa (rotas de API, front-end, biblioteca e decisões de proxy) em **D-013** e **D-014**.
 
 ---
 
@@ -159,8 +162,8 @@ Implementada em 11/05/2026 como parte do MVP do hackathon Sprint 2. O Boleto Gua
 | ERP | ADVPL / xBase (Protheus 12.1.33+) | Linguagem nativa do Protheus, com `SHA1()` e `FWRest` disponíveis. Domínio pessoal do autor. |
 | Backend | Node.js + Express | SDK Stellar oficial em JavaScript é o mais maduro. Stack leve, hospedagem barata. |
 | SDK | `@stellar/stellar-sdk` | Biblioteca oficial mantida pela Stellar Development Foundation |
-| Blockchain | Stellar (Soroban + fallback Manage Data) | Padrão Sprint 3: contrato Soroban e `lib/soroban.js` (**D-017**). `STORAGE_BACKEND=managedata` mantém operação nativa legada (**D-003**). |
-| Hospedagem (frontend) | Vercel | Free tier suficiente para a fase atual. Deploy automático via Git. |
+| Blockchain | Stellar (Soroban + *fallback* Manage Data) | Padrão Sprint 3: contrato Soroban e `lib/soroban.js` (**D-017**). `STORAGE_BACKEND=managedata` mantém operação nativa legada (**D-003**). |
+| Hospedagem (front-end) | Vercel | Plano gratuito suficiente para a fase atual. Implantação automática via Git. |
 | Hospedagem (API) | A definir (Railway / Fly.io / VPS) | Decisão pendente para Sprint 4 (mainnet) |
 | Auditoria pública | Stellar Expert | Explorer oficial do ecossistema Stellar |
 | Documentação | Markdown no GitHub | Versionamento automático e link público |
@@ -187,7 +190,7 @@ Cada decisão segue o formato: **ID → Data → Decisão → Por quê**.
 
 **Data:** 15/03/2026
 **Decisão:** Usar a operação nativa `Manage Data` da Stellar para registrar os dados do boleto.
-**Por quê:** Manage Data é nativo, gratuito (apenas custo da transação) e não exige deploy de contrato. Soroban (smart contracts da Stellar) é overkill para o caso de uso atual. Se a expansão futura exigir lógica programável on-chain, Soroban entra como camada adicional, não substituta.
+**Por quê:** Manage Data é nativo, gratuito (apenas custo da transação) e não exige implantação de contrato. Soroban (smart contracts da Stellar) é desproporcional para o caso de uso atual. Se a expansão futura exigir lógica programável on-chain, Soroban entra como camada adicional, não substituta.
 
 **Atualização 13/05/2026 (D-017):** A persistência **padrão** on-chain passou a ser **Soroban**; este registro permanece válido para o **modo legado** (`STORAGE_BACKEND=managedata`) e como histórico da evolução do produto.
 
@@ -207,7 +210,7 @@ Cada decisão segue o formato: **ID → Data → Decisão → Por quê**.
 
 **Data:** 15/03/2026
 **Decisão:** Manter o código aberto sob licença MIT.
-**Por quê:** Reforça a tese de transparência radical e fé pública digital. O valor do produto não está no código (que é simples) — está na rede de empresas que o adotam. MIT incentiva fork, contribuição e auditoria por parceiros.
+**Por quê:** Reforça a tese de transparência radical e fé pública digital. O valor do produto não está no código (que é simples) — está na rede de empresas que o adotam. MIT incentiva bifurcações (*forks*) e contribuição e auditoria por parceiros.
 
 ### D-007 · Foco inicial em Protheus (TOTVS)
 
@@ -215,11 +218,13 @@ Cada decisão segue o formato: **ID → Data → Decisão → Por quê**.
 **Decisão:** Implementar primeiro a integração com Protheus, antes de expandir para outros ERPs.
 **Por quê:** Protheus tem grande participação no mercado de ERP brasileiro e domínio pessoal do autor. Integrar primeiro com Protheus reduz tempo de validação e abre porta para parceria com TOTVS no futuro.
 
+**Atualização 14/05/2026 (D-018):** Integração adicional no **Contas a receber** (FI040ROT / classe Guardian) complementa o foco inicial em Protheus.
+
 ### D-008 · Migração para mainnet em maio
 
 **Data:** 06/05/2026
 **Decisão:** Migrar de testnet para mainnet até o fim da Sprint 4 (30/05/2026), com pelo menos um piloto comercial real registrando boletos.
-**Por quê:** Entrega oficial do programa exige cinco wallets reais com atividade na mainnet. Migrar sem piloto não cumpre o critério. Migrar sem segurança aprimorada (HSM ou Secret Manager) também não é aceitável. Decisão liga as duas pontas: piloto comercial + segurança de chaves.
+**Por quê:** Entrega oficial do programa exige cinco carteiras reais com atividade na mainnet. Migrar sem piloto não cumpre o critério. Migrar sem segurança aprimorada (HSM ou Secret Manager) também não é aceitável. Decisão liga as duas pontas: piloto comercial + segurança de chaves.
 
 ### D-009 · Modelo de receita ainda em aberto
 
@@ -244,7 +249,7 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 
 **Data:** 08/05/2026
 **Decisão:** Adotar Guardian Labs como marca-mãe do projeto. O Boleto Guardian passa a ser oficialmente o primeiro produto do ecossistema Guardian Labs. O posicionamento institucional passa a ser: "infraestrutura pública de autenticidade para as chaves que movem dinheiro no Brasil".
-**Por quê:** A tese de longo prazo do projeto sempre foi maior que apenas boletos — a categoria comum entre boleto e outros instrumentos de pagamento brasileiros é "chaves que movem dinheiro". Adotar a marca-mãe agora resolve quatro problemas: (1) permite expansão futura sem perder marca acumulada; (2) facilita o pitch internacional, em que "boleto" exige explicação; (3) dá ao programa Stellar 37 Degrees uma narrativa de empresa, não só de produto; (4) cria um sistema visual coerente para futuros produtos da família. Decisão tomada com base na lógica de holding/conglomerado em fase early — adotar nome forte de família agora custa pouco e abre muito.
+**Por quê:** A tese de longo prazo do projeto sempre foi maior que apenas boletos — a categoria comum entre boleto e outros instrumentos de pagamento brasileiros é "chaves que movem dinheiro". Adotar a marca-mãe agora resolve quatro problemas: (1) permite expansão futura sem perder marca acumulada; (2) facilita o pitch internacional, em que "boleto" exige explicação; (3) dá ao programa Stellar 37 Degrees uma narrativa de empresa, não só de produto; (4) cria um sistema visual coerente para futuros produtos da família. Decisão tomada com base na lógica de holding/conglomerado em fase inicial — adotar nome forte de família agora custa pouco e abre muito.
 
 ### D-012 · Persona alvo nomeada como Camila
 
@@ -255,10 +260,10 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 ### D-013 · Integração com Anchor existente via SEP-10
 
 **Data:** 11/05/2026
-**Decisão:** O Boleto Guardian passa a integrar uma Anchor existente da Stellar Testnet usando **SEP-10 (Stellar Web Authentication)** para autenticação de wallet. O usuário autentica sua wallet por meio de um challenge SEP-10 emitido pela Anchor, assina esse challenge, recebe uma sessão autenticada e, a partir daí, acessa os fluxos de registro e consulta de boletos dentro do Boleto Guardian.
-**Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública on-chain (Soroban por padrão ou Manage Data conforme `STORAGE_BACKEND`; **D-017**). SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a wallet autenticada a dados cadastrais da empresa emissora.
+**Decisão:** O Boleto Guardian passa a integrar uma Anchor existente da Stellar Testnet usando **SEP-10 (Stellar Web Authentication)** para autenticação de carteira (*wallet*). O usuário autentica sua carteira (*wallet*) por meio de um desafio SEP-10 (*challenge*) emitido pela âncora (Anchor), assina esse desafio, recebe uma sessão autenticada e, a partir daí, acessa os fluxos de registro e consulta de boletos dentro do Boleto Guardian.
+**Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública on-chain (Soroban por padrão ou Manage Data conforme `STORAGE_BACKEND`; **D-017**). SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a carteira autenticada a dados cadastrais da empresa emissora.
 
-**Implementação (11/05/2026):** Anchor escolhida: `testanchor.stellar.org` (Anchor oficial da SDF na Testnet, endpoint `https://testanchor.stellar.org/auth`). O Boleto Guardian **não atua como Anchor** — consome a Anchor existente via proxy no backend para evitar restrições CORS no browser. Chave privada do usuário é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões).
+**Implementação (11/05/2026):** Anchor escolhida: `testanchor.stellar.org` (Anchor oficial da SDF na Testnet, endpoint `https://testanchor.stellar.org/auth`). O Boleto Guardian **não atua como Anchor** — consome a Anchor existente via proxy no servidor (back-end) para evitar restrições CORS no navegador. Chave privada do usuário é usada apenas em memória no navegador para assinar o desafio (*challenge*) e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões).
 
 | Arquivo | Função |
 |---|---|
@@ -271,13 +276,13 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 | `web/login.html` | Fluxo SEP-10 de 4 etapas: Carteira → Assinatura → Token JWT → Painel |
 | `web/dashboard.html` | Painel autenticado; usa JWT do `sessionStorage` como Bearer token; auto-logout em HTTP 401 |
 
-Validação JWT: trust-based — verifica `iss === 'testanchor.stellar.org'`, expiração e formato do `sub` (endereço G de 56 chars). Sem necessidade do segredo de assinatura da Anchor. Compatibilidade retroativa: `api/blockchain.js` existente não foi alterado; integração Protheus/ERP continua funcionando via chave de admin.
+Validação JWT: baseada em confiança — verifica `iss === 'testanchor.stellar.org'`, expiração e formato do `sub` (endereço G de 56 caracteres). Sem necessidade do segredo de assinatura da Anchor. Compatibilidade retroativa: `api/blockchain.js` existente não foi alterado; integração Protheus/ERP continua funcionando via chave de admin (fluxo emissão + Contas a receber FI040ROT/Guardian; **D-018**).
 
 ### D-014 · Padrão de proxy SEP-10 e validação JWT por confiança
 
 **Data:** 11/05/2026
-**Decisão:** Implementar o fluxo SEP-10 usando o Boleto Guardian como **proxy reverso** para `testanchor.stellar.org`, evitando restrições CORS no browser. A validação do JWT emitido pela Anchor usa abordagem **trust-based** — verificando `iss`, `exp` e formato do `sub` — sem necessidade do segredo de assinatura da Anchor. O JWT é armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões) para reduzir exposição em caso de XSS por scripts de terceiros.
-**Por quê:** (1) O browser não pode chamar `testanchor.stellar.org` diretamente por restrições CORS — o proxy no backend (`api/sep10/challenge.js` e `api/sep10/token.js`) resolve sem comprometer a experiência do usuário e sem expor a URL da Anchor no frontend. (2) A validação trust-based é adequada porque o campo `iss` identifica unicamente a Anchor de confiança e o `sub` confirma a carteira autenticada; obter o segredo de assinatura exigiria acesso privilegiado não fornecido por design pelo `testanchor.stellar.org`. (3) `sessionStorage` é preferível a `localStorage` porque isola a sessão por aba — se o usuário fechar a aba o token expira automaticamente, reduzindo a janela de exposição. (4) A chave privada da carteira é usada apenas em memória no browser para assinar o challenge e descartada imediatamente após a assinatura — nunca armazenada, nunca enviada ao servidor.
+**Decisão:** Implementar o fluxo SEP-10 usando o Boleto Guardian como **proxy reverso** para `testanchor.stellar.org`, evitando restrições CORS no navegador. A validação do JWT emitido pela Anchor usa abordagem **baseada em confiança** — verificando `iss`, `exp` e formato do `sub` — sem necessidade do segredo de assinatura da Anchor. O JWT é armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões) para reduzir exposição em caso de XSS por scripts de terceiros.
+**Por quê:** (1) O navegador não pode chamar `testanchor.stellar.org` diretamente por restrições CORS — o proxy no servidor (back-end) (`api/sep10/challenge.js` e `api/sep10/token.js`) resolve sem comprometer a experiência do usuário e sem expor a URL da Anchor no front-end. (2) A validação baseada em confiança é adequada porque o campo `iss` identifica unicamente a Anchor de confiança e o `sub` confirma a carteira autenticada; obter o segredo de assinatura exigiria acesso privilegiado não fornecido por definição do `testanchor.stellar.org`. (3) `sessionStorage` é preferível a `localStorage` porque isola a sessão por aba — se o usuário fechar a aba o token expira automaticamente, reduzindo a janela de exposição. (4) A chave privada da carteira é usada apenas em memória no navegador para assinar o desafio (*challenge*) e descartada imediatamente após a assinatura — nunca armazenada, nunca enviada ao servidor.
 
 ### D-015 · Identidade visual no site e alinhamento com o RT
 
@@ -294,8 +299,16 @@ Validação JWT: trust-based — verifica `iss === 'testanchor.stellar.org'`, ex
 ### D-017 · Migração de Manage Data para Soroban (Sprint 3)
 
 **Data:** 13/05/2026
-**Decisão:** A camada de persistência on-chain foi migrada de `Operation.manageData` para Soroban persistent storage. O contrato Soroban (`contract/src/lib.rs`) é o backend padrão a partir desta data. A variável de ambiente `STORAGE_BACKEND` permite fallback para `managedata` para compatibilidade retroativa com clientes existentes. O backend assina transações Soroban via `lib/soroban.js`, substituindo o modelo anterior em `lib/stellar.js`.
-**Por quê:** Manage Data impõe limite de 64 bytes por campo value, impossibilitando armazenar metadados expandidos (hash do documento original, campos de auditoria, assinatura do emissor). Soroban resolve essas limitações estruturais com structs tipadas sem limite de campo, habilita lógica programável on-chain para validação futura, e mantém as propriedades de imutabilidade e auditabilidade pública. A decisão D-003 é formalmente supersedida: Soroban deixa de ser "overkill" ao resolver vulnerabilidades que Manage Data não pode endereçar. Compatibilidade retroativa é mantida via `STORAGE_BACKEND=managedata` como fallback.
+**Decisão:** A camada de persistência on-chain foi migrada de `Operation.manageData` para armazenamento persistente Soroban. O contrato Soroban (`contract/src/lib.rs`) é o backend padrão a partir desta data. A variável de ambiente `STORAGE_BACKEND` permite fallback para `managedata` para compatibilidade retroativa com clientes existentes. O servidor assina transações Soroban via `lib/soroban.js`, substituindo o modelo anterior em `lib/stellar.js`.
+**Por quê:** Manage Data impõe limite de 64 bytes por campo value, impossibilitando armazenar metadados expandidos (hash do documento original, campos de auditoria, assinatura do emissor). Soroban resolve essas limitações estruturais com structs tipadas sem limite de campo, habilita lógica programável on-chain para validação futura, e mantém as propriedades de imutabilidade e auditabilidade pública. A decisão D-003 é formalmente substituída: Soroban deixa de ser "desproporcional" ao resolver vulnerabilidades que Manage Data não pode endereçar. Compatibilidade retroativa é mantida via `STORAGE_BACKEND=managedata` como fallback.
+
+### D-018 · Integração Protheus Contas a Receber (`Guardian.prw` / `FI040ROT`)
+
+**Data:** 14/05/2026  
+**Decisão:** Registrar no RT um **segundo caminho** de integração Protheus, além do fluxo por emissão (`U_BolStlr` / `ZXH`): ponto de entrada **`FI040ROT`** e classe **`Guardian`** em `Protheus/guardian_lib/`, permitindo **registrar** e **consultar** o boleto do título selecionado a partir do **Contas a receber** (cadastro **SE1** / campo `E1_CODBAR`), via menu **Outras ações**.  
+**Por quê:** Aproxima o produto do trabalho diário do financeiro (ação contextual no título) sem substituir a automação na emissão. Reutiliza endpoints já previstos na API: `POST /api/blockchain` (registro com corpo `{"codebar"}`) e `GET /api/admin/boletos/:codebar` (consulta admin). A chave de serviço é lida do parâmetro **`MV_GUARDKY`** (SX6) e enviada como **`x-admin-key`** — o valor efetivo deve existir **apenas** no ambiente do cliente (evitar *default* com segredo no repositório em produção).  
+
+**Implementação:** entregue por **Sergio Artero** no repositório público (commit `ffe139b`, 13/05/2026). Mensagem original no Git (inglês): *Implementation of integration for registering and querying payment slips in accounts payable*. Em português do Brasil: *Implementação da integração para registro e consulta de boletos em contas a receber*.
 
 ---
 
@@ -339,7 +352,7 @@ Se 4 em 5 entrevistas indicarem que a empresa não considera fraude um problema 
 | Sprint 1 — Bootcamp | 04 a 09/05/2026 | Discovery + FLG + Testnet | Persona, premissa, transação testnet, 2 posts, 1 vídeo de entrevista |
 | Sprint 2 — Hackathon | 11 a 16/05/2026 | MVP + entrevistas + pitch | Loom do fluxo, 3 entrevistas em vídeo, x402 (ou N/A), pitch deck 5 slides |
 | Sprint 3 — Refinamento | 18 a 23/05/2026 | Segurança + monetização | Vulnerabilidade documentada, modelo de receita, posicionamento, rascunho SCF |
-| Sprint 4 — Mainnet | 25 a 30/05/2026 | Mainnet + 5 usuários reais | Produto na mainnet, 5 wallets reais, deck 7 slides, landing page, plano GTM |
+| Sprint 4 — Mainnet | 25 a 30/05/2026 | Mainnet + 5 usuários reais | Produto na mainnet, 5 carteiras reais, deck 7 slides, landing page, plano GTM |
 | Preparação | 01 a 05/06/2026 | Polimento + ensaios | Pitch final em inglês, materiais físicos, lista de contatos |
 | Sprint 5 — Stellar Village | 09 a 12/06/2026 (RJ) | Apresentação + networking | Pitch ao vivo, demos 1:1, 30+ contatos qualificados |
 
@@ -367,13 +380,13 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | Risco | Probabilidade | Impacto | Mitigação |
 |---|---|---|---|
 | Não conseguir 5 pilotos reais até 30/05/2026 | Alta | Crítico | Iniciar prospecção na Sprint 1; oferecer piloto gratuito 30–60 dias |
-| Pitch em inglês fraco no Village | Média | Crítico | Treinar oral desde Sprint 1; gravar e revisar; buscar feedback de nativos |
+| Pitch em inglês fraco no Village | Média | Crítico | Treinar oral desde Sprint 1; gravar e revisar; buscar feedback de falantes nativos de inglês |
 | Hackathon mal sucedido (Sprint 2) | Média | Alto | Definir entregável único e claro; polir uma coisa em vez de refazer tudo |
 | Demo quebrar ao vivo no Village | Média | Alto | Backup em vídeo; testar 24h antes |
 | Migração mainnet com problemas de chave | Baixa | Crítico | HSM ou Secret Manager; nunca commitar chave; backup separado |
 | Custo de reserva XLM em escala | Baixa | Médio | Modelar custo com cenários antes da mainnet; repassar como setup ao cliente |
 | Concorrência institucional (banco/FEBRABAN lança equivalente) | Baixa | Alto | Reforçar diferencial de independência, transparência e auditoria pública |
-| Dependência de Anchor externa na Testnet para autenticação SEP-10 | Média | Médio | Escolher Anchor de referência estável; isolar a integração em módulo próprio; manter fallback documentado para troca de Anchor; deixar claro que a Anchor autentica a wallet, mas não registra boletos |
+| Dependência de Anchor externa na Testnet para autenticação SEP-10 | Média | Médio | Escolher Anchor de referência estável; isolar a integração em módulo próprio; manter fallback documentado para troca de Anchor; deixar claro que a Anchor autentica a carteira (*wallet*), mas não registra boletos |
 
 ---
 
@@ -384,14 +397,17 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | v1.0 | 08/05/2026 | Versão inicial: persona, arquitetura, decisões D-001 a D-010, hipóteses, riscos |
 | v1.1 | 08/05/2026 | Adoção da marca-mãe Guardian Labs (D-011); atualização da Seção 1 e do README |
 | v1.2 | 08/05/2026 | Persona alvo nomeada como Camila (D-012); Seção 2 reescrita com narrativa correta das duas dores |
-| v1.3 | 11/05/2026 | Integração com Anchor existente via SEP-10 (D-013); arquitetura atualizada para autenticação de wallet antes dos fluxos de registro e consulta |
+| v1.3 | 11/05/2026 | Integração com Anchor existente via SEP-10 (D-013); arquitetura atualizada para autenticação de carteira (*wallet*) antes dos fluxos de registro e consulta |
 | v1.4 | 11/05/2026 | Sprint 1 marcada como finalizada com sucesso; Seção 8 atualizada com os quatro desafios oficiais da Sprint 2 — Hackathon |
 | v1.5 | 11/05/2026 | SEP-10 implementado end-to-end (D-013, D-014): `lib/sep10.js`, endpoints proxy `challenge`/`token`/`verify`, `web/login.html` (4 etapas), `web/dashboard.html` autenticado, `POST /api/boleto/register` exigindo Bearer JWT; Seção 1 corrigida — Boleto Guardian é *relying party* de `testanchor.stellar.org`, **não** Anchor |
 | v1.6 | 12/05/2026 | Identidade visual no site: logo em `web/assets/brand/`, paleta #0B1F3A / #1A7FD4 / #F4C842; whitepaper PT/EN/ES e fluxos web alinhados ao RT (Guardian Labs, Camila, SEP-10, link painel); decisão D-015 |
-| v1.7 | 12/05/2026 | Arquitetura: Camada 4 (SEP-10) adicionada à Seção 3; tabela de endpoints distingue rota legada `/api/blockchain` de rota autenticada `/api/boleto/register`; D-013 expandida com tabela de arquivos e detalhes de implementação; D-014 adicionada (proxy SEP-10, validação JWT trust-based); Seção 1 reescrita para deixar explícito que o Boleto Guardian é *relying party*, não Anchor; voz da Seção 7 ajustada para primeira pessoa direta |
+| v1.7 | 12/05/2026 | Arquitetura: Camada 4 (SEP-10) adicionada à Seção 3; tabela de *endpoints* distingue rota legada `/api/blockchain` de rota autenticada `/api/boleto/register`; D-013 expandida com tabela de arquivos e detalhes de implementação; D-014 adicionada (proxy SEP-10, validação JWT baseada em confiança); Seção 1 reescrita para deixar explícito que o Boleto Guardian é *relying party*, não Anchor; voz da Seção 7 ajustada para primeira pessoa direta |
 | v1.8 | 12/05/2026 | D-016: x402 fora do fluxo principal na Sprint 2 (demo + N/A formal); encerra avaliação pendente desde D-010; hipótese de camada opcional B2B / Sprint 3 no texto de D-016 |
 | v1.9 | 13/05/2026 | D-017: migração Soroban (`contract/src/lib.rs`, `lib/soroban.js`, `STORAGE_BACKEND`); Seção 3, tecnologias e D-013 alinhados; D-003 e D-010 atualizados; histórico v1.8/v1.9 |
+| v1.10 | 14/05/2026 | D-018: integração Protheus Contas a receber (`FI040ROT`, `Guardian.prw`, `MV_GUARDKY`, `SE1->E1_CODBAR`); tabela Camada 1 e *endpoint* `GET /api/admin/boletos/:codebar` na Camada 2; implementação Sergio Artero (`ffe139b`) |
+| v1.11 | 14/05/2026 | Revisão de português do Brasil: glossas (carteira/*wallet*, parte confiante/*relying party*), servidor em vez de *backend* em prosa, navegador, implantação, *fallback*, mensagem D-018 em pt-BR |
 
 ---
 
 *Documento mantido vivo durante todo o programa. Cada decisão nova é registrada com ID, data e justificativa. Revisitar suposições é parte do processo, não falha.*
+
