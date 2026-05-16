@@ -3,7 +3,7 @@
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 16/05/2026 (v1.12)
+**Última atualização:** 16/05/2026 (v1.15)
 
 ---
 
@@ -15,7 +15,7 @@ Este é o **Documento de Produto** (RT — *Registro do raciocínio*) do Boleto 
 
 > **Princípio:** decisões são registradas com a justificativa que as motivou no momento. Quando uma decisão é revertida, a anterior **não é apagada** — é marcada como obsoleta com a nova decisão abaixo. Isso preserva a memória do raciocínio e permite revisitar suposições.
 
-> **Status operacional (16/05/2026):** A equipe está **realizando testes locais** do MVP (API em Stellar/, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10 e integração Protheus **FI040ROT** / **Guardian.prw**). Resultados ainda não consolidados em produção — ambiente de referência é **desenvolvimento local** (.env + Horizon Testnet), não mainnet.
+> **Status operacional (16/05/2026):** A equipe está **realizando testes locais** do MVP (API em `Stellar/`, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10 e integração Protheus **FI040ROT** / **Guardian.prw**). Commit **`61fdd47`**: removido ramo Soroban do servidor; demo x402 corrigida na Vercel (sem header `X-Payment-Required` inválido). Resultados ainda não consolidados em produção — ambiente de referência é **desenvolvimento local** (.env + Horizon Testnet), não mainnet.
 
 ---
 
@@ -89,11 +89,11 @@ O pagador do boleto é quem **mais ganha** com a solução, mas **não é quem p
 
 ```
 ERP do cliente            API Boleto Guardian          Blockchain Stellar
-(Protheus/ADVPL)   ─────▶ (Node.js + Express)   ─────▶ (Soroban · contrato)
+(Protheus/ADVPL)   ─────▶ (Node.js + Express)   ─────▶ (Manage Data)
 
-U_BolStlr()               POST /api/blockchain         `contract/src/lib.rs` + `lib/soroban.js`
-ZXH (tabela)              GET  /api/validate/          `STORAGE_BACKEND` (padrão soroban;
-                                                       fallback managedata — **D-017**)
+U_BolStlr()               POST /api/blockchain         Operation.manageData
+ZXH (tabela)              GET  /api/validate/          key = código de barras (44–48 dígitos)
+Guardian.prw (D-018)      GET  /api/admin/boletos/     value = metadados (**D-003**)
 
                           Página de validação
                           (HTML público, Vercel)
@@ -103,7 +103,7 @@ ZXH (tabela)              GET  /api/validate/          `STORAGE_BACKEND` (padrã
                           login.html / dashboard.html
 ```
 
-Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A âncora (Anchor) autentica a carteira (*wallet*) no fluxo do painel; o registro imutável dos boletos é feito pelo Boleto Guardian na conta Stellar da empresa emissora via **Soroban** (padrão desde Sprint 3) ou **Manage Data** se `STORAGE_BACKEND=managedata` (**D-017**). Resumo da superfície SEP-10 na **Camada 4** abaixo; implementação completa em **D-013** / **D-014**.
+Para o MVP do hackathon, a arquitetura inclui uma integração complementar com uma Anchor existente da Stellar Testnet via SEP-10. A âncora (Anchor) autentica a carteira (*wallet*) no fluxo do painel; o registro imutável dos boletos é feito pelo Boleto Guardian na conta Stellar da empresa emissora via **Manage Data** (**D-003**; experimento Soroban **D-017** revertido em **D-019**). Resumo da superfície SEP-10 na **Camada 4** abaixo; implementação completa em **D-013** / **D-014**.
 
 ### Camada 1 — ERP (Protheus / ADVPL)
 
@@ -129,7 +129,7 @@ API REST que recebe os dados do boleto, assina a transação Stellar com a chave
 |---|---|
 | `GET /` | Status da API |
 | `POST /api/wallet` | Cria conta Stellar de uma nova empresa cliente |
-| `POST /api/blockchain` | Registra um boleto na blockchain (servidor padrão Soroban, **D-017**; *fallback* Manage Data conforme `STORAGE_BACKEND`); **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
+| `POST /api/blockchain` | Registra um boleto na blockchain via **Manage Data** (`lib/stellar.js`); **rota legada/admin** (ex.: Protheus com chave de serviço), **sem** Bearer SEP-10 |
 | `POST /api/boleto/register` | Registro pelo fluxo web autenticado; exige `Authorization: Bearer <sep10-jwt>`; detalhes em **D-013** |
 | `GET /api/validate/:codebar` | Consulta pública de autenticidade pelos 44 a 48 dígitos do código de barras (pagador; sem login; D-004) |
 | `GET /api/admin/boletos/:codebar` | Consulta admin: verifica se o código de barras está registrado na API (JSON com `success` / `found`); exige autenticação de serviço (cabeçalho HTTP `x-admin-key` alinhado à variável de ambiente do servidor). Usado pelo Protheus `Guardian:Verify()` (**D-018**). |
@@ -143,13 +143,13 @@ Modelo: **uma conta Stellar por empresa emissora.**
 
 | Aspecto | Decisão |
 |---|---|
-| Backend padrão (Sprint 3) | **Soroban** persistent storage — contrato `contract/src/lib.rs`; assinatura e orquestração no servidor (back-end) via `lib/soroban.js` (**D-017**). |
-| Fallback | `STORAGE_BACKEND=managedata` — `Operation.manageData({ name, value })`; `key` = código de barras (44 a 48 dígitos); `value` até 64 bytes (`nossonumero\|valor\|vencimento\|status`) — modelo **D-003**. |
+| Persistência on-chain | `Operation.manageData({ name, value })` via `lib/stellar.js` (**D-003**). `key` = código de barras (44 a 48 dígitos); `value` até 64 bytes (`nossonumero\|valor\|vencimento\|status`). |
+| Soroban (adiado) | Experimento **D-017** revertido (**D-019**, commit `61fdd47`); artefatos de contrato removidos do repositório até nova decisão. |
 | Reserva / custo (Manage Data) | 1 XLM base + 0,5 XLM por subentry (cada boleto = 1 subentry); fee por operação conforme rede. |
 | Rede atual | **Testnet** |
 | Migração planejada | **Mainnet** até 30/05/2026 (Sprint 4 do programa) |
 
-Detalhes da migração, limitações de 64 bytes no modo legado e substituição formal de D-003 estão em **D-017**.
+Limitações de 64 bytes por campo e histórico do experimento Soroban estão em **D-003**, **D-017** e **D-019**.
 
 ### Camada 4 — Autenticação SEP-10
 
@@ -164,7 +164,7 @@ Implementada em 11/05/2026 como parte do MVP do hackathon Sprint 2. O Boleto Gua
 | ERP | ADVPL / xBase (Protheus 12.1.33+) | Linguagem nativa do Protheus, com `SHA1()` e `FWRest` disponíveis. Domínio pessoal do autor. |
 | Backend | Node.js + Express | SDK Stellar oficial em JavaScript é o mais maduro. Stack leve, hospedagem barata. |
 | SDK | `@stellar/stellar-sdk` | Biblioteca oficial mantida pela Stellar Development Foundation |
-| Blockchain | Stellar (Soroban + *fallback* Manage Data) | Padrão Sprint 3: contrato Soroban e `lib/soroban.js` (**D-017**). `STORAGE_BACKEND=managedata` mantém operação nativa legada (**D-003**). |
+| Blockchain | Stellar (Manage Data) | Persistência via `Operation.manageData` e `lib/stellar.js` (**D-003**). Soroban adiado após reversão (**D-019**). |
 | Hospedagem (front-end) | Vercel | Plano gratuito suficiente para a fase atual. Implantação automática via Git. |
 | Hospedagem (API) | A definir (Railway / Fly.io / VPS) | Decisão pendente para Sprint 4 (mainnet) |
 | Auditoria pública | Stellar Expert | Explorer oficial do ecossistema Stellar |
@@ -194,7 +194,7 @@ Cada decisão segue o formato: **ID → Data → Decisão → Por quê**.
 **Decisão:** Usar a operação nativa `Manage Data` da Stellar para registrar os dados do boleto.
 **Por quê:** Manage Data é nativo, gratuito (apenas custo da transação) e não exige implantação de contrato. Soroban (smart contracts da Stellar) é desproporcional para o caso de uso atual. Se a expansão futura exigir lógica programável on-chain, Soroban entra como camada adicional, não substituta.
 
-**Atualização 13/05/2026 (D-017):** A persistência **padrão** on-chain passou a ser **Soroban**; este registro permanece válido para o **modo legado** (`STORAGE_BACKEND=managedata`) e como histórico da evolução do produto.
+**Atualização 13/05/2026 (D-017):** Houve experimento temporário com Soroban como padrão — **revertido** em 16/05/2026 (**D-019**, commit `61fdd47`). A persistência em produção e nos testes locais volta a ser **somente Manage Data**.
 
 ### D-004 · Validação pública sem cadastro
 
@@ -263,13 +263,13 @@ Decidir o modelo agora seria precoce. A Sprint 3 fecha esta decisão com base em
 
 **Data:** 11/05/2026
 **Decisão:** O Boleto Guardian passa a integrar uma Anchor existente da Stellar Testnet usando **SEP-10 (Stellar Web Authentication)** para autenticação de carteira (*wallet*). O usuário autentica sua carteira (*wallet*) por meio de um desafio SEP-10 (*challenge*) emitido pela âncora (Anchor), assina esse desafio, recebe uma sessão autenticada e, a partir daí, acessa os fluxos de registro e consulta de boletos dentro do Boleto Guardian.
-**Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública on-chain (Soroban por padrão ou Manage Data conforme `STORAGE_BACKEND`; **D-017**). SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a carteira autenticada a dados cadastrais da empresa emissora.
+**Por quê:** SEP-10 permite demonstrar interoperabilidade real com o ecossistema Stellar ao provar controle sobre uma conta Stellar antes de executar ações no aplicativo. Essa autenticação fortalece o MVP do hackathon porque conecta o Boleto Guardian a uma Anchor da Testnet sem alterar sua função principal: registrar e validar boletos com evidência pública on-chain via **Manage Data** (**D-003**). SEP-12 poderá ser avaliado futuramente para KYC/KYB complementar, caso o produto precise associar a carteira autenticada a dados cadastrais da empresa emissora.
 
 **Implementação (11/05/2026):** Anchor escolhida: `testanchor.stellar.org` (Anchor oficial da SDF na Testnet, endpoint `https://testanchor.stellar.org/auth`). O Boleto Guardian **não atua como Anchor** — consome a Anchor existente via proxy no servidor (back-end) para evitar restrições CORS no navegador. Chave privada do usuário é usada apenas em memória no navegador para assinar o desafio (*challenge*) e descartada imediatamente após a assinatura. JWT armazenado em `sessionStorage` (escopo de aba, não persiste entre sessões).
 
 | Arquivo | Função |
 |---|---|
-| `lib/soroban.js` | Invocação Soroban e assinatura de transações de persistência (ver **D-017**). |
+| `lib/stellar.js` | Registro on-chain via Manage Data (`sendBoletoToBlockchain`, consulta Horizon). |
 | `lib/sep10.js` | Biblioteca utilitária central: `getChallenge()`, `exchangeToken()`, `validateAnchorJwt()` |
 | `api/sep10/challenge.js` | `GET /api/sep10/challenge?account=G...` — proxy para `testanchor.stellar.org/auth` |
 | `api/sep10/token.js` | `POST /api/sep10/token` — proxy para troca de XDR assinado por JWT |
@@ -298,11 +298,18 @@ Validação JWT: baseada em confiança — verifica `iss === 'testanchor.stellar
 **Decisão:** O protocolo x402 (HTTP 402 Pay Required com micropagamento por chamada de API) não será implementado no fluxo principal do Boleto Guardian na Sprint 2. Um endpoint de demonstração (`api/premium/[codebar].js`) e uma página interativa (`web/x402-demo.html`) foram criados para provar capacidade técnica de integração x402, cumprindo a exigência do desafio. A justificativa formal de N/A está documentada em `web/naoseaplica-x402.html`.
 **Por quê:** O modelo de negócio do Boleto Guardian é verificação pública gratuita para o pagador final — qualquer pessoa pode consultar a autenticidade de um boleto sem fricção e sem custo. Inserir uma barreira de micropagamento no fluxo de validação contraria diretamente o propósito central do produto, que é eliminar fricção no acesso à informação de autenticidade. A monetização ocorre no lado da emissora (empresa que paga para registrar boletos na blockchain), não no lado do pagador. x402 poderá ser avaliado na Sprint 3 como camada opcional para clientes B2B de alto volume que integram a API diretamente via sistema próprio, onde o modelo de pay-per-call faz sentido econômico sem prejudicar o usuário final. Esta decisão resolve formalmente a avaliação pendente desde D-010.
 
-### D-017 · Migração de Manage Data para Soroban (Sprint 3)
+**Atualização 16/05/2026 (commit `61fdd47`):** Correções na demonstração x402 em produção (Vercel): removido o header HTTP `X-Payment-Required` com JSON (caracteres inválidos causavam `FUNCTION_INVOCATION_FAILED`); respostas 402 passam apenas no corpo JSON; `try/catch` global no handler de `api/premium/[codebar].js`. Em `web/x402-demo.html`: removido campo de chave secreta na UI; carteira pagadora de teste fixa com saldo consultado via Horizon; pagamento assinado automaticamente após o 402 (fluxo sem fricção para demo do hackathon). Chaves de teste **apenas** Testnet — não usar em mainnet.
 
-**Data:** 13/05/2026
-**Decisão:** A camada de persistência on-chain foi migrada de `Operation.manageData` para armazenamento persistente Soroban. O contrato Soroban (`contract/src/lib.rs`) é o backend padrão a partir desta data. A variável de ambiente `STORAGE_BACKEND` permite fallback para `managedata` para compatibilidade retroativa com clientes existentes. O servidor assina transações Soroban via `lib/soroban.js`, substituindo o modelo anterior em `lib/stellar.js`.
-**Por quê:** Manage Data impõe limite de 64 bytes por campo value, impossibilitando armazenar metadados expandidos (hash do documento original, campos de auditoria, assinatura do emissor). Soroban resolve essas limitações estruturais com structs tipadas sem limite de campo, habilita lógica programável on-chain para validação futura, e mantém as propriedades de imutabilidade e auditabilidade pública. A decisão D-003 é formalmente substituída: Soroban deixa de ser "desproporcional" ao resolver vulnerabilidades que Manage Data não pode endereçar. Compatibilidade retroativa é mantida via `STORAGE_BACKEND=managedata` como fallback.
+### D-017 · Migração de Manage Data para Soroban (Sprint 3) — **obsoleta**
+
+**Data:** 13/05/2026  
+**Status:** **Obsoleta** desde 16/05/2026 — substituída por **D-019** (commit `61fdd47`). Mantida no RT para preservar o raciocínio.
+
+**Decisão (original):** A camada de persistência on-chain foi migrada de `Operation.manageData` para armazenamento persistente Soroban. O contrato Soroban (`contract/src/lib.rs`) seria o backend padrão. A variável `STORAGE_BACKEND` permitiria fallback para `managedata`.
+
+**Por quê (original):** Limites de 64 bytes no Manage Data e desejo de metadados expandidos on-chain.
+
+**Reversão:** Durante testes locais e deploy, o time optou por **não** manter Soroban no MVP: complexidade operacional (build/deploy de contrato, RPC Soroban) sem benefício imediato para o hackathon. Código Soroban removido de `Stellar/server.js`; artefatos `contract/`, `lib/soroban.js` e scripts de deploy retirados do repositório. Ver **D-019**.
 
 ### D-018 · Integração Protheus Contas a Receber (`Guardian.prw` / `FI040ROT`)
 
@@ -311,6 +318,32 @@ Validação JWT: baseada em confiança — verifica `iss === 'testanchor.stellar
 **Por quê:** Aproxima o produto do trabalho diário do financeiro (ação contextual no título) sem substituir a automação na emissão. Reutiliza endpoints já previstos na API: `POST /api/blockchain` (registro com corpo `{"codebar"}`) e `GET /api/admin/boletos/:codebar` (consulta admin). A chave de serviço é lida do parâmetro **`MV_GUARDKY`** (SX6) e enviada como **`x-admin-key`** — o valor efetivo deve existir **apenas** no ambiente do cliente (evitar *default* com segredo no repositório em produção).  
 
 **Implementação:** entregue por **Sergio Artero** no repositório público (commit `ffe139b`, 13/05/2026). Mensagem original no Git (inglês): *Implementation of integration for registering and querying payment slips in accounts payable*. Em português do Brasil: *Implementação da integração para registro e consulta de boletos em contas a receber*.
+
+### D-019 · Reversão Soroban e correção da demo x402 (commit `61fdd47`)
+
+**Data:** 16/05/2026  
+**Decisão:** (1) **Persistência:** remover do código de produção o ramo Soroban e a variável `STORAGE_BACKEND`; manter **apenas Manage Data** em `lib/stellar.js`, `Stellar/server.js` e endpoints Vercel que consultam boletos. (2) **x402 (demo):** corrigir `api/premium/[codebar].js` e `web/x402-demo.html` para a demo funcionar na Vercel sem erro de função serverless.
+
+**Por quê:** (1) O MVP do hackathon precisa de fluxo estável na Testnet com o modelo já validado (D-003); Soroban ficou adiado para pós-MVP. (2) O header `X-Payment-Required` com JSON quebrava a função na Vercel (`FUNCTION_INVOCATION_FAILED`); instruções de pagamento permanecem no corpo HTTP 402. A demo interativa usa carteira pagadora de teste embutida (somente Testnet) para reduzir fricção na apresentação — alinhado a D-016 (fora do fluxo principal do pagador).
+
+**Implementação (Git `61fdd47`, autor CES):** `Stellar/server.js` — removidos `STORAGE_BACKEND` e imports Soroban; listagem de boletos só via Horizon `data_attr`. `api/premium/[codebar].js` — sem `X-Payment-Required`; try/catch global. `web/x402-demo.html` — saldo via Horizon, assinatura automática com `TEST_PAYER_SECRET`. `lib/stellar.js` — sem ramo Soroban.
+
+**Fluxo on-chain da demo x402 (Testnet):**
+
+```
+TEST_PAYER_PUBLIC (GA3M5Q…XWHV)
+    └─ paga 0,10 XLM ──▶ COMPANY_ACCOUNT (GDBLQV…YYBQ6)
+                              └─ servidor verifica on-chain (Horizon)
+                                    └─ retorna validação do boleto
+```
+
+**Passos HTTP (demo web/x402-demo.html):**
+
+1. GET /api/premium/:codebar sem header X-Payment → **402** com payTo = COMPANY_ACCOUNT e maxAmountRequired = **0,10 XLM** (testnet).
+2. Navegador assina transação com TEST_PAYER_SECRET (carteira pagadora de teste; só na memória).
+3. GET /api/premium/:codebar com X-Payment: <hash> → servidor confirma o pagamento on-chain e chama getBoletoRecord (Manage Data).
+
+COMPANY_ACCOUNT vem da variável de ambiente (endereços abreviados neste documento; valores completos só em Vercel / .env). Carteira pagadora **apenas Testnet** — não reutilizar em mainnet.
 
 ---
 
@@ -384,6 +417,8 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 - painel web com SEP-10 (login.html, dashboard.html);
 - integração Protheus (menu Contas a receber → **Registrar** / **Consultar no Boleto Guardian**).
 
+- demo x402 (`web/x402-demo.html` + `api/premium/[codebar].js`) corrigida para Vercel (**`61fdd47`**).
+
 Até concluir essa rodada, o produto deve ser tratado como **em homologação local**, não como release estável em produção.
 
 ---
@@ -420,6 +455,9 @@ Até concluir essa rodada, o produto deve ser tratado como **em homologação lo
 | v1.10 | 14/05/2026 | D-018: integração Protheus Contas a receber (`FI040ROT`, `Guardian.prw`, `MV_GUARDKY`, `SE1->E1_CODBAR`); tabela Camada 1 e *endpoint* `GET /api/admin/boletos/:codebar` na Camada 2; implementação Sergio Artero (`ffe139b`) |
 | v1.11 | 14/05/2026 | Revisão de português do Brasil: glossas (carteira/*wallet*, parte confiante/*relying party*), servidor em vez de *backend* em prosa, navegador, implantação, *fallback*, mensagem D-018 em pt-BR |
 | v1.12 | 16/05/2026 | Status: testes locais do MVP em andamento (API Testnet, Manage Data, SEP-10, Protheus FI040ROT/Guardian); Seção 8 e bloco de status no início do documento |
+| v1.13 | 16/05/2026 | D-019: reversão Soroban (61fdd47); D-017 obsoleta; Seções 3–4 e D-003/D-013 alinhados a Manage Data; D-016 atualizada (fix x402 Vercel + demo sem fricção) |
+| v1.14 | 16/05/2026 | Diagrama fluxo x402 Testnet (TEST_PAYER_PUBLIC → COMPANY_ACCOUNT → validação) em D-019 |
+| v1.15 | 16/05/2026 | Endereços Stellar abreviados no RT (sem exposição integral de carteiras) |
 
 ---
 

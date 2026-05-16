@@ -157,7 +157,7 @@
 
       <div style="margin-bottom:16px;padding:12px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;font-size:0.82rem;color:#166534;">
         <strong>Carteira pagadora (teste):</strong><br>
-        <code style="word-break:break-all;font-size:0.75rem;">GA3M5QHVHLUD3QMLZBL7RKFAJLHEMM4URCICC7DUUMNZ7WBUJIORXWHV</code><br>
+        <code id="payerAddress" style="font-size:0.75rem;">GA3M5Q�</code><br>
         Saldo: <span id="payerBalance">consultando...</span> XLM testnet &mdash; assina automaticamente. Chave fica só na memória do browser.
       </div>
 
@@ -197,6 +197,12 @@
     var TEST_PAYER_SECRET = 'SB4MNXHDOPDQQA2OTGB7JGVN3CMQRP2ZHUKC2CN2L4TLE2KQCGZKIREE';
     var TEST_PAYER_PUBLIC = 'GA3M5QHVHLUD3QMLZBL7RKFAJLHEMM4URCICC7DUUMNZ7WBUJIORXWHV';
     var currentPaymentInstructions = null;
+
+    function maskStellarAddress(addr) {
+      if (!addr || addr.length < 12) return addr || '';
+      return addr.slice(0, 7) + '\u2026' + addr.slice(-4);
+    }
+    document.getElementById('payerAddress').textContent = maskStellarAddress(TEST_PAYER_PUBLIC);
 
     fetch('https://horizon-testnet.stellar.org/accounts/' + TEST_PAYER_PUBLIC)
       .then(function(r) { return r.json(); })
@@ -279,7 +285,7 @@
             currentPaymentInstructions = a;
             document.getElementById('pdAmount').textContent = a.maxAmountRequired + ' XLM';
             document.getElementById('pdAsset').textContent = 'XLM (native)';
-            document.getElementById('pdPayTo').textContent = a.payTo;
+            document.getElementById('pdPayTo').textContent = maskStellarAddress(a.payTo);
             document.getElementById('pdMemo').textContent = a.memo || '—';
             document.getElementById('pdNetwork').textContent = a.network;
             document.getElementById('paymentDetails').style.display = 'block';
