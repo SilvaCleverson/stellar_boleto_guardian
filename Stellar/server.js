@@ -17,6 +17,7 @@ const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
 const COMPANY_SECRET = process.env.COMPANY_SECRET || "";
 const STELLAR_NETWORK = process.env.STELLAR_NETWORK || "testnet";
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
+const STORAGE_BACKEND = (process.env.STORAGE_BACKEND || "soroban").toLowerCase();
 
 app.use(cors());
 app.use(express.json());
@@ -68,6 +69,10 @@ function requireAdmin(req, res, next) {
 
 async function getBoletoRecord(accountId, codebar) {
   const normalized = normalizeCodebar(codebar);
+  if (STORAGE_BACKEND === "soroban") {
+    const { getBoletoRecordSoroban } = require("../lib/soroban");
+    return getBoletoRecordSoroban(normalized);
+  }
   const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(normalized)}`;
   const response = await fetch(url);
 
@@ -298,27 +303,31 @@ app.get("/api/account/data", async (req, res) => {
       });
     }
 
-    const server = new Horizon.Server(HORIZON_URL);
-    const account = await server.loadAccount(accountId);
-    const dataEntries = account.data_attr || {};
-
-    const boletos = Object.entries(dataEntries).map(([key, valueB64]) => {
-      let valueDecoded = "";
-      try {
-        valueDecoded = Buffer.from(valueB64, "base64").toString("utf8");
-      } catch (_) {
-        /* ignore */
-      }
-      const [nosso_numero, valor, vencimento, status] =
-        valueDecoded.split("|");
-      return {
-        codebar: key,
-        nosso_numero: nosso_numero || "",
-        valor: valor || "",
-        vencimento: vencimento || "",
-        status: status || "",
-      };
-    });
+    let boletos;
+    if (STORAGE_BACKEND === "soroban") {
+      const { listBoletosSoroban } = require("../lib/soroban");
+      boletos = await listBoletosSoroban();
+    } else {
+      const server = new Horizon.Server(HORIZON_URL);
+      const account = await server.loadAccount(accountId);
+      const dataEntries = account.data_attr || {};
+      boletos = Object.entries(dataEntries).map(([key, valueB64]) => {
+        let valueDecoded = "";
+        try {
+          valueDecoded = Buffer.from(valueB64, "base64").toString("utf8");
+        } catch (_) {
+          /* ignore */
+        }
+        const [nosso_numero, valor, vencimento, status] = valueDecoded.split("|");
+        return {
+          codebar: key,
+          nosso_numero: nosso_numero || "",
+          valor: valor || "",
+          vencimento: vencimento || "",
+          status: status || "",
+        };
+      });
+    }
 
     res.json({
       success: true,
@@ -337,6 +346,85 @@ app.get("/api/account/data", async (req, res) => {
     res
       .status(status)
       .json({ success: false, error: error.message || "Conta não encontrada" });
+  }
+});
+
+// x402 — pay-per-validation endpoint
+const X402_AMOUNT = "0.1000000";
+
+app.get("/api/premium/:codebar", async (req, res) => {
+  const { codebar } = req.params;
+
+  if (!isValidCodebar(codebar)) {
+    return res.status(400).json({
+      success: false,
+      error: "Código de barras inválido. Deve conter entre 44 e 48 dígitos numéricos.",
+    });
+  }
+
+  const xPayment = req.header("X-Payment");
+
+  if (!xPayment) {
+    return res.status(402).json({
+      error: "Payment Required",
+      x402: {
+        version: 1,
+        amount: X402_AMOUNT,
+        asset: "XLM",
+        destination: COMPANY_ACCOUNT,
+        network: STELLAR_NETWORK,
+        description: `Pay ${X402_AMOUNT} XLM on Stellar to validate this boleto`,
+      },
+    });
+  }
+
+  try {
+    const horizonServer = new Horizon.Server(HORIZON_URL);
+    const ops = await horizonServer.operations().forTransaction(xPayment).call();
+
+    const paymentOp = ops.records.find(
+      (op) =>
+        op.type === "payment" &&
+        op.asset_type === "native" &&
+        op.to === COMPANY_ACCOUNT &&
+        parseFloat(op.amount) >= 0.1
+    );
+
+    if (!paymentOp) {
+      return res.status(402).json({
+        error: "Payment not verified",
+        detail: "No valid XLM payment (≥ 0.10 XLM) to company account found in this transaction",
+      });
+    }
+
+    if (!COMPANY_ACCOUNT || !isValidStellarKey(COMPANY_ACCOUNT)) {
+      return res.status(500).json({ success: false, error: "Company account not configured" });
+    }
+
+    const lookup = await getBoletoRecord(COMPANY_ACCOUNT, codebar);
+
+    return res.json({
+      success: true,
+      paid: true,
+      payment: {
+        txHash: xPayment,
+        amount: paymentOp.amount,
+        from: paymentOp.from,
+      },
+      validation: {
+        found: lookup.found,
+        codebar: normalizeCodebar(codebar),
+        message: lookup.found
+          ? "Boleto emitido pela empresa — autêntico."
+          : "Boleto NÃO encontrado na blockchain. Pode ser fraudulento.",
+      },
+    });
+  } catch (error) {
+    console.error("[x402] Erro ao verificar pagamento:", error.message);
+    return res.status(402).json({
+      error: "Payment verification failed",
+      detail: error.message,
+    });
   }
 });
 

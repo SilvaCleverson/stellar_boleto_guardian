@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>x402 Payment Demo — Boleto Guardian</title>
+  <script src="https://cdn.jsdelivr.net/npm/@stellar/stellar-sdk@13/dist/stellar-sdk.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0d3b66 0%, #1a5f7a 50%, #159895 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .wrapper { max-width: 760px; width: 100%; padding: 24px 0; }
+    .breadcrumb {
+      text-align: center;
+      margin-bottom: 20px;
+      color: rgba(255,255,255,0.75);
+      font-size: 13px;
+    }
+    .breadcrumb a { color: rgba(255,255,255,0.9); text-decoration: none; }
+    .breadcrumb .tag {
+      display: inline-block;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+      letter-spacing: 0.3px;
+    }
+    .page-title { text-align: center; color: white; margin-bottom: 24px; }
+    .page-title h1 { font-size: 2em; font-weight: 700; margin-bottom: 6px; }
+    .page-title p { font-size: 1em; opacity: 0.8; }
+    .card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+      overflow: hidden;
+      padding: 32px;
+    }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 28px;
+      flex-wrap: nowrap;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 80px;
+      padding: 12px 10px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px;
+      font-size: 13px;
+      color: #9ca3af;
+      background: #f9fafb;
+      transition: all 0.2s;
+      cursor: default;
+    }
+    .step .step-num { font-size: 18px; font-weight: 700; line-height: 1; }
+    .step.active {
+      border-color: #1a5f7a;
+      background: #eff6ff;
+      color: #1a5f7a;
+    }
+    .step.done {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #166534;
+    }
+    .step-arrow {
+      color: #d1d5db;
+      font-size: 18px;
+      padding: 0 4px;
+      flex-shrink: 0;
+    }
+
+    /* Info box */
+    .info-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      font-size: 14px;
+      color: #78350f;
+      line-height: 1.6;
+    }
+    .info-box strong { display: block; margin-bottom: 4px; color: #92400e; }
+    .info-box code {
+      background: rgba(0,0,0,0.06);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+    .info-box .highlight { color: #b45309; font-weight: 700; }
+
+    /* Form */
+    label { display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 6px; }
+    .field-group { margin-bottom: 16px; }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      transition: border-color 0.2s;
+    }
+    input:focus { outline: none; border-color: #1a5f7a; box-shadow: 0 0 0 3px rgba(26,95,122,0.12); }
+    .key-hint { font-size: 12px; color: #6b7280; margin-top: 5px; }
+
+    /* Button */
+    .btn-primary {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #1a5f7a 0%, #159895 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      margin-top: 8px;
+    }
+    .btn-primary:hover { opacity: 0.92; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* Panels */
+    .panel {
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-top: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .panel-error { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .panel-info  { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a5f; }
+    .panel-warn  { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+    .panel-success { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+
+    .panel pre {
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-family: 'Consolas', monospace;
+      font-size: 12px;
+      margin-top: 8px;
+      background: rgba(0,0,0,0.05);
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .panel strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+    /* Result card */
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .result-field {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+    .result-field .fl { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.5px; }
+    .result-field .fv { font-size: 14px; color: #111827; margin-top: 3px; word-break: break-all; }
+
+    /* Spinner */
+    .spinner-wrap { display: none; text-align: center; padding: 14px 0; color: #6b7280; font-size: 14px; }
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #1a5f7a;
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 10px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid #f3f4f6;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+    .footer a { color: #1a5f7a; text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="breadcrumb">
+    <a href="/">~ Home</a>
+    <span class="tag">HTTP 402 &middot; x402 Protocol &middot; Stellar Testnet</span>
+  </div>
+
+  <div class="page-title">
+    <h1>x402 Payment Demo</h1>
+    <p>Pay-per-validation via micropayment on Stellar &mdash; Boleto Guardian</p>
+  </div>
+
+  <div class="card">
+    <!-- Step indicator -->
+    <div class="steps">
+      <div class="step active" id="step1"><span class="step-num">1</span>Request</div>
+      <span class="step-arrow">&#8594;</span>
+      <div class="step" id="step2"><span class="step-num">2</span>402</div>
+      <span class="step-arrow">&#8594;</span>
+      <div class="step" id="step3"><span class="step-num">3</span>Pay XLM</div>
+      <span class="step-arrow">&#8594;</span>
+      <div class="step" id="step4"><span class="step-num">4</span>Retry</div>
+      <span class="step-arrow">&#8594;</span>
+      <div class="step" id="step5"><span class="step-num">5</span>Result</div>
+    </div>
+
+    <div class="info-box">
+      <strong>How x402 works here</strong>
+      The <code>/api/premium/:codebar</code> endpoint requires a Stellar payment before serving the result.
+      Step 1 shows the raw 402 response. After paying
+      <span class="highlight">0.10 XLM</span>
+      on Testnet, the same request is retried with the transaction hash in the <code>X-Payment</code> header &mdash;
+      the server verifies on-chain and returns the validation.
+    </div>
+
+    <!-- Inputs -->
+    <div class="field-group">
+      <label for="codebar">Barcode (44&ndash;48 digits)</label>
+      <input type="text" id="codebar" placeholder="00193246100000111008294868854798526870085737"
+        value="00193246100000111008294868854798526870085737" maxlength="54" autocomplete="off" inputmode="numeric">
+    </div>
+
+    <div class="field-group">
+      <label for="secretKey">Stellar secret key (for payment signing)</label>
+      <input type="password" id="secretKey" placeholder="S..." autocomplete="off">
+      <div class="key-hint" id="pubKeyHint">Used only in memory to sign the payment transaction. Never stored.</div>
+    </div>
+
+    <button class="btn-primary" id="btnStep1" onclick="doStep1()">
+      Step 1 &mdash; Request endpoint (expect 402)
+    </button>
+
+    <!-- Spinner -->
+    <div class="spinner-wrap" id="spinner">
+      <div class="spinner"></div>
+      <span id="spinnerMsg">Working...</span>
+    </div>
+
+    <!-- Panels -->
+    <div class="panel panel-error"   id="panelError"></div>
+    <div class="panel panel-warn"    id="panel402"></div>
+    <div class="panel panel-info"    id="panelPaying"></div>
+    <div class="panel panel-success" id="panelResult"></div>
+
+    <div class="footer">
+      <a href="/">Dashboard (SEP-10)</a> &middot;
+      <a href="/validation.html">Public validation</a> &middot;
+      Powered by <a href="https://stellar.org" target="_blank">Stellar</a> &middot;
+      Boleto Guardian v3.0
+    </div>
+  </div>
+</div>
+
+<script>
+const HORIZON_URL = 'https://horizon-testnet.stellar.org';
+
+// Derive public key on secret input
+document.getElementById('secretKey').addEventListener('input', function () {
+  const hint = document.getElementById('pubKeyHint');
+  const val = this.value.trim();
+  if (!val) {
+    hint.textContent = 'Used only in memory to sign the payment transaction. Never stored.';
+    return;
+  }
+  try {
+    const kp = StellarSdk.Keypair.fromSecret(val);
+    hint.textContent = 'Public key: ' + kp.publicKey();
+  } catch (_) {
+    hint.textContent = 'Invalid secret key format.';
+  }
+});
+
+function getCodebar() {
+  return document.getElementById('codebar').value.trim().replace(/[.\s-]/g, '');
+}
+
+function showSpinner(msg) {
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('spinnerMsg').textContent = msg || 'Working...';
+}
+function hideSpinner() {
+  document.getElementById('spinner').style.display = 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('panelError');
+  el.innerHTML = '<strong>Error</strong>' + escHtml(msg);
+  el.style.display = 'block';
+}
+
+function hideAll() {
+  ['panelError','panel402','panelPaying','panelResult'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+}
+
+function setStep(n) {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active','done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+}
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ── Step 1: call endpoint without payment → expect 402 ────────────────────
+async function doStep1() {
+  const codebar = getCodebar();
+  if (!/^\d{44,48}$/.test(codebar)) {
+    hideAll();
+    showError('Barcode must be 44–48 numeric digits.');
+    return;
+  }
+
+  hideAll();
+  setStep(1);
+  document.getElementById('btnStep1').disabled = true;
+  showSpinner('Requesting endpoint (expecting 402)...');
+
+  try {
+    const res = await fetch('/api/premium/' + encodeURIComponent(codebar));
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(_) {
+      throw new Error('Server returned non-JSON: ' + text.slice(0, 200));
+    }
+
+    hideSpinner();
+
+    if (res.status === 402) {
+      setStep(2);
+      const box = document.getElementById('panel402');
+      box.innerHTML =
+        '<strong>402 Payment Required &mdash; x402 response received</strong>' +
+        'The server requires a Stellar micropayment to proceed.<pre>' +
+        escHtml(JSON.stringify(data, null, 2)) + '</pre>';
+      box.style.display = 'block';
+
+      // Auto-advance to Step 3 if secret key is provided
+      const secret = document.getElementById('secretKey').value.trim();
+      if (secret && data.x402) {
+        await doStep3(codebar, data.x402);
+      } else {
+        showError('Enter your Stellar testnet secret key above to continue with the payment.');
+        document.getElementById('panelError').style.display = 'block';
+      }
+    } else if (res.ok) {
+      setStep(5);
+      showFinalResult(data);
+    } else {
+      showError('Unexpected status ' + res.status + ': ' + (data.error || text));
+    }
+  } catch (e) {
+    hideSpinner();
+    showError('Request failed: ' + e.message);
+  } finally {
+    document.getElementById('btnStep1').disabled = false;
+  }
+}
+
+// ── Step 3: build, sign, and submit payment ────────────────────────────────
+async function doStep3(codebar, x402Info) {
+  const secret = document.getElementById('secretKey').value.trim();
+  if (!secret) { showError('Secret key required to sign the payment.'); return; }
+
+  let keypair;
+  try { keypair = StellarSdk.Keypair.fromSecret(secret); }
+  catch (_) { showError('Invalid Stellar secret key.'); return; }
+
+  setStep(3);
+  const payingPanel = document.getElementById('panelPaying');
+  payingPanel.innerHTML = '<strong>Step 3 &mdash; Paying 0.10 XLM on Testnet...</strong>' +
+    'Building and submitting payment transaction. Please wait.';
+  payingPanel.style.display = 'block';
+  showSpinner('Submitting Stellar payment...');
+
+  try {
+    const server = new StellarSdk.Horizon.Server(HORIZON_URL);
+    const account = await server.loadAccount(keypair.publicKey());
+
+    const tx = new StellarSdk.TransactionBuilder(account, {
+      fee: StellarSdk.BASE_FEE,
+      networkPassphrase: StellarSdk.Networks.TESTNET,
+    })
+    .addOperation(StellarSdk.Operation.payment({
+      destination: x402Info.destination,
+      asset: StellarSdk.Asset.native(),
+      amount: '0.1',
+    }))
+    .setTimeout(300)
+    .build();
+
+    tx.sign(keypair);
+    const result = await server.submitTransaction(tx);
+    const txHash = result.hash;
+
+    hideSpinner();
+    payingPanel.innerHTML = '<strong>Step 3 &mdash; Payment submitted!</strong>' +
+      'Transaction hash: <code style="word-break:break-all">' + escHtml(txHash) + '</code>';
+
+    await doStep4(codebar, txHash);
+  } catch (e) {
+    hideSpinner();
+    const detail = e.response?.data?.extras?.result_codes
+      ? JSON.stringify(e.response.data.extras.result_codes)
+      : e.message;
+    showError('Payment failed: ' + detail);
+  }
+}
+
+// ── Step 4: retry with X-Payment header ───────────────────────────────────
+async function doStep4(codebar, txHash) {
+  setStep(4);
+  showSpinner('Retrying with X-Payment header...');
+
+  try {
+    const res = await fetch('/api/premium/' + encodeURIComponent(codebar), {
+      headers: { 'X-Payment': txHash },
+    });
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(_) {
+      throw new Error('Server returned non-JSON: ' + text.slice(0, 200));
+    }
+
+    hideSpinner();
+
+    if (res.ok && data.success) {
+      setStep(5);
+      showFinalResult(data);
+    } else {
+      showError('Step 4 failed (status ' + res.status + '): ' + (data.error || data.detail || text));
+    }
+  } catch (e) {
+    hideSpinner();
+    showError('Retry failed: ' + e.message);
+  }
+}
+
+// ── Step 5: show result ────────────────────────────────────────────────────
+function showFinalResult(data) {
+  const v = data.validation || {};
+  const p = data.payment || {};
+  const found = v.found;
+
+  const explorerBase = 'https://stellar.expert/explorer/testnet/tx/';
+  const txLink = p.txHash
+    ? '<a href="' + explorerBase + p.txHash + '" target="_blank" style="color:#1e40af;word-break:break-all">' + p.txHash + '</a>'
+    : '&mdash;';
+
+  const panel = document.getElementById('panelResult');
+  panel.innerHTML =
+    '<strong>Step 5 &mdash; Result' + (found ? ' ✓ Authentic' : ' ✗ Not found') + '</strong>' +
+    '<div class="result-grid">' +
+      field('Status', found ? '&#10003; Registered on-chain' : '&#10007; Not found') +
+      field('Codebar', v.codebar || '&mdash;') +
+      field('XLM paid', p.amount ? p.amount + ' XLM' : '0.10 XLM') +
+      field('Paid from', p.from ? p.from.slice(0,12) + '...' : '&mdash;') +
+    '</div>' +
+    '<div style="margin-top:12px;font-size:13px;padding:10px;background:rgba(0,0,0,0.04);border-radius:6px">' +
+      v.message + '<br><br>Transaction: ' + txLink +
+    '</div>';
+  panel.style.display = 'block';
+}
+
+function field(label, value) {
+  return '<div class="result-field"><div class="fl">' + label + '</div><div class="fv">' + value + '</div></div>';
+}
+</script>
+</body>
+</html>
