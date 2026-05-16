@@ -35,16 +35,6 @@ async function handleRequest(req, res) {
   const paymentHeader = req.headers['x-payment'];
 
   if (!paymentHeader) {
-    const paymentDetails = {
-      x402Version: 1,
-      network: 'stellar-testnet',
-      amount: PAYMENT_AMOUNT,
-      asset: 'XLM (native)',
-      payTo: COMPANY_ACCOUNT,
-      memo: `x402:${codebar.slice(0, 10)}`,
-      description: `Boleto Guardian — premium validation for barcode ${codebar.slice(0, 8)}...`,
-    };
-    res.setHeader('X-Payment-Required', JSON.stringify(paymentDetails));
     return res.status(402).json({
       x402Version: 1,
       error: 'Payment required',

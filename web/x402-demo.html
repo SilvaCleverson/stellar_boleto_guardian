@@ -155,11 +155,10 @@
         <input type="text" id="codebar" placeholder="Numbers only" maxlength="48" inputmode="numeric" />
       </div>
 
-      <div class="form-group">
-        <label for="secretKey">Stellar secret key (for payment signing)</label>
-        <input type="password" id="secretKey" placeholder="SXXXXXXXXXXXXXXXXXX..." autocomplete="off" spellcheck="false" />
-        <div class="pubkey-hint" id="pubkeyHint"></div>
-        <p style="font-size:0.76rem;color:#6b7280;margin-top:5px;">Used only in memory to sign the payment transaction. Never stored.</p>
+      <div style="margin-bottom:16px;padding:12px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;font-size:0.82rem;color:#166534;">
+        <strong>Carteira pagadora (teste):</strong><br>
+        <code style="word-break:break-all;font-size:0.75rem;">GA3M5QHVHLUD3QMLZBL7RKFAJLHEMM4URCICC7DUUMNZ7WBUJIORXWHV</code><br>
+        Saldo: <span id="payerBalance">consultando...</span> XLM testnet &mdash; assina automaticamente. Chave fica só na memória do browser.
       </div>
 
       <button class="btn btn-check" onclick="step1Check()" id="btnCheck">Step 1 — Request endpoint (expect 402)</button>
@@ -195,7 +194,20 @@
     var API_BASE = (document.querySelector('meta[name="api-base"]') || {}).content || window.location.origin;
     if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
 
+    var TEST_PAYER_SECRET = 'SB4MNXHDOPDQQA2OTGB7JGVN3CMQRP2ZHUKC2CN2L4TLE2KQCGZKIREE';
+    var TEST_PAYER_PUBLIC = 'GA3M5QHVHLUD3QMLZBL7RKFAJLHEMM4URCICC7DUUMNZ7WBUJIORXWHV';
     var currentPaymentInstructions = null;
+
+    fetch('https://horizon-testnet.stellar.org/accounts/' + TEST_PAYER_PUBLIC)
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var xlm = d.balances.find(function(b) { return b.asset_type === 'native'; });
+        var bal = xlm ? parseFloat(xlm.balance).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—';
+        document.getElementById('payerBalance').textContent = bal;
+      })
+      .catch(function() {
+        document.getElementById('payerBalance').textContent = '(erro ao consultar)';
+      });
     var currentCodebar = null;
 
     function digitsOnly(v) { return String(v || '').replace(/\D/g, ''); }
@@ -236,16 +248,6 @@
       body.innerHTML = syntaxHighlight(data);
     }
 
-    document.getElementById('secretKey').addEventListener('input', function () {
-      var val = this.value.trim();
-      var hint = document.getElementById('pubkeyHint');
-      if (val.length === 56 && val.startsWith('S')) {
-        try {
-          var kp = StellarSdk.Keypair.fromSecret(val);
-          hint.textContent = 'Public key: ' + kp.publicKey();
-        } catch (e) { hint.textContent = ''; }
-      } else { hint.textContent = ''; }
-    });
 
     async function step1Check() {
       var codebar = digitsOnly(document.getElementById('codebar').value);
@@ -282,6 +284,7 @@
             document.getElementById('pdNetwork').textContent = a.network;
             document.getElementById('paymentDetails').style.display = 'block';
             document.getElementById('btnPay').style.display = 'block';
+            await step3Pay();
           }
         } else {
           showResponse(res.status, data);
@@ -294,22 +297,16 @@
     }
 
     async function step3Pay() {
-      var secretKey = document.getElementById('secretKey').value.trim();
-      if (!secretKey) {
-        setStatus('err', 'Enter your Stellar secret key to sign the payment.');
+      if (!currentPaymentInstructions || !currentCodebar) {
+        setStatus('err', 'Run Step 1 first to get payment instructions.');
         return;
       }
 
       var keypair;
       try {
-        keypair = StellarSdk.Keypair.fromSecret(secretKey);
+        keypair = StellarSdk.Keypair.fromSecret(TEST_PAYER_SECRET);
       } catch (e) {
-        setStatus('err', 'Invalid secret key. Must start with S and be 56 characters.');
-        return;
-      }
-
-      if (!currentPaymentInstructions || !currentCodebar) {
-        setStatus('err', 'Run Step 1 first to get payment instructions.');
+        setStatus('err', 'Erro ao carregar carteira de teste: ' + e.message);
         return;
       }
 
@@ -337,7 +334,6 @@
 
         tx.sign(keypair);
         keypair = null;
-        document.getElementById('secretKey').value = '';
 
         var result = await server.submitTransaction(tx);
         var txHash = result.hash;

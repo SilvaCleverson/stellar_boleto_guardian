@@ -17,7 +17,6 @@ const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
 const COMPANY_SECRET = process.env.COMPANY_SECRET || "";
 const STELLAR_NETWORK = process.env.STELLAR_NETWORK || "testnet";
 const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
-const STORAGE_BACKEND = (process.env.STORAGE_BACKEND || "soroban").toLowerCase();
 
 app.use(cors());
 app.use(express.json());
@@ -69,10 +68,6 @@ function requireAdmin(req, res, next) {
 
 async function getBoletoRecord(accountId, codebar) {
   const normalized = normalizeCodebar(codebar);
-  if (STORAGE_BACKEND === "soroban") {
-    const { getBoletoRecordSoroban } = require("../lib/soroban");
-    return getBoletoRecordSoroban(normalized);
-  }
   const url = `${HORIZON_URL}/accounts/${accountId}/data/${encodeURIComponent(normalized)}`;
   const response = await fetch(url);
 
@@ -303,31 +298,27 @@ app.get("/api/account/data", async (req, res) => {
       });
     }
 
-    let boletos;
-    if (STORAGE_BACKEND === "soroban") {
-      const { listBoletosSoroban } = require("../lib/soroban");
-      boletos = await listBoletosSoroban();
-    } else {
-      const server = new Horizon.Server(HORIZON_URL);
-      const account = await server.loadAccount(accountId);
-      const dataEntries = account.data_attr || {};
-      boletos = Object.entries(dataEntries).map(([key, valueB64]) => {
-        let valueDecoded = "";
-        try {
-          valueDecoded = Buffer.from(valueB64, "base64").toString("utf8");
-        } catch (_) {
-          /* ignore */
-        }
-        const [nosso_numero, valor, vencimento, status] = valueDecoded.split("|");
-        return {
-          codebar: key,
-          nosso_numero: nosso_numero || "",
-          valor: valor || "",
-          vencimento: vencimento || "",
-          status: status || "",
-        };
-      });
-    }
+    const server = new Horizon.Server(HORIZON_URL);
+    const account = await server.loadAccount(accountId);
+    const dataEntries = account.data_attr || {};
+
+    const boletos = Object.entries(dataEntries).map(([key, valueB64]) => {
+      let valueDecoded = "";
+      try {
+        valueDecoded = Buffer.from(valueB64, "base64").toString("utf8");
+      } catch (_) {
+        /* ignore */
+      }
+      const [nosso_numero, valor, vencimento, status] =
+        valueDecoded.split("|");
+      return {
+        codebar: key,
+        nosso_numero: nosso_numero || "",
+        valor: valor || "",
+        vencimento: vencimento || "",
+        status: status || "",
+      };
+    });
 
     res.json({
       success: true,
