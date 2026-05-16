@@ -3,7 +3,7 @@
 **Projeto:** Boleto Guardian
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 **Mantido por:** Equipe Guardian
-**Última atualização:** 14/05/2026 (v1.11)
+**Última atualização:** 16/05/2026 (v1.12)
 
 ---
 
@@ -14,6 +14,8 @@ Este é o **Documento de Produto** (RT — *Registro do raciocínio*) do Boleto 
 É atualizado a cada nova decisão, aprendizado ou pivô. O histórico de mudanças é preservado pelos commits do GitHub.
 
 > **Princípio:** decisões são registradas com a justificativa que as motivou no momento. Quando uma decisão é revertida, a anterior **não é apagada** — é marcada como obsoleta com a nova decisão abaixo. Isso preserva a memória do raciocínio e permite revisitar suposições.
+
+> **Status operacional (16/05/2026):** A equipe está **realizando testes locais** do MVP (API em Stellar/, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10 e integração Protheus **FI040ROT** / **Guardian.prw**). Resultados ainda não consolidados em produção — ambiente de referência é **desenvolvimento local** (.env + Horizon Testnet), não mainnet.
 
 ---
 
@@ -373,6 +375,17 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | Integração x402 | Implementar o protocolo x402 no produto, se aplicável ao modelo de negócio; caso contrário, registrar justificativa de N/A |
 | Entrega Final do Hackathon | Submissão completa do MVP com demo ao vivo, vídeo do produto, pitch deck de 5 slides e posts de divulgação |
 
+### Atualização de andamento · 16/05/2026
+
+**Testes locais em curso.** O time valida o fluxo ponta a ponta no ambiente de desenvolvimento:
+
+- API Node (Stellar/server.js) com conta Testnet e **Manage Data**;
+- registro e consulta de boleto (POST /api/blockchain, GET /api/validate/:codebar, GET /api/admin/boletos/:codebar);
+- painel web com SEP-10 (login.html, dashboard.html);
+- integração Protheus (menu Contas a receber → **Registrar** / **Consultar no Boleto Guardian**).
+
+Até concluir essa rodada, o produto deve ser tratado como **em homologação local**, não como release estável em produção.
+
 ---
 
 ## 9. Riscos críticos identificados
@@ -406,6 +419,7 @@ A Sprint 2 — Hackathon começa em 11/05/2026 com quatro desafios oficiais:
 | v1.9 | 13/05/2026 | D-017: migração Soroban (`contract/src/lib.rs`, `lib/soroban.js`, `STORAGE_BACKEND`); Seção 3, tecnologias e D-013 alinhados; D-003 e D-010 atualizados; histórico v1.8/v1.9 |
 | v1.10 | 14/05/2026 | D-018: integração Protheus Contas a receber (`FI040ROT`, `Guardian.prw`, `MV_GUARDKY`, `SE1->E1_CODBAR`); tabela Camada 1 e *endpoint* `GET /api/admin/boletos/:codebar` na Camada 2; implementação Sergio Artero (`ffe139b`) |
 | v1.11 | 14/05/2026 | Revisão de português do Brasil: glossas (carteira/*wallet*, parte confiante/*relying party*), servidor em vez de *backend* em prosa, navegador, implantação, *fallback*, mensagem D-018 em pt-BR |
+| v1.12 | 16/05/2026 | Status: testes locais do MVP em andamento (API Testnet, Manage Data, SEP-10, Protheus FI040ROT/Guardian); Seção 8 e bloco de status no início do documento |
 
 ---
 
