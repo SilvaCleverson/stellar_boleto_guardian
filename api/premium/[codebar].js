@@ -9,6 +9,15 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Payment');
 
+  try {
+    return await handleRequest(req, res);
+  } catch (err) {
+    console.error('[x402] Unhandled error:', err);
+    return res.status(500).json({ success: false, error: 'Internal error: ' + err.message, stack: err.stack });
+  }
+};
+
+async function handleRequest(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ success: false, error: 'Method not allowed' });
 
@@ -70,7 +79,7 @@ module.exports = async function handler(req, res) {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
-};
+}
 
 async function verifyPayment(txHash, destination) {
   const server = new Horizon.Server(HORIZON_URL);
