@@ -83,9 +83,17 @@ stellar_boleto_guardian/
 |   |   +-- [codebar].js         # GET /api/validate/:codebar
 |   |-- account/
 |   |   +-- data.js              # GET /api/account/data
+|   |-- webhooks/asaas/
+|   |   +-- [tenantId].js        # Proxy -> Integracao/ASAAS
 |   +-- admin/
+|       |-- tenants.js           # Proxy -> Integracao/ASAAS
 |       +-- boletos/
 |           +-- [codebar].js     # GET /api/admin/boletos/:codebar
+|
+|-- Integracao/
+|   |-- README.md
+|   |-- Protheus/                # ADVPL (FI040ROT, Guardian.prw)
+|   +-- ASAAS/                   # Webhook Asaas
 |
 |-- lib/
 |   +-- stellar.js               # Logica Stellar compartilhada
@@ -101,9 +109,6 @@ stellar_boleto_guardian/
 |   |-- createCompanyAccount.js
 |   |-- sendBoletoToBlockchain.js
 |   +-- env.example
-|
-|-- Protheus/                    # Fontes ADVPL (integracao futura)
-|   +-- BoletoHashStellar.prw
 |
 |-- vercel.json                  # Config deploy Vercel (raiz)
 |-- package.json                 # Dependencias das serverless functions
@@ -154,6 +159,24 @@ Acesse `http://localhost:3000`.
 
 ---
 
+## Integracao Asaas (multi-tenant)
+
+Emissores que usam [Asaas](https://www.asaas.com/desenvolvedores) podem registrar boletos na Stellar automaticamente via webhook `PAYMENT_CREATED`.
+
+1. Configure `TENANTS_JSON` (veja `Integracao/ASAAS/config/tenants.example.json`) com API Key Asaas, token do webhook e conta Stellar do emissor.
+2. No Asaas, aponte o webhook para `https://www.boletoguardian.xyz/api/webhooks/asaas/{tenantId}` com o mesmo `authToken`.
+3. Ao criar cobranca `BOLETO`, o Guardian busca o codigo de barras na API Asaas (back-end) e grava na blockchain.
+
+Guia completo: **[Integracao/ASAAS/README.md](Integracao/ASAAS/README.md)** · Índice: **[Integracao/README.md](Integracao/README.md)**
+
+Testes unitarios (sem credenciais Asaas):
+
+```bash
+npm run test:asaas
+```
+
+---
+
 ## Deploy no Vercel
 
 ### 1. Variaveis de ambiente no dashboard
@@ -165,6 +188,8 @@ Settings -> Environment Variables:
 | `COMPANY_ACCOUNT` | Chave publica da conta Stellar da empresa |
 | `COMPANY_SECRET` | Chave privada (nunca exposta ao cliente) |
 | `ADMIN_API_KEY` | Chave para endpoints administrativos |
+| `TENANTS_JSON` | Array JSON de emissores Asaas (multi-tenant) |
+| `GUARDIAN_PUBLIC_URL` | URL base para onboarding (ex.: `https://www.boletoguardian.xyz`) |
 | `STELLAR_NETWORK` | `testnet` ou `public` |
 | `HORIZON_URL` | URL do Horizon |
 

@@ -1,0 +1,12 @@
+[
+  {
+    "tenantId": "loja_exemplo",
+    "name": "Loja Exemplo Ltda",
+    "asaasEnv": "sandbox",
+    "asaasApiKey": "$aact_YOUR_SANDBOX_API_KEY",
+    "webhookAuthToken": "whsec_minimum_32_characters_secure_token_here",
+    "companyAccount": "GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "companySecret": "SXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+    "enabled": true
+  }
+]

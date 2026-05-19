@@ -80,7 +80,9 @@ stellar_boleto_guardian/
 │   ├── validation.html     # Public boleto validation
 │   └── registro.html       # Internal registration (admin only)
 ├── Stellar/                # Express server (local / legacy)
-├── Protheus/               # ADVPL sources (future integration)
+├── Integracao/
+│   ├── Protheus/           # ADVPL (TOTVS)
+│   └── ASAAS/              # Asaas webhook
 ├── vercel.json             # Vercel config
 └── package.json            # Serverless function dependencies
 ```
