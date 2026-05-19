@@ -84,7 +84,36 @@ The barcode is:
 +------------------+        +--------------------+        +--------------------+
 ```
 
-**Key point:** the Stellar account belongs to the **company** (DS2U), not to each client. All slips are stored in the same account. The DS2U Account ID is fixed and pre-configured in the API -- the end user never needs to know it.
+**Key point:** each **issuer** has its own Stellar account (one account per company). The payer only needs the barcode digits to validate.
+
+---
+
+## Project structure
+
+```
+stellar_boleto_guardian/
+|-- api/                    # Vercel serverless (public HTTP)
+|-- Integracao/
+|   |-- Protheus/           # ADVPL sources (FI040ROT, Guardian.prw)
+|   `-- ASAAS/              # Asaas webhook + multi-tenant
+|-- lib/stellar.js          # Shared Stellar logic
+|-- web/                    # Static frontend
+`-- Stellar/                # Local Express server (legacy)
+```
+
+Index: **[Integracao/README.md](Integracao/README.md)**
+
+---
+
+## External integrations
+
+| Channel | Location | How it registers |
+|---------|----------|------------------|
+| **Protheus** | `Integracao/Protheus/` | `POST /api/blockchain` with `x-admin-key` (server-side in ERP) |
+| **Asaas** | `Integracao/ASAAS/` | Webhook `PAYMENT_CREATED` -> `POST /api/webhooks/asaas/{tenantId}` |
+| **Web panel** | `web/dashboard.html` | SEP-10 login -> `POST /api/boleto/register` |
+
+Asaas setup: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) · `npm run test:asaas`
 
 ---
 
@@ -144,8 +173,12 @@ U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
 | `GET` | `/` | API status |
 | `POST` | `/api/wallet` | Create company Stellar account |
 | `POST` | `/api/blockchain` | Register slip (key=barcode, value=payload) |
-| `GET` | `/api/validate/:barcode` | Validate slip by barcode |
-| `GET` | `/api/account/:id/data` | List all registered slips |
+| `GET` | `/api/validate/:barcode` | Validate slip by barcode (public) |
+| `GET` | `/api/admin/boletos/:codebar` | Admin lookup (`x-admin-key`) |
+| `POST` | `/api/webhooks/asaas/:tenantId` | Asaas webhook (`Integracao/ASAAS`) |
+| `GET` / `POST` | `/api/admin/tenants` | Asaas tenant setup (admin) |
+| `POST` | `/api/boleto/register` | Register via SEP-10 web panel |
+| `GET` | `/api/account/:id/data` | List registered slips |
 
 ### Example POST /api/blockchain
 

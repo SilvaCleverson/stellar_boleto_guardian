@@ -36,7 +36,7 @@ Tabela ZXH para cadastro da conta Stellar da empresa (URL da API e, se desejar, 
 | ZXH_CODCLI | C | 6 | Codigo da empresa |
 | ZXH_WALLET | C | 60 | Stellar Account ID (COMPANY_ACCOUNT) -- apenas referencia; nao enviado na assinatura |
 | ZXH_TOPIC | C | 20 | Reservado |
-| ZXH_PRVKEY | C | 300 | **Nao utilizar para envio à API.** A chave fica apenas no servidor da API. Campo mantido por compatibilidade; deixar em branco ou nao preencher. |
+| ZXH_PRVKEY | C | 300 | **Nao utilizar para envio a API.** A chave fica apenas no servidor da API. Campo mantido por compatibilidade; deixar em branco ou nao preencher. |
 | ZXH_DTGER | D | 8 | Data da criacao |
 
 **Indices:**

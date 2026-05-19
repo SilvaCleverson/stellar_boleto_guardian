@@ -52,17 +52,16 @@ Nenhum app. Nenhum cadastro. So os numeros do boleto.
 ## Arquitetura
 
 ```
- EMPRESA (registro.html ou ERP)    API SERVERLESS (Vercel)      STELLAR (Blockchain)
+ EMISSOR (Integracao/)             API SERVERLESS (Vercel)      STELLAR (Blockchain)
  +-----------------------------+   +----------------------+     +--------------------+
- | Digita codebar (44 a 48 digitos) |   | POST /api/blockchain |     | Manage Data        |
- | Informa ADMIN_API_KEY       |-->| Valida chave admin   |---->| key  = codebar     |
- |                             |   | Assina transacao     |     | value = payload    |
- +-----------------------------+   +----------------------+     +--------------------+
-                                                                        |
+ | Protheus: POST /blockchain  |   | Assina com COMPANY_  |---->| Manage Data        |
+ | Asaas: webhook PAYMENT_     |-->| SECRET (so servidor) |     | key  = codebar     |
+ |   CREATED                   |   |                      |     | value = payload    |
+ | Web: SEP-10 + dashboard     |   +----------------------+     +--------------------+
+ +-----------------------------+                                        |
  PAGADOR (validation.html)                                              v
  +-----------------------------+   +----------------------+     +--------------------+
- | Digita codebar do boleto    |-->| GET /api/validate/   |---->| Codebar existe?    |
- |                             |   | :codebar             |     | Retorna resultado  |
+ | Digita codebar (44-48 dig.) |-->| GET /api/validate/   |---->| Autentico?         |
  +-----------------------------+   +----------------------+     +--------------------+
 ```
 
@@ -209,7 +208,10 @@ O `vercel.json` ja configura `outputDirectory: "web"` para servir os arquivos es
 | `GET` | `/api/validate/:codebar` | Publica | Valida boleto pelo codebar |
 | `GET` | `/api/account/data` | Publica | Lista boletos registrados |
 | `GET` | `/api/admin/boletos/:codebar` | ADMIN_API_KEY | Busca boleto com dados completos |
+| `POST` | `/api/webhooks/asaas/:tenantId` | Webhook token | Registro automatico via Asaas (**Integracao/ASAAS**) |
+| `GET` / `POST` | `/api/admin/tenants` | ADMIN_API_KEY | Gestao de tenants Asaas |
 | `POST` | `/api/wallet` | Publica | Cria nova conta Stellar |
+| `POST` | `/api/boleto/register` | Bearer SEP-10 | Registro pelo painel web |
 
 ### Registrar boleto
 

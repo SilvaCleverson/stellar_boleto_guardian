@@ -78,7 +78,36 @@ La linea digitalizadora de un boleto bancario tiene **44 a 48 digitos** -- cabe 
 +------------------+        +--------------------+        +--------------------+
 ```
 
-**Punto clave:** la cuenta Stellar es de la **empresa** (DS2U), no de cada cliente. Todos los boletos quedan en la misma cuenta. El Account ID de DS2U es fijo y ya viene configurado en la API -- el usuario final nunca necesita saberlo.
+**Punto clave:** cada **emisor** tiene su propia cuenta Stellar (una cuenta por empresa). El pagador solo necesita los digitos del codigo de barras para validar.
+
+---
+
+## Estructura del proyecto
+
+```
+stellar_boleto_guardian/
+|-- api/                    # Serverless Vercel (HTTP publico)
+|-- Integracao/
+|   |-- Protheus/           # Fuentes ADVPL (FI040ROT, Guardian.prw)
+|   `-- ASAAS/              # Webhook Asaas + multi-tenant
+|-- lib/stellar.js          # Logica Stellar compartida
+|-- web/                    # Frontend estatico
+`-- Stellar/                # Servidor Express local (legado)
+```
+
+Indice: **[Integracao/README.md](Integracao/README.md)**
+
+---
+
+## Integraciones externas
+
+| Canal | Ubicacion | Como registra |
+|-------|-----------|---------------|
+| **Protheus** | `Integracao/Protheus/` | `POST /api/blockchain` con `x-admin-key` (servidor ERP) |
+| **Asaas** | `Integracao/ASAAS/` | Webhook `PAYMENT_CREATED` -> `POST /api/webhooks/asaas/{tenantId}` |
+| **Panel web** | `web/dashboard.html` | Login SEP-10 -> `POST /api/boleto/register` |
+
+Configuracion Asaas: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) · `npm run test:asaas`
 
 ---
 
@@ -138,8 +167,12 @@ U_BolStlr(cCodebar, cNossoNum, nValor, dVencto, cCodCli)
 | `GET` | `/` | Estado de la API |
 | `POST` | `/api/wallet` | Crear cuenta Stellar de la empresa |
 | `POST` | `/api/blockchain` | Registrar boleto (key=codebar, value=payload) |
-| `GET` | `/api/validate/:codebar` | Validar boleto por codigo de barras |
-| `GET` | `/api/account/:id/data` | Listar todos los boletos registrados |
+| `GET` | `/api/validate/:codebar` | Validar boleto por codigo de barras (publico) |
+| `GET` | `/api/admin/boletos/:codebar` | Consulta admin (`x-admin-key`) |
+| `POST` | `/api/webhooks/asaas/:tenantId` | Webhook Asaas (`Integracao/ASAAS`) |
+| `GET` / `POST` | `/api/admin/tenants` | Configuracion de tenants Asaas (admin) |
+| `POST` | `/api/boleto/register` | Registro via panel web SEP-10 |
+| `GET` | `/api/account/:id/data` | Listar boletos registrados |
 
 ### Ejemplo POST /api/blockchain
 

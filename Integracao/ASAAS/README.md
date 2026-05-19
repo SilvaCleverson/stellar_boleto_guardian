@@ -1,4 +1,4 @@
-# Integração Asaas ? Boleto Guardian
+# Integração Asaas — Boleto Guardian
 
 Módulo em **`Integracao/ASAAS/`** — registro automático na Stellar ao criar cobrança **BOLETO** no Asaas (`PAYMENT_CREATED`).
 
@@ -8,14 +8,14 @@ Módulo em **`Integracao/ASAAS/`** — registro automático na Stellar ao criar cobr
 
 ```
 Integracao/ASAAS/
-??? README.md
-??? index.js
-??? config/tenants.example.json
-??? lib/client.js
-??? lib/tenants.js
-??? handlers/webhook.js
-??? handlers/admin-tenants.js
-??? tests/integration.test.js
+|-- README.md
+|-- index.js
+|-- config/tenants.example.json
+|-- lib/client.js
+|-- lib/tenants.js
+|-- handlers/webhook.js
+|-- handlers/admin-tenants.js
+`-- tests/integration.test.js
 ```
 
 Proxies Vercel em `api/`:

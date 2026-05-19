@@ -32,19 +32,20 @@
 ## How it works
 
 ```
- COMPANY (registro.html)         SERVERLESS API (Vercel)       STELLAR (Blockchain)
+ ISSUER (Integracao/)            SERVERLESS API (Vercel)        STELLAR (Blockchain)
  +---------------------------+   +----------------------+      +--------------------+
- | Enter codebar (44 to 48 digits) |   | POST /api/blockchain |      | Manage Data        |
- | Provide ADMIN_API_KEY     |-->| Verify admin key     |----> | key  = codebar     |
- |                           |   | Sign transaction     |      | value = payload    |
+ | Protheus: POST /blockchain|   | Sign with COMPANY_   |----> | Manage Data        |
+ | Asaas: webhook PAYMENT_   |-->| SECRET (server only) |      | key  = codebar     |
+ |   CREATED                 |   |                      |      | value = payload    |
+ | Web: SEP-10 + dashboard   |   +----------------------+      +--------------------+
+ +---------------------------+                                        |
+ PAYER (validation.html)                                                v
  +---------------------------+   +----------------------+      +--------------------+
-                                                                       |
- PAYER (validation.html)                                               v
- +---------------------------+   +----------------------+      +--------------------+
- | Type barcode from boleto  |-->| GET /api/validate/   |----> | Codebar exists?    |
- |                           |   | :codebar             |      | Return result      |
+ | Type barcode (44-48 dig.) |-->| GET /api/validate/   |----> | Authentic?         |
  +---------------------------+   +----------------------+      +--------------------+
 ```
+
+**Integrations:** [Integracao/README.md](Integracao/README.md) — `Protheus/` (ERP) and `ASAAS/` (payment gateway webhook).
 
 ## Quick start (local)
 
