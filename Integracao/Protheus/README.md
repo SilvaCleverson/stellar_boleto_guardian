@@ -1,6 +1,6 @@
-# Fontes ADVPL — Stellar Boleto Guardian
+# Fontes ADVPL â€” Stellar Boleto Guardian
 
-Local: **`Integracao/Protheus/`** — índice das integrações: [../README.md](../README.md)
+Local: **`Integracao/Protheus/`** â€” Ã­ndice das integraÃ§Ãµes: [../README.md](../README.md)
 
 Fontes Protheus para autenticacao imutavel de boletos via blockchain Stellar.
 

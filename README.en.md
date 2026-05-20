@@ -113,7 +113,7 @@ Index: **[Integracao/README.md](Integracao/README.md)**
 | **Asaas** | `Integracao/ASAAS/` | Webhook `PAYMENT_CREATED` -> `POST /api/webhooks/asaas/{tenantId}` |
 | **Web panel** | `web/dashboard.html` | SEP-10 login -> `POST /api/boleto/register` |
 
-Asaas setup: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) · `npm run test:asaas`
+Asaas setup: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) Â· `npm run test:asaas`
 
 ---
 

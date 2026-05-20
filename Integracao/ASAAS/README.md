@@ -1,8 +1,8 @@
-# IntegraÁ„o Asaas ó Boleto Guardian
+# Integra√ß√£o Asaas ‚Äî Boleto Guardian
 
-MÛdulo em **`Integracao/ASAAS/`** ó registro autom·tico na Stellar ao criar cobranÁa **BOLETO** no Asaas (`PAYMENT_CREATED`).
+M√≥dulo em **`Integracao/ASAAS/`** ‚Äî registro autom√°tico na Stellar ao criar cobran√ßa **BOLETO** no Asaas (`PAYMENT_CREATED`).
 
-Õndice das integraÁıes: [../README.md](../README.md)
+√çndice das integra√ß√µes: [../README.md](../README.md)
 
 ## Estrutura
 
@@ -25,10 +25,10 @@ Proxies Vercel em `api/`:
 | `api/webhooks/asaas/[tenantId].js` | `Integracao/ASAAS/handlers/webhook.js` |
 | `api/admin/tenants.js` | `Integracao/ASAAS/handlers/admin-tenants.js` |
 
-## PrÈ-requisitos
+## Pr√©-requisitos
 
-- Conta [Asaas Sandbox](https://www.asaas.com/desenvolvedores) ou produÁ„o
-- API Key Asaas (menu **Minha Conta ? IntegraÁ„o ? Gerar API Key**)
+- Conta [Asaas Sandbox](https://www.asaas.com/desenvolvedores) ou produ√ß√£o
+- API Key Asaas (menu **Minha Conta ? Integra√ß√£o ? Gerar API Key**)
 - Conta Stellar do emissor (`POST /api/wallet` ou `node Stellar/createCompanyAccount.js`)
 
 ## 1. Cadastrar tenant
@@ -48,7 +48,7 @@ curl -X POST https://www.boletoguardian.xyz/api/admin/tenants \
 - **Eventos:** `PAYMENT_CREATED`
 - **authToken:** igual a `webhookAuthToken` do tenant
 
-[DocumentaÁ„o webhooks Asaas](https://docs.asaas.com/docs/criar-novo-webhook-pela-api)
+[Documenta√ß√£o webhooks Asaas](https://docs.asaas.com/docs/criar-novo-webhook-pela-api)
 
 ## 3. Testes
 
@@ -56,8 +56,8 @@ curl -X POST https://www.boletoguardian.xyz/api/admin/tenants \
 npm run test:asaas
 ```
 
-## SeguranÁa
+## Seguran√ßa
 
-- API Key Asaas **somente no servidor** ([orientaÁ„o Asaas](https://www.asaas.com/desenvolvedores)).
+- API Key Asaas **somente no servidor** ([orienta√ß√£o Asaas](https://www.asaas.com/desenvolvedores)).
 - Header `asaas-access-token` = `webhookAuthToken`.
 - Uma conta Stellar por emissor.

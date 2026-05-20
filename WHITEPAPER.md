@@ -357,7 +357,7 @@ The intermediary API is the only layer that accesses the private key to sign tra
 
 ### 7.3 No upload of full financial data
 
-The Boleto Guardian does **not** upload or store full financial documents or sensitive financial data. Only the **minimum data required for authenticity verification** is sent to the API and recorded on the blockchain: the barcode (44 to 48 digits), nosso nÃºmero, amount, due date, and status. The system does **not** receive or store: full boleto text, bank account details, customer financial history, or any data beyond what is necessary to prove that a given barcode was issued by the company. This limits exposure and keeps the solution aligned with data minimization and regulatory expectations.
+The Boleto Guardian does **not** upload or store full financial documents or sensitive financial data. Only the **minimum data required for authenticity verification** is sent to the API and recorded on the blockchain: the barcode (44 to 48 digits), nosso número, amount, due date, and status. The system does **not** receive or store: full boleto text, bank account details, customer financial history, or any data beyond what is necessary to prove that a given barcode was issued by the company. This limits exposure and keeps the solution aligned with data minimization and regulatory expectations.
 
 ### 7.4 Privacy by Design -- LGPD
 

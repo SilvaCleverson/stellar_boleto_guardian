@@ -45,7 +45,7 @@
  +---------------------------+   +----------------------+      +--------------------+
 ```
 
-**Integrations:** [Integracao/README.md](Integracao/README.md) � `Protheus/` (ERP) and `ASAAS/` (payment gateway webhook).
+**Integrations:** [Integracao/README.md](Integracao/README.md) - `Protheus/` (ERP) and `ASAAS/` (payment gateway webhook).
 
 ## Quick start (local)
 
@@ -68,24 +68,24 @@ Open `http://localhost:3000`.
 
 ```
 stellar_boleto_guardian/
-├── api/                    # Vercel serverless functions
-│   ├── blockchain.js       # POST /api/blockchain
-│   ├── wallet.js           # POST /api/wallet
-│   ├── validate/[codebar].js
-│   ├── account/data.js
-│   └── admin/boletos/[codebar].js
-├── lib/
-│   └── stellar.js          # Shared Stellar SDK logic
-├── web/                    # Static frontend (Vercel outputDirectory)
-│   ├── index.html
-│   ├── validation.html     # Public boleto validation
-│   └── registro.html       # Internal registration (admin only)
-├── Stellar/                # Express server (local / legacy)
-├── Integracao/
-│   ├── Protheus/           # ADVPL (TOTVS)
-│   └── ASAAS/              # Asaas webhook
-├── vercel.json             # Vercel config
-└── package.json            # Serverless function dependencies
+|-- api/                    # Vercel serverless functions
+|   |-- blockchain.js       # POST /api/blockchain
+|   |-- wallet.js           # POST /api/wallet
+|   |-- validate/[codebar].js
+|   |-- account/data.js
+|   `-- admin/boletos/[codebar].js
+|-- lib/
+|   `-- stellar.js          # Shared Stellar SDK logic
+|-- web/                    # Static frontend (Vercel outputDirectory)
+|   |-- index.html
+|   |-- validation.html     # Public boleto validation
+|   `-- registro.html       # Internal registration (admin only)
+|-- Stellar/                # Express server (local / legacy)
+|-- Integracao/
+|   |-- Protheus/           # ADVPL (TOTVS)
+|   `-- ASAAS/              # Asaas webhook
+|-- vercel.json             # Vercel config
+`-- package.json            # Serverless function dependencies
 ```
 
 ## Full docs

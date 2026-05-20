@@ -66,7 +66,7 @@ Nenhum app. Nenhum cadastro. So os numeros do boleto.
 ```
 
 **Conta Stellar da empresa (Testnet):**
-`GDBLQVÖYYBQ6` (conta Testnet; chave completa em `COMPANY_ACCOUNT` no ambiente)
+`GDBLQV‚Ä¶YYBQ6` (conta Testnet; chave completa em `COMPANY_ACCOUNT` no ambiente)
 
 ---
 
@@ -166,7 +166,7 @@ Emissores que usam [Asaas](https://www.asaas.com/desenvolvedores) podem registra
 2. No Asaas, aponte o webhook para `https://www.boletoguardian.xyz/api/webhooks/asaas/{tenantId}` com o mesmo `authToken`.
 3. Ao criar cobranca `BOLETO`, o Guardian busca o codigo de barras na API Asaas (back-end) e grava na blockchain.
 
-Guia completo: **[Integracao/ASAAS/README.md](Integracao/ASAAS/README.md)** ∑ Õndice: **[Integracao/README.md](Integracao/README.md)**
+Guia completo: **[Integracao/ASAAS/README.md](Integracao/ASAAS/README.md)** ¬∑ √çndice: **[Integracao/README.md](Integracao/README.md)**
 
 Testes unitarios (sem credenciais Asaas):
 

@@ -13,19 +13,19 @@ module.exports = async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Headers", "x-admin-key, Authorization");
 
   if (req.method !== "GET") {
-    return res.status(405).json({ success: false, error: "MÈtodo n„o permitido." });
+    return res.status(405).json({ success: false, error: "M√©todo n√£o permitido." });
   }
 
   const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
   const COMPANY_ACCOUNT = process.env.COMPANY_ACCOUNT || "";
 
   if (!ADMIN_API_KEY) {
-    return res.status(500).json({ success: false, error: "ADMIN_API_KEY n„o configurada no servidor." });
+    return res.status(500).json({ success: false, error: "ADMIN_API_KEY n√£o configurada no servidor." });
   }
 
   const key = getAdminKey(req);
   if (!key || key !== ADMIN_API_KEY) {
-    return res.status(401).json({ success: false, error: "N„o autorizado. Informe uma chave administrativa v·lida." });
+    return res.status(401).json({ success: false, error: "N√£o autorizado. Informe uma chave administrativa v√°lida." });
   }
 
   const { codebar } = req.query;
@@ -33,19 +33,19 @@ module.exports = async function handler(req, res) {
   if (!isValidCodebar(codebar)) {
     return res.status(400).json({
       success: false,
-      error: "CÛdigo de barras inv·lido. Deve conter entre 44 e 48 dÌgitos numÈricos.",
+      error: "C√≥digo de barras inv√°lido. Deve conter entre 44 e 48 d√≠gitos num√©ricos.",
     });
   }
 
   const accountId = req.query.account || COMPANY_ACCOUNT;
   if (!accountId || !isValidStellarKey(accountId)) {
-    return res.status(400).json({ success: false, error: "Conta da empresa n„o configurada. Defina COMPANY_ACCOUNT no Vercel." });
+    return res.status(400).json({ success: false, error: "Conta da empresa n√£o configurada. Defina COMPANY_ACCOUNT no Vercel." });
   }
 
   try {
     const lookup = await getBoletoRecord(accountId, codebar);
     if (!lookup.found) {
-      return res.json({ success: true, found: false, message: "Boleto n„o encontrado nos registros da empresa." });
+      return res.json({ success: true, found: false, message: "Boleto n√£o encontrado nos registros da empresa." });
     }
     res.json({ success: true, found: true, data: lookup.record, message: "Boleto encontrado no registro da empresa." });
   } catch (error) {

@@ -1,23 +1,23 @@
-# Integrações — Boleto Guardian
+# IntegraÃ§Ãµes â€” Boleto Guardian
 
-Diretório das integrações com sistemas externos. Cada subpasta é um conector independente.
+DiretÃ³rio das integraÃ§Ãµes com sistemas externos. Cada subpasta Ã© um conector independente.
 
-| Pasta | Sistema | Descrição |
+| Pasta | Sistema | DescriÃ§Ã£o |
 |-------|---------|-----------|
 | [**Protheus/**](Protheus/) | TOTVS Protheus (ADVPL) | Registro e consulta via Contas a Receber (`FI040ROT`, `Guardian.prw`) |
-| [**ASAAS/**](ASAAS/) | Asaas (API + webhook) | Registro automático na Stellar ao emitir boleto (`PAYMENT_CREATED`) |
+| [**ASAAS/**](ASAAS/) | Asaas (API + webhook) | Registro automÃ¡tico na Stellar ao emitir boleto (`PAYMENT_CREATED`) |
 
 ## Rotas HTTP (Vercel)
 
-As APIs públicas permanecem em `api/` na raiz do repositório:
+As APIs pÃºblicas permanecem em `api/` na raiz do repositÃ³rio:
 
-| Rota | Módulo |
+| Rota | MÃ³dulo |
 |------|--------|
 | `POST /api/blockchain` | Core (Protheus / ERP legado) |
 | `POST /api/webhooks/asaas/{tenantId}` | `Integracao/ASAAS/handlers/webhook.js` |
 | `GET/POST /api/admin/tenants` | `Integracao/ASAAS/handlers/admin-tenants.js` |
 
-## Documentação
+## DocumentaÃ§Ã£o
 
 - Protheus: [Protheus/README.md](Protheus/README.md)
 - Asaas: [ASAAS/README.md](ASAAS/README.md)

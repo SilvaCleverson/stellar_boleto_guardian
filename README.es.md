@@ -17,7 +17,7 @@
 
 > **Parte del ecosistema Guardian Labs**
 >
-> Guardian Labs construye infraestructura pública de autenticidad para las claves que mueven dinero en Brasil. Boleto Guardian es el primer producto de este ecosistema. Otros instrumentos de pago brasileños están en la hoja de ruta futura.
+> Guardian Labs construye infraestructura pública de autenticidad para las claves que mueven dinero en Brasil. Boleto Guardian es el primer producto de este ecosistema. Otros instrumentos de pago brasileÃ±os están en la hoja de ruta futura.
 
 ---
 
@@ -107,7 +107,7 @@ Indice: **[Integracao/README.md](Integracao/README.md)**
 | **Asaas** | `Integracao/ASAAS/` | Webhook `PAYMENT_CREATED` -> `POST /api/webhooks/asaas/{tenantId}` |
 | **Panel web** | `web/dashboard.html` | Login SEP-10 -> `POST /api/boleto/register` |
 
-Configuracion Asaas: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) � `npm run test:asaas`
+Configuracion Asaas: [Integracao/ASAAS/README.md](Integracao/ASAAS/README.md) · `npm run test:asaas`
 
 ---
 
