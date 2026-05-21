@@ -45,7 +45,7 @@ services:
       - "traefik.http.routers.my_dashboard.entrypoints=console"
       - "traefik.http.routers.my_dashboard.service=api@internal"
       - "traefik.http.routers.my_dashboard.middlewares=my_admin_auth"
-      - "traefik.http.middlewares.my_admin_auth.basicauth.users=admin:$$2y$$05$$ycUvQJQqlGWFlK4GMLviHOJ5Xqgm9k.VzypJMdoHr5KW4e7Ftn8q6"
+      - "traefik.http.middlewares.my_admin_auth.basicauth.users=admin:$$2y$$05$$kDFDcpoinTBpivrM1UeSoOdMs9RntBI7djKqJ2EA4wBgAOu3HrSCW
       - "traefik.http.routers.dashboard.rule=Host(`traefik.guardian-labs.xyz`)"
       - "traefik.http.routers.dashboard.entrypoints=web"
       - "traefik.http.routers.dashboard.middlewares=redirect-to-https"
@@ -76,53 +76,53 @@ services:
     depends_on:
       - traefik
 
-  guardian-labs-api:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: guardian-labs-api
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.guardian-labs-api.rule=Host(`api.guardian-labs.xyz`)"
-      - "traefik.http.routers.guardian-labs-api.entrypoints=websecure"
-      - "traefik.http.routers.guardian-labs-api.tls=true"
-      - "traefik.http.services.guardian-labs-api.loadbalancer.server.port=3000"
-    expose:
-      - "3000"
-    env_file:
-      - ./backend/.env
-    environment:
-      - NODE_ENV=production
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
-      interval: 30s
-      timeout: 5s
-      start_period: 10s
-      retries: 3
-    depends_on:
-      - traefik
-
-  guardian-labs-portal:
-    build:
-      context: .
-      dockerfile: docker/nginx/Dockerfile
-    container_name: guardian-labs-portal
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.guardian-labs-portal.rule=Host(`guardian-labs.xyz`)"
-      - "traefik.http.routers.guardian-labs-portal.entrypoints=web"
-      - "traefik.http.routers.guardian-labs-portal.middlewares=guardian-labs-portal-https"
-      - "traefik.http.middlewares.guardian-labs-portal-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.guardian-labs-portal-secure.rule=Host(`guardian-labs.xyz`)"
-      - "traefik.http.routers.guardian-labs-portal-secure.entrypoints=websecure"
-      - "traefik.http.routers.guardian-labs-portal-secure.tls=true"
-      # (Opcional) especifique a porta caso o serviço não use 80:
-      - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
-    
-    depends_on:
-      traefik:
-        condition: service_started
-      guardian-labs-api:
-        condition: service_healthy
-    restart: unless-stopped
+  #guardian-labs-api:
+  #  build:
+  #    context: ./backend
+  #    dockerfile: Dockerfile
+  #  container_name: guardian-labs-api
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.guardian-labs-api.rule=Host(`api.guardian-labs.xyz`)"
+  #    - "traefik.http.routers.guardian-labs-api.entrypoints=websecure"
+  #    - "traefik.http.routers.guardian-labs-api.tls=true"
+  #    - "traefik.http.services.guardian-labs-api.loadbalancer.server.port=3000"
+  #  expose:
+  #    - "3000"
+  #  env_file:
+  #    - ./backend/.env
+  #  environment:
+  #    - NODE_ENV=production
+  #  restart: unless-stopped
+  #  healthcheck:
+  #    test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+  #    interval: 30s
+  #    timeout: 5s
+  #    start_period: 10s
+  #    retries: 3
+  #  depends_on:
+  #    - traefik
+#
+  #guardian-labs-portal:
+  #  build:
+  #    context: .
+  #    dockerfile: docker/nginx/Dockerfile
+  #  container_name: guardian-labs-portal
+  #  labels:
+  #    - "traefik.enable=true"
+  #    - "traefik.http.routers.guardian-labs-portal.rule=Host(`guardian-labs.xyz`)"
+  #    - "traefik.http.routers.guardian-labs-portal.entrypoints=web"
+  #    - "traefik.http.routers.guardian-labs-portal.middlewares=guardian-labs-portal-https"
+  #    - "traefik.http.middlewares.guardian-labs-portal-https.redirectscheme.scheme=https"
+  #    - "traefik.http.routers.guardian-labs-portal-secure.rule=Host(`guardian-labs.xyz`)"
+  #    - "traefik.http.routers.guardian-labs-portal-secure.entrypoints=websecure"
+  #    - "traefik.http.routers.guardian-labs-portal-secure.tls=true"
+  #    # (Opcional) especifique a porta caso o serviço não use 80:
+  #    - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
+  #  
+  #  depends_on:
+  #    traefik:
+  #      condition: service_started
+  #    guardian-labs-api:
+  #      condition: service_healthy
+  #  restart: unless-stopped
