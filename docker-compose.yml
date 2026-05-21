@@ -92,8 +92,6 @@ services:
     environment:
       - NODE_ENV=production
     restart: unless-stopped
-    networks:
-      - guardian-net
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
       interval: 30s
@@ -122,9 +120,3 @@ services:
       api:
         condition: service_healthy
     restart: unless-stopped
-    networks:
-      - guardian-net
-
-networks:
-  guardian-net:
-    driver: bridge
