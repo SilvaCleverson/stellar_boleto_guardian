@@ -1,3 +1,19 @@
+# =============================================================================
+# Pré-requisitos no VPS antes do `docker compose up -d`:
+#
+#   1. docker network create proxy
+#   2. mkdir -p ~/DockerConfig/traefik/{logs,letsencrypt}
+#   3. touch ~/DockerConfig/traefik/letsencrypt/acme.json
+#      chmod 600 ~/DockerConfig/traefik/letsencrypt/acme.json
+#   4. cp docker/traefik/traefik_dynamic.toml ~/DockerConfig/traefik/
+#   5. Editar backend/.env com COMPANY_ACCOUNT, COMPANY_SECRET, ADMIN_API_KEY
+#   6. DNS apontando *.guardian-labs.xyz para o IP do VPS
+#
+# IMPORTANTE: este compose NÃO usa o Docker provider do Traefik
+# (incompatibilidade do SDK com Docker Engine 29.x). Todas as rotas estão
+# declaradas no traefik_dynamic.toml. Containers não precisam de labels.
+# =============================================================================
+
 networks:
   default:
     external: true
@@ -8,31 +24,24 @@ volumes:
 
 services:
 
-  # ── Traefik: reverse proxy + TLS automático ────────────────────────────────
+  # ── Traefik: reverse proxy + TLS automático (config estática) ──────────────
   traefik:
     container_name: traefik
     image: "traefik:v3.3"
     restart: always
-    environment:
-      # Docker Engine 29.x (API 1.54) exige clientes com API >= 1.40.
-      # Sem esta variável, o SDK negocia com 1.24 e o daemon rejeita.
-      # Com ela, o SDK pula a negociação e usa 1.41 diretamente.
-      - DOCKER_API_VERSION=1.41
     command:
       - --api.dashboard=true
+      - --api.insecure=false
+      # Provider de arquivo: lê /traefik_dynamic.toml para rotas/serviços
       - --providers.file.filename=/traefik_dynamic.toml
       - --providers.file.watch=true
+      # Provider Docker DESABILITADO (incompatível com Docker Engine 29.x)
       - --log.level=INFO
       - --log.filePath=/logs/traefik.log
-      - --providers.docker=true
-      - --providers.docker.endpoint=unix:///var/run/docker.sock
-      - --providers.docker.exposedbydefault=false
-      - --providers.docker.watch=true
-      - --providers.docker.network=proxy
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.console.address=:8080
-      # Let's Encrypt — HTTP-01 challenge na entrypoint :80
+      # Let's Encrypt
       - --certificatesresolvers.le.acme.email=guardianlabsw3@gmail.com
       - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
       - --certificatesresolvers.le.acme.httpchallenge=true
@@ -42,26 +51,10 @@ services:
       - "443:443"
       - "8080:8080"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/home/artero/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml"
-      - "/home/artero/DockerConfig/traefik/certs/:/certs/"
+      # Socket Docker NÃO é mais montado — provider Docker desativado
+      - "/home/artero/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml:ro"
       - "/home/artero/DockerConfig/traefik/logs:/logs"
       - "/home/artero/DockerConfig/traefik/letsencrypt:/letsencrypt"
-    labels:
-      - "traefik.enable=true"
-      # Dashboard protegido por basic auth (admin / a senha do hash original)
-      - "traefik.http.routers.my_dashboard.rule=Host(`traefik.guardian-labs.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
-      - "traefik.http.routers.my_dashboard.entrypoints=websecure"
-      - "traefik.http.routers.my_dashboard.tls=true"
-      - "traefik.http.routers.my_dashboard.tls.certresolver=le"
-      - "traefik.http.routers.my_dashboard.service=api@internal"
-      - "traefik.http.routers.my_dashboard.middlewares=my_admin_auth"
-      - "traefik.http.middlewares.my_admin_auth.basicauth.users=admin:$$2y$$05$$kDFDcpoinTBpivrM1UeSoOdMs9RntBI7djKqJ2EA4wBgAOu3HrSCW"
-      # Redirect HTTP → HTTPS no host do dashboard
-      - "traefik.http.routers.dashboard-redirect.rule=Host(`traefik.guardian-labs.xyz`)"
-      - "traefik.http.routers.dashboard-redirect.entrypoints=web"
-      - "traefik.http.routers.dashboard-redirect.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   # ── Portainer ──────────────────────────────────────────────────────────────
   portainer:
@@ -71,24 +64,10 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-data:/data
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`portainer.guardian-labs.xyz`)"
-      - "traefik.http.routers.portainer.entrypoints=websecure"
-      - "traefik.http.routers.portainer.tls=true"
-      - "traefik.http.routers.portainer.tls.certresolver=le"
-      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
-      # Redirect HTTP → HTTPS
-      - "traefik.http.routers.portainer-redirect.rule=Host(`portainer.guardian-labs.xyz`)"
-      - "traefik.http.routers.portainer-redirect.entrypoints=web"
-      - "traefik.http.routers.portainer-redirect.middlewares=portainer-https-redirect"
-      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
     depends_on:
       - traefik
 
   # ── Boleto Guardian: API Node ──────────────────────────────────────────────
-  # IMPORTANTE: o frontend chama /api/* same-origin (guardian-labs.xyz/api/*),
-  # então o router de api/ fica no Traefik abaixo (não no nginx).
   guardian-labs-api:
     build:
       context: ./backend
@@ -107,15 +86,6 @@ services:
       timeout: 5s
       start_period: 15s
       retries: 3
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.guardian-labs-api.loadbalancer.server.port=3000"
-      # Mesma origem do portal — o frontend chama /api/* sem CORS
-      - "traefik.http.routers.guardian-labs-api.rule=Host(`guardian-labs.xyz`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.guardian-labs-api.entrypoints=websecure"
-      - "traefik.http.routers.guardian-labs-api.tls=true"
-      - "traefik.http.routers.guardian-labs-api.tls.certresolver=le"
-      - "traefik.http.routers.guardian-labs-api.priority=100"
     depends_on:
       - traefik
 
@@ -128,19 +98,6 @@ services:
     restart: unless-stopped
     expose:
       - "8080"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
-      - "traefik.http.routers.guardian-labs-portal.rule=Host(`guardian-labs.xyz`)"
-      - "traefik.http.routers.guardian-labs-portal.entrypoints=websecure"
-      - "traefik.http.routers.guardian-labs-portal.tls=true"
-      - "traefik.http.routers.guardian-labs-portal.tls.certresolver=le"
-      - "traefik.http.routers.guardian-labs-portal.priority=1"
-      # Redirect HTTP → HTTPS
-      - "traefik.http.routers.guardian-labs-portal-redirect.rule=Host(`guardian-labs.xyz`)"
-      - "traefik.http.routers.guardian-labs-portal-redirect.entrypoints=web"
-      - "traefik.http.routers.guardian-labs-portal-redirect.middlewares=portal-https"
-      - "traefik.http.middlewares.portal-https.redirectscheme.scheme=https"
     depends_on:
       traefik:
         condition: service_started
