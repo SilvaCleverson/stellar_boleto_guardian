@@ -1,11 +1,29 @@
-<!DOCTYPE html>
+# -*- coding: utf-8 -*-
+from pathlib import Path
+
+OUT = Path(__file__).resolve().parents[1] / "web" / "auditoria-seguranca.html"
+COMMIT = "https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94"
+
+DESC = (
+    "Auditoria de Seguran\u00e7a D-021 \u2014 Boleto Guardian. "
+    "Exposi\u00e7\u00e3o de ADMIN_API_KEY no navegador e corre\u00e7\u00e3o por Sergio Artero (CTO)."
+)
+TITLE = "Auditoria de Seguran\u00e7a D-021 | Guardian Labs \u00b7 Boleto Guardian"
+H1 = "Auditoria de Seguran\u00e7a \u2014 D-021"
+HERO = (
+    "Relat\u00f3rio p\u00fablico da vulnerabilidade cr\u00edtica identificada na Sprint 3 "
+    "(Stellar 37 Degrees) e da corre\u00e7\u00e3o implementada."
+)
+META = "Projeto: Boleto Guardian \u00b7 Corre\u00e7\u00e3o: Sergio Artero (CTO) \u00b7 Data: 20/05/2026"
+
+HTML = """<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Auditoria de Segurança D-021 — Boleto Guardian. Exposição de ADMIN_API_KEY no navegador e correção por Sergio Artero (CTO).">
-  <title>Auditoria de Segurança D-021 | Guardian Labs · Boleto Guardian</title>
+  <meta name="description" content="__DESC__">
+  <title>__TITLE__</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -74,9 +92,9 @@
     </nav>
     <header class="hero">
       <p class="hero-labs">Guardian Labs</p>
-      <h1>Auditoria de Segurança — D-021</h1>
-      <p>Relatório público da vulnerabilidade crítica identificada na Sprint 3 (Stellar 37 Degrees) e da correção implementada.</p>
-      <p class="meta"><strong>Projeto: Boleto Guardian · Correção: Sergio Artero (CTO) · Data: 20/05/2026</strong></p>
+      <h1>__H1__</h1>
+      <p>__HERO__</p>
+      <p class="meta"><strong>__META__</strong></p>
     </header>
     <article class="card">
       <h2>1. Achado cr&iacute;tico</h2>
@@ -106,7 +124,7 @@
       <h2>2. Corre&ccedil;&atilde;o realizada</h2>
       <div class="commit-box">
         <p><strong>Commit (corre&ccedil;&atilde;o final):</strong></p>
-        <p><a href="https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94" target="_blank" rel="noopener">e7da273 &mdash; refactor: backend absorve ADMIN_API_KEY &mdash; nenhum header em tr&acirc;nsito</a></p>
+        <p><a href="__COMMIT__" target="_blank" rel="noopener">e7da273 &mdash; refactor: backend absorve ADMIN_API_KEY &mdash; nenhum header em tr&acirc;nsito</a></p>
       </div>
       <ul>
         <li><code>web/registro.html</code> &mdash; removidos <code>sessionStorage</code> e <code>x-admin-key</code> no cliente.</li>
@@ -120,7 +138,7 @@
         <p><strong>Vulnerabilidade:</strong> <code>ADMIN_API_KEY</code> em <code>sessionStorage</code> e header <code>x-admin-key</code> no DevTools.</p>
         <p><strong>Risco:</strong> abuso de APIs administrativas (registro/consulta on-chain).</p>
         <p><strong>Corre&ccedil;&atilde;o:</strong> chave s&oacute; no servidor; front sem segredo.</p>
-        <p><strong>Commit:</strong> <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94">github.com/.../e7da273</a></p>
+        <p><strong>Commit:</strong> <a href="__COMMIT__">github.com/.../e7da273</a></p>
         <p><strong>Relat&oacute;rio:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca.html">boletoguardian.xyz/auditoria-seguranca.html</a></p>
       </div>
     </article>
@@ -137,3 +155,23 @@
   </div>
 </body>
 </html>
+"""
+
+
+def main():
+    body = (
+        HTML.replace("__DESC__", DESC)
+        .replace("__TITLE__", TITLE)
+        .replace("__H1__", H1)
+        .replace("__HERO__", HERO)
+        .replace("__META__", META)
+        .replace("__COMMIT__", COMMIT)
+    )
+    OUT.write_text(body, encoding="utf-8", newline="\n")
+    t = OUT.read_text(encoding="utf-8")
+    assert "\ufffd" not in t and "cr&iacute;tico" in t
+    print("OK", OUT)
+
+
+if __name__ == "__main__":
+    main()
