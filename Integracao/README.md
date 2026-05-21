@@ -1,5 +1,7 @@
 # Integrações — Boleto Guardian
 
+Parte da infraestrutura do **Boleto Guardian**, primeiro produto da **Guardian Labs**.
+
 Diretório das integrações com sistemas externos. Cada subpasta é um conector independente.
 
 | Pasta | Sistema | Descrição |

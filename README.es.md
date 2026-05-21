@@ -16,8 +16,19 @@
 ---
 
 > **Parte del ecosistema Guardian Labs**
->
-> Guardian Labs construye infraestructura pública de autenticidad para las claves que mueven dinero en Brasil. Boleto Guardian es el primer producto de este ecosistema. Otros instrumentos de pago brasileÃ±os están en la hoja de ruta futura.
+
+> **Guardian Labs** construye **infraestructura pública de autenticidad** para las claves que mueven dinero en Brasil — pruebas inmutables y auditables de que un instrumento de pago es legítimo, sin depender solo del emisor o del banco. **Boleto Guardian** es el **primer producto** de Guardian Labs (autenticidad de boletos en Stellar; validación con 44 a 48 dígitos del código de barras). Otros instrumentos de pago brasileños están en la hoja de ruta.
+
+## Qué es Guardian Labs
+
+**Guardian Labs** es la **marca del proyecto** (marca madre) que desarrolla capas públicas de confianza sobre identificadores de pago en Brasil. No es banco, fintech de pagos ni ancla Stellar — es la capa de **autenticidad** que emisores y pagadores usan vía API, integrada a cualquier ERP.
+
+| Guardian Labs | Boleto Guardian |
+|---------------|-----------------|
+| Marca y tesis de largo plazo | Primer producto en producción (MVP) |
+| Infraestructura para varios instrumentos | Boletos en Stellar hoy |
+| Pitch: empresa + roadmap | Experiencia: registrar y validar boletos |
+
 
 ---
 
