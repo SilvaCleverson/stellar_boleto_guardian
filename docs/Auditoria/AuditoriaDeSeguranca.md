@@ -1,0 +1,104 @@
+# Auditoria de Segurança — D-021
+
+**Projeto:** Boleto Guardian (Guardian Labs)  
+**Programa:** Stellar 37 Degrees — Refinamento | Desafio 1 (Sprint 3)  
+**Responsável pela correção:** Sergio Artero (CTO)  
+**Data da correção:** 20/05/2026  
+
+**Relatório público (avaliadores):** https://www.boletoguardian.xyz/auditoria-seguranca.html
+
+---
+
+## 1. Achado crítico
+
+### Vulnerabilidade
+
+Exposição da **`ADMIN_API_KEY`** (credencial administrativa secreta da API) no **navegador**, na página interna `web/registro.html` (`https://boletoguardian.xyz/registro.html`).
+
+### Como foi detectada
+
+Durante revisão de segurança (Sprint 3), a equipe reproduziu o fluxo de registro interno de boleto e inspecionou as **Ferramentas de Desenvolvedor (DevTools)** do Chrome:
+
+1. **Application ? Session Storage:** a chave administrativa era gravada em `sessionStorage` após o operador clicar em “Salvar chave na sessão”.
+2. **Network ? requisição `POST /api/blockchain`:** o cabeçalho HTTP **`x-admin-key`** era enviado com o valor completo da `ADMIN_API_KEY` em texto claro.
+
+### Evidência
+
+![Evidência: cabeçalho x-admin-key visível no DevTools durante POST /api/blockchain](ChaveExposta.jpeg)  
+*(também em produção: `/assets/auditoria/ChaveExposta.jpeg` na página pública acima)*
+
+*Figura 1 — DevTools (aba Rede): requisição `POST https://www.boletoguardian.xyz/api/blockchain` com o cabeçalho `x-admin-key` exposto. Na mesma tela aparece a conta Stellar pública (`G…`), que é dado público na rede; o achado crítico é a **chave administrativa secreta**, não o endereço público.*
+
+### Risco
+
+| Aspecto | Impacto |
+|---------|---------|
+| **Confidencialidade** | Qualquer pessoa com acesso ao posto do operador (ou tráfego HTTP inspecionado) podia **copiar a chave admin** e chamar endpoints privilegiados. |
+| **Integridade** | Uso indevido de `POST /api/blockchain` para registrar boletos falsos on-chain em nome da empresa. |
+| **Disponibilidade / abuso** | Consulta e gestão via `GET /api/admin/boletos/:codebar` e demais rotas administrativas sem controle de identidade. |
+| **Severidade** | **Crítica** — segredo de API tratado como dado de sessão no cliente. |
+
+**Superfície afetada (antes da correção):**
+
+- `web/registro.html` — campo `ADMIN_API_KEY`, `sessionStorage` (`bg_admin_key`), envio de `x-admin-key` no `fetch`.
+- Endpoints: `POST /api/blockchain`, `GET /api/admin/boletos/:codebar`, rotas admin Asaas.
+
+**Nota sobre “chave pública” na evidência:** o endereço Stellar `G…` exibido na página é **público por design** na blockchain Stellar. O problema de segurança documentado nesta auditoria é a **credencial administrativa secreta** (`ADMIN_API_KEY`), visível no cabeçalho `x-admin-key` na captura de tela.
+
+---
+
+## 2. Correção realizada
+
+**Implementação:** Sergio Artero  
+**Commit de entrega (correção final):**
+
+**https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94**
+
+Mensagem: `refactor: backend absorve ADMIN_API_KEY — nenhum header em trânsito`
+
+### O que mudou
+
+1. **`web/registro.html`**
+   - Removidos campo de chave administrativa, `sessionStorage` e envio de `x-admin-key` pelo JavaScript.
+   - O front-end chama a API **sem cabeçalhos de segredo**; mensagem explícita de que a autenticação admin é resolvida no servidor.
+
+2. **`backend/server.js`** e **`backend/integrations/asaas/handlers/admin-tenants.js`**
+   - `requireAdmin()` passa a validar apenas que `ADMIN_API_KEY` existe no **`.env` do container `api`**.
+   - A chave **não é lida de header** do cliente; autorização marcada como `internal-env`.
+
+3. **Topologia Docker / nginx**
+   - API na rede interna `guardian-net` (porta 3000 sem exposição pública direta).
+   - Apenas o nginx na mesma rede alcança o backend; `ADMIN_API_KEY` permanece somente no ambiente do servidor.
+
+### Resultado
+
+- A `ADMIN_API_KEY` **não trafega** no navegador nem em cabeçalhos HTTP visíveis no DevTools.
+- Rotas administrativas continuam protegidas no servidor, alinhadas a **D-013** (SEP-10 no painel) e **D-018** (Protheus com `MV_GUARDKY` no servidor).
+
+**Commit intermediário (etapa anterior, 20/05/2026):**  
+https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/61912aac595145a805df35f70a9cef7963f8fd24  
+(`feat(nginx): injeta x-admin-key server-side`) — substituído pela abordagem final em `e7da273`, em que **nenhum header** transporta o segredo.
+
+---
+
+## 3. Texto para entrega do formulário (até 300 caracteres)
+
+**Relatório completo (link para avaliadores):** https://www.boletoguardian.xyz/auditoria-seguranca.html
+
+Texto sugerido (copiar no campo do formulário):
+
+> ADMIN_API_KEY exposta em sessionStorage e header x-admin-key no DevTools (registro.html). Risco: abuso de APIs admin. Correção: segredo só no servidor (commit e7da273). Relatório: https://www.boletoguardian.xyz/auditoria-seguranca.html
+
+*(?248 caracteres)*
+
+---
+
+## 4. Referências
+
+- **RT do produto:** `docs/RT-DocumentoDeProduto.md` — decisão **D-021**
+- **Documentação da descoberta:** commit `dbc1b0a` — `docs(RT): D-021 - exposicao ADMIN_API_KEY via DevTools em registro.html`
+- **Evidência visual:** `docs/Auditoria/ChaveExposta.jpeg`
+
+---
+
+*Guardian Labs · Boleto Guardian · Auditoria Sprint 3*

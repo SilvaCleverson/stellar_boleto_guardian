@@ -18,7 +18,7 @@ Este é o **Documento de Produto** (RT — *Registro do raciocínio*) do Boleto 
 
 > **Princípio:** decisões são registradas com a justificativa que as motivou no momento. Quando uma decisão é revertida, a anterior **não é apagada** — é marcada como obsoleta com a nova decisão abaixo. Isso preserva a memória do raciocínio e permite revisitar suposições.
 
-> **Status operacional (19/05/2026):** A equipe está **realizando testes locais** do MVP (API em `Stellar/`, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10, integração Protheus em `Integracao/Protheus/`, integração Asaas em `Integracao/ASAAS/` (**D-020**)). **Segurança (Sprint 3):** identificada exposição da **ADMIN_API_KEY** em `web/registro.html` via **DevTools** do navegador (`sessionStorage` + cabeçalho `x-admin-key`) — ver **D-021**; correção em andamento por **Sergio Artero**. Ambiente de referência: desenvolvimento local / Testnet, não mainnet.
+> **Status operacional (19/05/2026):** A equipe está **realizando testes locais** do MVP (API em `Stellar/`, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10, integração Protheus em `Integracao/Protheus/`, integração Asaas em `Integracao/ASAAS/` (**D-020**)). **Segurança (Sprint 3):** identificada exposição da **ADMIN_API_KEY** em `web/registro.html` via **DevTools** do navegador (`sessionStorage` + cabeçalho `x-admin-key`) — ver **D-021**; correção **D-021** concluída por **Sergio Artero** (commit `e7da273`). Ambiente de referência: desenvolvimento local / Testnet, não mainnet.
 
 ---
 ## Equipe Guardian Labs
@@ -507,12 +507,12 @@ COMPANY_ACCOUNT vem da variável de ambiente (endereços abreviados neste docume
 ### D-021 · Exposição de credencial administrativa via DevTools (`registro.html`)
 
 **Data:** 19/05/2026  
-**Status:** **Em correção** — responsável **Sergio Artero**.  
-**Descoberta:** Durante revisão de segurança (Sprint 3 — *vulnerabilidade documentada*), a equipe identificou que a página interna **`web/registro.html`** grava a **`ADMIN_API_KEY`** (chave administrativa da API) em **`sessionStorage`** do navegador e a reenvia no cabeçalho HTTP **`x-admin-key`**. Qualquer pessoa com acesso ao posto de trabalho do operador (ou que abra as **Ferramentas de Desenvolvedor** / DevTools → Application → Session Storage, ou inspecione a aba Rede) pode **ler e reutilizar** essa chave para chamar endpoints administrativos (`POST /api/blockchain`, `GET /api/admin/boletos/:codebar`, etc.).  
-**Nota:** A **chave pública** Stellar (endereço `G…` da empresa) exibida na mesma página é **dado público** por design na rede Stellar; o risco crítico é a **chave administrativa secreta**, não o endereço público da conta.  
-**Decisão:** Remover o fluxo que coloca segredos no navegador; manter registro interno apenas via **servidor** (proxy autenticado, SEP-10 no painel, Protheus/Asaas no back-end). Não expor `ADMIN_API_KEY` em HTML estático nem em `sessionStorage`.  
-**Por quê:** Segredos de API nunca devem transitar nem persistir no cliente; o padrão já adotado em **D-013** (SEP-10 + JWT) e **D-018** (Protheus com `MV_GUARDKY` no servidor) deve ser o único modelo para escrita privilegiada. A Sprint 3 do programa exige vulnerabilidade documentada e mitigação — esta falha atende ao critério.  
-**Implementação prevista:** refatoração de `web/registro.html` e/ou endpoint de proxy no servidor (**Sergio Artero**).
+**Status:** **Corrigido** (20/05/2026) — **Sergio Artero** (CTO).  
+**Descoberta:** Durante revisão de segurança (Sprint 3), a página **`web/registro.html`** gravava **`ADMIN_API_KEY`** em **`sessionStorage`** e reenviava no cabeçalho **`x-admin-key`**, visível no DevTools. Evidência: `docs/Auditoria/ChaveExposta.jpeg`; relatório público: https://www.boletoguardian.xyz/auditoria-seguranca.html (`docs/Auditoria/AuditoriaDeSeguranca.md`).  
+**Nota:** A chave pública Stellar (`G…`) na página é dado público; o achado crítico é a **chave administrativa secreta**.  
+**Decisão:** Remover segredos do navegador; auth admin apenas no servidor (`.env`, Docker).  
+**Implementação:** commit [`e7da273`](https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94) — `refactor: backend absorve ADMIN_API_KEY — nenhum header em trânsito`.
+
 
 ---
 
@@ -639,7 +639,7 @@ Até concluir essa rodada, o produto deve ser tratado como **em homologação lo
 
 | Concorrência institucional (banco/FEBRABAN lança equivalente) | Baixa | Alto | Reforçar diferencial de independência, transparência e auditoria pública |
 
-| Exposição de `ADMIN_API_KEY` no navegador (`registro.html` / DevTools) | Alta | Crítico | **D-021** — remover segredo do cliente; proxy servidor ou SEP-10; correção **Sergio Artero** |
+| Exposição de `ADMIN_API_KEY` no navegador (`registro.html` / DevTools) | Alta | Crítico | **D-021** — corrigido (`e7da273`): segredo removido do cliente; auth admin só no servidor |
 | Dependência de Anchor externa na Testnet para autenticação SEP-10 | Média | Médio | Escolher Anchor de referência estável; isolar a integração em módulo próprio; manter fallback documentado para troca de Anchor; deixar claro que a Anchor autentica a carteira (*wallet*), mas não registra boletos |
 
 ---
@@ -680,6 +680,7 @@ Até concluir essa rodada, o produto deve ser tratado como **em homologação lo
 
 | v1.14 | 16/05/2026 | Diagrama fluxo x402 Testnet (TEST_PAYER_PUBLIC → COMPANY_ACCOUNT → validação) em D-019 |
 
+| v1.20 | 21/05/2026 | **D-021 corrigido:** pagina publica auditoria-seguranca.html; commit Sergio `e7da273` |
 | v1.19 | 19/05/2026 | Equipe Guardian Labs: Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO) |
 | v1.18 | 19/05/2026 | Narrativa Guardian Labs (marca-mãe vs primeiro produto); Seção 1 reestruturada |
 | v1.17 | 19/05/2026 | **D-021:** vulnerabilidade — `ADMIN_API_KEY` exposta via DevTools em `registro.html`; correção Sergio Artero; READMEs alinhados (`Integracao/`, Asaas) |
