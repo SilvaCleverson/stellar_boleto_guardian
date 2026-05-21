@@ -11,7 +11,7 @@ services:
   # Servico para usar o Traefik como proxy reverso
   traefik:
     container_name: traefik
-    image: "traefik:v2.10.7"
+    image: "traefik:v3.3"
     restart: always
     command:
       - --api.dashboard=true
