@@ -28,3 +28,14 @@ coverage/
 *.env.development.local
 *.env.test.local
 *.env.production.local
+docs/Boleto_Guardian_Instaward_SOW.docx
+docs/Instawards_SOW_Fictional_Example_EN 2.pdf
+docs/Instawards_SOW_Fictional_Guardian_EN.docx
+
+# Vercel CLI (link local — não versionar)
+.vercel/
+
+# Notas locais / ferramentas de uso pessoal
+docs/claude.md
+tools/write_sep10_slides.py
+docs/Instawards_SOW_Fictional_Guardian_EN.docx
