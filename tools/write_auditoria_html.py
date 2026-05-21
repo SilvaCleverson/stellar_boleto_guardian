@@ -65,6 +65,8 @@ LANGS = {
         "s3_rep": "<strong>Relat&oacute;rio:</strong>",
         "s4": "4. Refer&ecirc;ncias",
         "s4_li1": "RT do produto &mdash; decis&atilde;o <strong>D-021</strong>",
+        "s4_li2": "Pen test unificado (D-022) &mdash; <a href=\"auditoria-pentest.html\">auditoria-pentest.html</a>",
+        "nav_pentest": "Pen test D-022",
         "index": "index.html",
         "validation": "validation.html",
     },
@@ -126,6 +128,8 @@ LANGS = {
         "s3_rep": "<strong>Full report:</strong>",
         "s4": "4. References",
         "s4_li1": "Product RT &mdash; decision <strong>D-021</strong>",
+        "s4_li2": "Unified pen test (D-022) &mdash; <a href=\"auditoria-pentest.html\">auditoria-pentest.html</a>",
+        "nav_pentest": "Pen test D-022",
         "index": "index-en.html",
         "validation": "validation-en.html",
     },
@@ -187,6 +191,8 @@ LANGS = {
         "s3_rep": "<strong>Informe:</strong>",
         "s4": "4. Referencias",
         "s4_li1": "RT del producto &mdash; decisi&oacute;n <strong>D-021</strong>",
+        "s4_li2": "Pen test unificado (D-022) &mdash; <a href=\"auditoria-pentest.html\">auditoria-pentest.html</a>",
+        "nav_pentest": "Pen test D-022",
         "index": "index-es.html",
         "validation": "validation-es.html",
     },
@@ -296,6 +302,7 @@ def render(code: str, L: dict) -> str:
     <nav class="nav-top">
       <a href="{d["index"]}">&larr; {d["back"]}</a>
       <a href="{d["validation"]}">{d["validate"]}</a>
+      <a href="auditoria-pentest.html">{d["nav_pentest"]}</a>
       <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
       <div class="lang-switch">
         <a href="{pt}"{apt}>PT</a>
@@ -359,6 +366,7 @@ def render(code: str, L: dict) -> str:
       <h2>{d["s4"]}</h2>
       <ul>
         <li>{d["s4_li1"]}</li>
+        <li>{d["s4_li2"]}</li>
         <li><code>docs/Auditoria/AuditoriaDeSeguranca.md</code></li>
       </ul>
     </article>
