@@ -1,0 +1,83 @@
+const {
+  validateTenantInput,
+  listTenantsPublic,
+  normalizeTenantId,
+  envKeyForTenant,
+} = require("../lib/tenants");
+
+/**
+ * Absorve a ADMIN_API_KEY do .env internamente. O cliente NÃO envia header
+ * algum — a autorização é resolvida server-side. A proteção real fica na
+ * topologia de rede: o container `api` não tem porta pública.
+ */
+function requireAdmin(req, res) {
+  const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
+  if (!ADMIN_API_KEY) {
+    res.status(500).json({ success: false, error: "ADMIN_API_KEY not configured" });
+    return false;
+  }
+  req.adminAuth = { method: "internal-env", source: "ADMIN_API_KEY" };
+  return true;
+}
+
+module.exports = async function handler(req, res) {
+  if (req.method === "OPTIONS") return res.status(200).end();
+  if (!requireAdmin(req, res)) return;
+
+  if (req.method === "GET") {
+    return res.json({
+      success: true,
+      tenants: listTenantsPublic(),
+      note: "Secrets are not returned. Configure via TENANTS_JSON or TENANT_{ID}_* env vars.",
+    });
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).json({ success: false, error: "Method not allowed" });
+  }
+
+  const input = req.body || {};
+  const { tenant, errors } = validateTenantInput(input);
+
+  if (errors.length) {
+    return res.status(400).json({ success: false, errors });
+  }
+
+  const tenantId = normalizeTenantId(tenant.tenantId);
+  const baseUrl = process.env.GUARDIAN_PUBLIC_URL || "https://www.boletoguardian.xyz";
+
+  const envHints = {
+    TENANTS_JSON_entry: {
+      tenantId,
+      name: input.name || tenantId,
+      asaasEnv: tenant.asaasEnv,
+      asaasApiKey: "<set in env or secret manager>",
+      webhookAuthToken: "<set in env or secret manager>",
+      companyAccount: tenant.companyAccount,
+      companySecret: "<set in env or secret manager>",
+      enabled: true,
+    },
+    env_overrides: {
+      [envKeyForTenant(tenantId, "ASAAS_API_KEY")]: "optional override",
+      [envKeyForTenant(tenantId, "WEBHOOK_TOKEN")]: "optional override",
+      [envKeyForTenant(tenantId, "COMPANY_ACCOUNT")]: "optional override",
+      [envKeyForTenant(tenantId, "COMPANY_SECRET")]: "optional override",
+      [envKeyForTenant(tenantId, "ASAAS_ENV")]: "sandbox | production",
+    },
+  };
+
+  return res.status(200).json({
+    success: true,
+    message: "Tenant validated. Add the entry to TENANTS_JSON (or use env overrides), then configure the Asaas webhook.",
+    tenant: {
+      tenantId,
+      name: tenant.name,
+      asaasEnv: tenant.asaasEnv,
+      companyAccount: tenant.companyAccount,
+      webhookUrl: `${baseUrl}/api/webhooks/asaas/${tenantId}`,
+      asaasWebhookEvents: ["PAYMENT_CREATED"],
+    },
+    setup: envHints,
+    asaasDocs: "https://docs.asaas.com/docs/criar-novo-webhook-pela-api",
+  });
+};

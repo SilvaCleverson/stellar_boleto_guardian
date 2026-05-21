@@ -105,16 +105,11 @@
       <a id="accountLink" href="#" target="_blank" rel="noopener" style="color:#38bdf8; word-break:break-all; font-family:monospace;"></a>
     </div>
 
-    <div class="box">
-      <h2>Acesso administrativo</h2>
-      <div class="row one" style="margin-top: 10px;">
-        <div>
-          <label for="adminKey">Chave administrativa (ADMIN_API_KEY)</label>
-          <input id="adminKey" type="password" placeholder="Informe a chave administrativa" />
-        </div>
-      </div>
-      <button onclick="saveAdminKey()">Salvar chave na sessão</button>
-      <div id="authStatus" class="status"></div>
+    <div class="box" style="background:#0b1220; border:1px solid #1e3a5f; padding:12px; border-radius:8px;">
+      <p style="margin:0; color:#94a3b8; font-size:0.85rem;">
+        🔒 Autenticação administrativa gerenciada pelo gateway nginx.
+        A chave <code>ADMIN_API_KEY</code> é injetada server-side a partir do <code>.env</code> e nunca trafega pelo navegador.
+      </p>
     </div>
 
     <div class="box">
@@ -162,8 +157,6 @@
     var API_BASE = (document.querySelector('meta[name="api-base"]') && document.querySelector('meta[name="api-base"]').content) || window.location.origin;
     if (API_BASE.endsWith('/')) API_BASE = API_BASE.slice(0, -1);
 
-    const SESSION_KEY = "bg_admin_key";
-
     fetch(API_BASE + "/api/account/data").then(r => r.json()).then(data => {
       const accountId = data && data.data && data.data.accountId;
       if (accountId) {
@@ -184,33 +177,11 @@
       el.textContent = text;
     }
 
-    function getAdminKey() {
-      return sessionStorage.getItem(SESSION_KEY) || "";
-    }
-
-    function saveAdminKey() {
-      const key = document.getElementById("adminKey").value.trim();
-      const status = document.getElementById("authStatus");
-      if (!key) {
-        setStatus(status, false, "Informe uma chave válida.");
-        return;
-      }
-      sessionStorage.setItem(SESSION_KEY, key);
-      setStatus(status, true, "Chave salva na sessão atual do navegador.");
-      document.getElementById("adminKey").value = "";
-    }
-
     async function registerBoleto() {
       const status = document.getElementById("registerStatus");
       const txCard = document.getElementById("txCard");
       txCard.style.display = "none";
       status.className = "status";
-
-      const adminKey = getAdminKey();
-      if (!adminKey) {
-        setStatus(status, false, "Salve a chave administrativa antes de registrar.");
-        return;
-      }
 
       const codebar = digitsOnly(document.getElementById("regCodebar").value);
 
@@ -222,12 +193,10 @@
       setStatus(status, true, "Registrando na blockchain Stellar...");
 
       try {
+        // x-admin-key é injetado pelo nginx server-side — não enviar pelo browser
         const response = await fetch(API_BASE + "/api/blockchain", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-key": adminKey
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ codebar })
         });
         const data = await response.json().catch(() => ({}));
@@ -263,12 +232,6 @@
       result.textContent = "";
       status.className = "status";
 
-      const adminKey = getAdminKey();
-      if (!adminKey) {
-        setStatus(status, false, "Salve a chave administrativa antes de buscar.");
-        return;
-      }
-
       const codebar = digitsOnly(document.getElementById("searchCodebar").value);
       if (!/^\d{44,48}$/.test(codebar)) {
         setStatus(status, false, "Código de barras inválido. Informe entre 44 e 48 dígitos.");
@@ -276,9 +239,8 @@
       }
 
       try {
-        const response = await fetch(API_BASE + "/api/admin/boletos/" + encodeURIComponent(codebar), {
-          headers: { "x-admin-key": adminKey }
-        });
+        // x-admin-key é injetado pelo nginx server-side
+        const response = await fetch(API_BASE + "/api/admin/boletos/" + encodeURIComponent(codebar));
         const data = await response.json().catch(() => ({}));
         if (!response.ok || !data.success) {
           setStatus(status, false, data.error || "Falha ao buscar boleto.");

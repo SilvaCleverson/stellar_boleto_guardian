@@ -1,0 +1,106 @@
+## =============================================================================
+## Configuração dinâmica do Traefik — rotas, serviços e middlewares.
+## Carregado por --providers.file.filename + --providers.file.watch.
+## Editar este arquivo recarrega a config sem reiniciar o container.
+##
+## Containers se resolvem pelo nome dentro da rede "proxy":
+##   - guardian-labs-api:3000
+##   - guardian-labs-portal:8080
+##   - portainer:9000
+## =============================================================================
+
+## ─── ROUTERS ─────────────────────────────────────────────────────────────────
+
+[http.routers]
+
+  ## Boleto Guardian — API (mesmo host do portal, /api/*)
+  [http.routers.guardian-api]
+    rule = "Host(`guardian-labs.xyz`) && PathPrefix(`/api`)"
+    entryPoints = ["websecure"]
+    service = "guardian-api"
+    priority = 100
+    [http.routers.guardian-api.tls]
+      certResolver = "le"
+
+  ## Boleto Guardian — Portal (catch-all do domínio raiz)
+  [http.routers.guardian-portal]
+    rule = "Host(`guardian-labs.xyz`)"
+    entryPoints = ["websecure"]
+    service = "guardian-portal"
+    priority = 1
+    [http.routers.guardian-portal.tls]
+      certResolver = "le"
+
+  ## Boleto Guardian — Redirect HTTP → HTTPS
+  [http.routers.guardian-portal-redirect]
+    rule = "Host(`guardian-labs.xyz`)"
+    entryPoints = ["web"]
+    middlewares = ["redirect-to-https"]
+    service = "noop@internal"
+
+  ## Portainer — HTTPS
+  [http.routers.portainer]
+    rule = "Host(`portainer.guardian-labs.xyz`)"
+    entryPoints = ["websecure"]
+    service = "portainer"
+    [http.routers.portainer.tls]
+      certResolver = "le"
+
+  ## Portainer — Redirect HTTP → HTTPS
+  [http.routers.portainer-redirect]
+    rule = "Host(`portainer.guardian-labs.xyz`)"
+    entryPoints = ["web"]
+    middlewares = ["redirect-to-https"]
+    service = "noop@internal"
+
+  ## Traefik Dashboard — HTTPS com basic auth
+  [http.routers.traefik-dashboard]
+    rule = "Host(`traefik.guardian-labs.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+    entryPoints = ["websecure"]
+    service = "api@internal"
+    middlewares = ["admin-auth"]
+    [http.routers.traefik-dashboard.tls]
+      certResolver = "le"
+
+  ## Traefik Dashboard — Redirect HTTP → HTTPS
+  [http.routers.traefik-dashboard-redirect]
+    rule = "Host(`traefik.guardian-labs.xyz`)"
+    entryPoints = ["web"]
+    middlewares = ["redirect-to-https"]
+    service = "noop@internal"
+
+## ─── SERVICES ────────────────────────────────────────────────────────────────
+
+[http.services]
+
+  [http.services.guardian-api]
+    [http.services.guardian-api.loadBalancer]
+      [[http.services.guardian-api.loadBalancer.servers]]
+        url = "http://guardian-labs-api:3000"
+
+  [http.services.guardian-portal]
+    [http.services.guardian-portal.loadBalancer]
+      [[http.services.guardian-portal.loadBalancer.servers]]
+        url = "http://guardian-labs-portal:8080"
+
+  [http.services.portainer]
+    [http.services.portainer.loadBalancer]
+      [[http.services.portainer.loadBalancer.servers]]
+        url = "http://portainer:9000"
+
+## ─── MIDDLEWARES ─────────────────────────────────────────────────────────────
+
+[http.middlewares]
+
+  ## Redirect HTTP → HTTPS
+  [http.middlewares.redirect-to-https.redirectScheme]
+    scheme = "https"
+    permanent = true
+
+  ## Basic auth para o dashboard do Traefik (admin / senha original)
+  ## Hash bcrypt do compose anterior — gerar novo com:
+  ##   htpasswd -nbB admin SUA_SENHA
+  [http.middlewares.admin-auth.basicAuth]
+    users = [
+      "admin:$2y$05$kDFDcpoinTBpivrM1UeSoOdMs9RntBI7djKqJ2EA4wBgAOu3HrSCW"
+    ]
