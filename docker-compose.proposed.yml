@@ -42,10 +42,10 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "/root/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml"
-      - "/root/DockerConfig/traefik/certs/:/certs/"
-      - "/root/DockerConfig/traefik/logs:/logs"
-      - "/root/DockerConfig/traefik/letsencrypt:/letsencrypt"
+      - "/home/artero/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml"
+      - "/home/artero/DockerConfig/traefik/certs/:/certs/"
+      - "/home/artero/DockerConfig/traefik/logs:/logs"
+      - "/home/artero/DockerConfig/traefik/letsencrypt:/letsencrypt"
     labels:
       - "traefik.enable=true"
       # Dashboard protegido por basic auth (admin / a senha do hash original)
