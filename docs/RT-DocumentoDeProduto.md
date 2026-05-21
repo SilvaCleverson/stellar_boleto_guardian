@@ -6,7 +6,7 @@
 
 **Mantido por:** Guardian Labs — Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO)
 
-**Última atualização:** 19/05/2026 (v1.19)
+**Última atualização:** 21/05/2026 (v1.21)
 
 ---
 
@@ -514,6 +514,32 @@ COMPANY_ACCOUNT vem da variável de ambiente (endereços abreviados neste docume
 **Implementação:** commit [`e7da273`](https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94) — `refactor: backend absorve ADMIN_API_KEY — nenhum header em trânsito`.
 
 
+### D-022 · Pen test unificado (Sprint 3) — cancelamento do x402 e roadmap de remediação para mainnet
+
+**Data:** 21/05/2026  
+**Responsável:** Guardian Labs (análise interna — Claude / Cursor / Codex)  
+**Documentos:** `docs/Auditoria/PenTestUnificado-BoletoGuardian.md` · relatório público: https://www.boletoguardian.xyz/auditoria-pentest.html
+
+**Contexto:** Durante a Sprint 3, três agentes independentes (Claude — Anthropic, Cursor — Auto, Codex — OpenAI) realizaram análises de segurança do repositório e do deploy em produção. Os resultados foram consolidados em um relatório unificado com **19 achados ativos** (3 Críticos, 4 Altos, 6 Médios, 6 Baixos) após o encerramento de 2 achados pelo cancelamento do x402.
+
+**Decisões tomadas:**
+
+1. **Cancelamento do x402.** O protocolo x402 não será implementado no produto. `web/x402-demo.html` e `api/premium/[codebar].js` serão removidos do repositório. Os achados UNI-006 (replay x402) e UNI-011 (stack trace em endpoint x402) foram encerrados como não aplicáveis.
+
+2. **Bloqueadores da mainnet (P0).** Os seguintes achados devem ser corrigidos antes do primeiro deploy em mainnet (Sprint 4):
+   - **UNI-001** — JWT SEP-10 aceito sem verificação de assinatura criptográfica (`lib/sep10.js`). Adotar `jose` + JWKS da Anchor mainnet.
+   - **UNI-002** — `requireAdmin()` no backend Docker não valida credencial do cliente (`backend/server.js`). Separar rotas admin do Traefik ou implementar mTLS/token de serviço.
+   - **UNI-003** — `TEST_PAYER_SECRET` hardcoded em `web/x402-demo.html` (confirmado em produção pelo Cursor). Remover arquivo e rotacionar a wallet comprometida.
+   - **UNI-015** — `ANCHOR_DOMAIN` hardcoded para `testanchor.stellar.org`. Mover para variável de ambiente.
+
+3. **Relatório público.** O relatório de pen test unificado é publicado em https://www.boletoguardian.xyz/auditoria-pentest.html como evidência do processo de segurança para os avaliadores do programa Stellar 37 Degrees.
+
+**Pontos positivos confirmados pelos 3 agentes:**
+- D-021 corrigido; rotas admin na Vercel exigem `x-admin-key` válido.
+- `.env` fora do Git (`npm audit`: 0 vulnerabilidades).
+- Validação de `codebar` (44–48 dígitos) consistente.
+- Container Docker roda como usuário não-root.
+
 ---
 
 ## 6. Pesquisa em curso (entrevistas e descobertas)
@@ -680,6 +706,7 @@ Até concluir essa rodada, o produto deve ser tratado como **em homologação lo
 
 | v1.14 | 16/05/2026 | Diagrama fluxo x402 Testnet (TEST_PAYER_PUBLIC → COMPANY_ACCOUNT → validação) em D-019 |
 
+| v1.21 | 21/05/2026 | **D-022:** pen test unificado (3 agentes, 19 achados ativos); cancelamento x402; bloqueadores mainnet UNI-001/002/003/015; página pública `auditoria-pentest.html` |
 | v1.20 | 21/05/2026 | **D-021 corrigido:** pagina publica auditoria-seguranca.html; commit Sergio `e7da273` |
 | v1.19 | 19/05/2026 | Equipe Guardian Labs: Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO) |
 | v1.18 | 19/05/2026 | Narrativa Guardian Labs (marca-mãe vs primeiro produto); Seção 1 reestruturada |
