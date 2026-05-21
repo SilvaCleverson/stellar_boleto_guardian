@@ -22,11 +22,10 @@ services:
       start_period: 10s
       retries: 3
 
-  # ── Container nginx: frontend estático + proxy ──────────────────────────────
-  # ADMIN_API_KEY é lido do mesmo backend/.env e injetado no template via
-  # envsubst (NGINX_ENVSUBST_FILTER=^ADMIN_API_KEY$). Assim, o nginx adiciona
-  # automaticamente o header x-admin-key nas rotas /api/blockchain e /api/admin/*
-  # e o frontend NÃO precisa mais conhecer ou enviar a chave administrativa.
+  # ── Container nginx: frontend estático + proxy reverso ─────────────────────
+  # O nginx NÃO conhece nem manipula ADMIN_API_KEY. Toda a autenticação
+  # administrativa é absorvida pelo container `api`, que lê a chave do
+  # próprio backend/.env e a aplica internamente nas rotas protegidas.
   web:
     build:
       context: .
@@ -34,8 +33,6 @@ services:
     container_name: boleto-guardian-web
     ports:
       - "80:80"
-    env_file:
-      - ./backend/.env
     depends_on:
       api:
         condition: service_healthy

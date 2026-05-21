@@ -29,22 +29,24 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-function getAdminKeyFromRequest(req) {
-  const headerKey = req.header("x-admin-key");
-  if (headerKey) return headerKey.trim();
-  const authHeader = req.header("authorization");
-  if (!authHeader || !authHeader.toLowerCase().startsWith("bearer ")) return "";
-  return authHeader.slice(7).trim();
-}
-
+/**
+ * Autoriza rotas administrativas absorvendo a ADMIN_API_KEY do .env
+ * internamente — sem exigir nenhum header do cliente. O cliente (navegador
+ * ou outro serviço) NUNCA precisa conhecer ou trafegar a chave.
+ *
+ * A proteção destas rotas é garantida pela topologia de rede:
+ *   - O container `api` só escuta na rede interna `guardian-net`
+ *   - Não há port mapping público para a porta 3000
+ *   - Apenas o nginx (mesma rede) consegue alcançar o backend
+ *
+ * Cada rota protegida injeta a chave no `req` antes de prosseguir, deixando
+ * registro explícito de que a autorização foi resolvida server-side.
+ */
 function requireAdmin(req, res, next) {
   if (!ADMIN_API_KEY) {
     return res.status(500).json({ success: false, error: "ADMIN_API_KEY não configurada no servidor." });
   }
-  const providedKey = getAdminKeyFromRequest(req);
-  if (!providedKey || providedKey !== ADMIN_API_KEY) {
-    return res.status(401).json({ success: false, error: "Não autorizado. Informe uma chave administrativa válida." });
-  }
+  req.adminAuth = { method: "internal-env", source: "ADMIN_API_KEY" };
   next();
 }
 

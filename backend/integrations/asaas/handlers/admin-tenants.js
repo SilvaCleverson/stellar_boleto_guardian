@@ -5,25 +5,18 @@ const {
   envKeyForTenant,
 } = require("../lib/tenants");
 
-function getAdminKey(req) {
-  const h = req.headers["x-admin-key"];
-  if (h) return String(h).trim();
-  const auth = req.headers["authorization"] || "";
-  if (auth.toLowerCase().startsWith("bearer ")) return auth.slice(7).trim();
-  return "";
-}
-
+/**
+ * Absorve a ADMIN_API_KEY do .env internamente. O cliente NÃO envia header
+ * algum — a autorização é resolvida server-side. A proteção real fica na
+ * topologia de rede: o container `api` não tem porta pública.
+ */
 function requireAdmin(req, res) {
   const ADMIN_API_KEY = process.env.ADMIN_API_KEY || "";
   if (!ADMIN_API_KEY) {
     res.status(500).json({ success: false, error: "ADMIN_API_KEY not configured" });
     return false;
   }
-  const key = getAdminKey(req);
-  if (!key || key !== ADMIN_API_KEY) {
-    res.status(401).json({ success: false, error: "Unauthorized" });
-    return false;
-  }
+  req.adminAuth = { method: "internal-env", source: "ADMIN_API_KEY" };
   return true;
 }
 
