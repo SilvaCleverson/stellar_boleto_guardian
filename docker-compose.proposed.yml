@@ -1,0 +1,143 @@
+networks:
+  default:
+    external: true
+    name: proxy
+
+volumes:
+  portainer-data:
+
+services:
+
+  # ── Traefik: reverse proxy + TLS automático ────────────────────────────────
+  traefik:
+    container_name: traefik
+    image: "traefik:v2.10.7"
+    restart: always
+    command:
+      - --api.dashboard=true
+      - --providers.file=true
+      - --providers.file.filename=/traefik_dynamic.toml
+      - --log.level=INFO
+      - --log.filePath=/logs/traefik.log
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.watch=true
+      - --providers.docker.network=proxy
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.console.address=:8080
+      # Let's Encrypt — HTTP-01 challenge na entrypoint :80
+      - --certificatesresolvers.le.acme.email=guardianlabsw3@gmail.com
+      - --certificatesresolvers.le.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.le.acme.httpchallenge=true
+      - --certificatesresolvers.le.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/root/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml"
+      - "/root/DockerConfig/traefik/certs/:/certs/"
+      - "/root/DockerConfig/traefik/logs:/logs"
+      - "/root/DockerConfig/traefik/letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.enable=true"
+      # Dashboard protegido por basic auth (admin / a senha do hash original)
+      - "traefik.http.routers.my_dashboard.rule=Host(`traefik.guardian-labs.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.my_dashboard.entrypoints=websecure"
+      - "traefik.http.routers.my_dashboard.tls=true"
+      - "traefik.http.routers.my_dashboard.tls.certresolver=le"
+      - "traefik.http.routers.my_dashboard.service=api@internal"
+      - "traefik.http.routers.my_dashboard.middlewares=my_admin_auth"
+      - "traefik.http.middlewares.my_admin_auth.basicauth.users=admin:$$2y$$05$$kDFDcpoinTBpivrM1UeSoOdMs9RntBI7djKqJ2EA4wBgAOu3HrSCW"
+      # Redirect HTTP → HTTPS no host do dashboard
+      - "traefik.http.routers.dashboard-redirect.rule=Host(`traefik.guardian-labs.xyz`)"
+      - "traefik.http.routers.dashboard-redirect.entrypoints=web"
+      - "traefik.http.routers.dashboard-redirect.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+  # ── Portainer ──────────────────────────────────────────────────────────────
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.guardian-labs.xyz`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=le"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      # Redirect HTTP → HTTPS
+      - "traefik.http.routers.portainer-redirect.rule=Host(`portainer.guardian-labs.xyz`)"
+      - "traefik.http.routers.portainer-redirect.entrypoints=web"
+      - "traefik.http.routers.portainer-redirect.middlewares=portainer-https-redirect"
+      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+    depends_on:
+      - traefik
+
+  # ── Boleto Guardian: API Node ──────────────────────────────────────────────
+  # IMPORTANTE: o frontend chama /api/* same-origin (guardian-labs.xyz/api/*),
+  # então o router de api/ fica no Traefik abaixo (não no nginx).
+  guardian-labs-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: guardian-labs-api
+    restart: unless-stopped
+    expose:
+      - "3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=production
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.guardian-labs-api.loadbalancer.server.port=3000"
+      # Mesma origem do portal — o frontend chama /api/* sem CORS
+      - "traefik.http.routers.guardian-labs-api.rule=Host(`guardian-labs.xyz`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.guardian-labs-api.entrypoints=websecure"
+      - "traefik.http.routers.guardian-labs-api.tls=true"
+      - "traefik.http.routers.guardian-labs-api.tls.certresolver=le"
+      - "traefik.http.routers.guardian-labs-api.priority=100"
+    depends_on:
+      - traefik
+
+  # ── Boleto Guardian: Portal nginx (estático) ───────────────────────────────
+  guardian-labs-portal:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    container_name: guardian-labs-portal
+    restart: unless-stopped
+    expose:
+      - "8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
+      - "traefik.http.routers.guardian-labs-portal.rule=Host(`guardian-labs.xyz`)"
+      - "traefik.http.routers.guardian-labs-portal.entrypoints=websecure"
+      - "traefik.http.routers.guardian-labs-portal.tls=true"
+      - "traefik.http.routers.guardian-labs-portal.tls.certresolver=le"
+      - "traefik.http.routers.guardian-labs-portal.priority=1"
+      # Redirect HTTP → HTTPS
+      - "traefik.http.routers.guardian-labs-portal-redirect.rule=Host(`guardian-labs.xyz`)"
+      - "traefik.http.routers.guardian-labs-portal-redirect.entrypoints=web"
+      - "traefik.http.routers.guardian-labs-portal-redirect.middlewares=portal-https"
+      - "traefik.http.middlewares.portal-https.redirectscheme.scheme=https"
+    depends_on:
+      traefik:
+        condition: service_started
+      guardian-labs-api:
+        condition: service_healthy
