@@ -11,16 +11,12 @@ services:
   # ── Traefik: reverse proxy + TLS automático ────────────────────────────────
   traefik:
     container_name: traefik
-    image: "traefik:v2.10.7"
+    image: "traefik:v3.3"
     restart: always
-    environment:
-      # O Docker Engine do VPS requer API >= 1.40. Traefik v2 negocia com 1.24
-      # por padrão e o daemon rejeita. Forçar aqui resolve o provider Docker.
-      - DOCKER_API_VERSION=1.41
     command:
       - --api.dashboard=true
-      - --providers.file=true
       - --providers.file.filename=/traefik_dynamic.toml
+      - --providers.file.watch=true
       - --log.level=INFO
       - --log.filePath=/logs/traefik.log
       - --providers.docker=true
