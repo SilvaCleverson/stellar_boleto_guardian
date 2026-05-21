@@ -26,6 +26,29 @@ LANGS = {
             "(Stellar 37 Degrees) e da corre\u00e7\u00e3o implementada."
         ),
         "meta": "Projeto: Boleto Guardian \u00b7 Corre\u00e7\u00e3o: Sergio Artero (CTO) \u00b7 Data: 20/05/2026",
+        "relato_title": "Relato detalhado &mdash; o que foi feito",
+        "relato_body": """
+        <p class="relato-lead">Vulnerabilidade cr&iacute;tica identificada no fluxo administrativo do Boleto Guardian:</p>
+        <p>A <code>ADMIN_API_KEY</code> estava sendo armazenada no <code>sessionStorage</code> do navegador e enviada em texto claro no cabe&ccedil;alho <code>x-admin-key</code> pela p&aacute;gina <a href="registro.html">registro.html</a>. Isso permitia que qualquer pessoa com acesso ao DevTools visualizasse a credencial administrativa e potencialmente abusasse das APIs internas de registro/consulta on-chain.</p>
+        <h3>Impacto</h3>
+        <ul>
+          <li>Exposi&ccedil;&atilde;o de credencial administrativa;</li>
+          <li>Possibilidade de chamadas indevidas a endpoints privilegiados;</li>
+          <li>Risco de registro indevido de boletos on-chain;</li>
+          <li>Risco cr&iacute;tico para integridade e controle operacional do sistema.</li>
+        </ul>
+        <h3>Corre&ccedil;&atilde;o aplicada</h3>
+        <ul>
+          <li>Remo&ccedil;&atilde;o da <code>ADMIN_API_KEY</code> do frontend;</li>
+          <li>Remo&ccedil;&atilde;o do uso de <code>sessionStorage</code> para segredo administrativo;</li>
+          <li>Elimina&ccedil;&atilde;o do envio de <code>x-admin-key</code> pelo navegador;</li>
+          <li><code>ADMIN_API_KEY</code> mantida exclusivamente no <code>.env</code> do backend;</li>
+          <li>Backend passa a absorver a autentica&ccedil;&atilde;o administrativa internamente;</li>
+          <li>API isolada em rede Docker interna, evitando tr&aacute;fego de segredo pelo cliente.</li>
+        </ul>
+        <p><strong>Refer&ecirc;ncia:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca.html">https://www.boletoguardian.xyz/auditoria-seguranca.html</a></p>
+        <p><strong>Relat&oacute;rio consolidado:</strong> <a href="https://www.boletoguardian.xyz/auditoria-pentest.html">https://www.boletoguardian.xyz/auditoria-pentest.html</a></p>
+        """,
         "s1": "1. Achado cr&iacute;tico",
         "s1_vuln": "Vulnerabilidade",
         "s1_vuln_p": (
@@ -89,6 +112,29 @@ LANGS = {
             "(Stellar 37 Degrees) and the implemented fix."
         ),
         "meta": "Project: Boleto Guardian \u00b7 Fix: Sergio Artero (CTO) \u00b7 Date: 20/05/2026",
+        "relato_title": "Detailed report &mdash; what was done",
+        "relato_body": """
+        <p class="relato-lead">Critical vulnerability identified in the Boleto Guardian administrative flow:</p>
+        <p>The <code>ADMIN_API_KEY</code> was stored in browser <code>sessionStorage</code> and sent in plain text in the <code>x-admin-key</code> header from <a href="registro.html">registro.html</a>. Anyone with DevTools access could view the administrative credential and potentially abuse internal on-chain registration/query APIs.</p>
+        <h3>Impact</h3>
+        <ul>
+          <li>Exposure of administrative credentials;</li>
+          <li>Possible unauthorized calls to privileged endpoints;</li>
+          <li>Risk of fraudulent on-chain slip registration;</li>
+          <li>Critical risk to system integrity and operational control.</li>
+        </ul>
+        <h3>Fix applied</h3>
+        <ul>
+          <li>Removed <code>ADMIN_API_KEY</code> from the front end;</li>
+          <li>Stopped using <code>sessionStorage</code> for administrative secrets;</li>
+          <li>Eliminated <code>x-admin-key</code> sent by the browser;</li>
+          <li><code>ADMIN_API_KEY</code> kept only in backend <code>.env</code>;</li>
+          <li>Backend now handles admin authentication internally;</li>
+          <li>API isolated on internal Docker network so secrets never travel via the client.</li>
+        </ul>
+        <p><strong>Reference:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca-en.html">https://www.boletoguardian.xyz/auditoria-seguranca-en.html</a></p>
+        <p><strong>Consolidated report:</strong> <a href="https://www.boletoguardian.xyz/auditoria-pentest.html">https://www.boletoguardian.xyz/auditoria-pentest.html</a></p>
+        """,
         "s1": "1. Critical finding",
         "s1_vuln": "Vulnerability",
         "s1_vuln_p": (
@@ -152,6 +198,29 @@ LANGS = {
             "(Stellar 37 Degrees) y la correcci\u00f3n implementada."
         ),
         "meta": "Proyecto: Boleto Guardian \u00b7 Correcci\u00f3n: Sergio Artero (CTO) \u00b7 Fecha: 20/05/2026",
+        "relato_title": "Informe detallado &mdash; qu&eacute; se hizo",
+        "relato_body": """
+        <p class="relato-lead">Vulnerabilidad cr&iacute;tica identificada en el flujo administrativo de Boleto Guardian:</p>
+        <p>La <code>ADMIN_API_KEY</code> se almacenaba en <code>sessionStorage</code> del navegador y se enviaba en texto claro en la cabecera <code>x-admin-key</code> desde <a href="registro.html">registro.html</a>. Cualquier persona con acceso a DevTools pod&iacute;a ver la credencial administrativa y abusar de las APIs internas de registro/consulta on-chain.</p>
+        <h3>Impacto</h3>
+        <ul>
+          <li>Exposici&oacute;n de credencial administrativa;</li>
+          <li>Posibilidad de llamadas indebidas a endpoints privilegiados;</li>
+          <li>Riesgo de registro indebido de boletos on-chain;</li>
+          <li>Riesgo cr&iacute;tico para la integridad y el control operacional del sistema.</li>
+        </ul>
+        <h3>Correcci&oacute;n aplicada</h3>
+        <ul>
+          <li>Eliminaci&oacute;n de <code>ADMIN_API_KEY</code> del frontend;</li>
+          <li>Fin del uso de <code>sessionStorage</code> para secretos administrativos;</li>
+          <li>Eliminaci&oacute;n del env&iacute;o de <code>x-admin-key</code> por el navegador;</li>
+          <li><code>ADMIN_API_KEY</code> solo en el <code>.env</code> del backend;</li>
+          <li>El backend absorbe la autenticaci&oacute;n administrativa internamente;</li>
+          <li>API aislada en red Docker interna, sin tr&aacute;fico de secretos en el cliente.</li>
+        </ul>
+        <p><strong>Referencia:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca-es.html">https://www.boletoguardian.xyz/auditoria-seguranca-es.html</a></p>
+        <p><strong>Informe consolidado:</strong> <a href="https://www.boletoguardian.xyz/auditoria-pentest.html">https://www.boletoguardian.xyz/auditoria-pentest.html</a></p>
+        """,
         "s1": "1. Hallazgo cr&iacute;tico",
         "s1_vuln": "Vulnerabilidad",
         "s1_vuln_p": (
@@ -269,6 +338,10 @@ STYLES = """
     .evidence figcaption { padding: 10px 12px; font-size: 0.82rem; color: #64748b; background: #f8fafc; }
     .commit-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px; margin: 12px 0; }
     .form-box { background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 14px; font-size: 0.9rem; line-height: 1.5; }
+    .relato-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px 20px; font-size: 0.95rem; line-height: 1.65; }
+    .relato-box .relato-lead { font-weight: 600; color: #0B1F3A; margin-bottom: 12px; }
+    .relato-box h3 { font-size: 0.95rem; color: #0B1F3A; margin: 14px 0 8px; border: none; padding: 0; }
+    .relato-box ul { margin-bottom: 12px; }
     footer { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #94a3b8; }
 """
 
@@ -316,6 +389,10 @@ def render(code: str, L: dict) -> str:
       <p>{d["hero"]}</p>
       <p class="meta"><strong>{d["meta"]}</strong></p>
     </header>
+    <article class="card">
+      <h2>{d["relato_title"]}</h2>
+      <div class="relato-box">{d["relato_body"]}</div>
+    </article>
     <article class="card">
       <h2>{d["s1"]}</h2>
       <h3>{d["s1_vuln"]}</h3>

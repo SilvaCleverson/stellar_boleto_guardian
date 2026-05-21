@@ -80,6 +80,10 @@
     .evidence figcaption { padding: 10px 12px; font-size: 0.82rem; color: #64748b; background: #f8fafc; }
     .commit-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px; margin: 12px 0; }
     .form-box { background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 14px; font-size: 0.9rem; line-height: 1.5; }
+    .relato-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px 20px; font-size: 0.95rem; line-height: 1.65; }
+    .relato-box .relato-lead { font-weight: 600; color: #0B1F3A; margin-bottom: 12px; }
+    .relato-box h3 { font-size: 0.95rem; color: #0B1F3A; margin: 14px 0 8px; border: none; padding: 0; }
+    .relato-box ul { margin-bottom: 12px; }
     footer { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #94a3b8; }
 </style>
 </head>
@@ -102,6 +106,31 @@
       <p>Informe público de la vulnerabilidad crítica identificada en la Sprint 3 (Stellar 37 Degrees) y la corrección implementada.</p>
       <p class="meta"><strong>Proyecto: Boleto Guardian · Corrección: Sergio Artero (CTO) · Fecha: 20/05/2026</strong></p>
     </header>
+    <article class="card">
+      <h2>Informe detallado &mdash; qu&eacute; se hizo</h2>
+      <div class="relato-box">
+        <p class="relato-lead">Vulnerabilidad cr&iacute;tica identificada en el flujo administrativo de Boleto Guardian:</p>
+        <p>La <code>ADMIN_API_KEY</code> se almacenaba en <code>sessionStorage</code> del navegador y se enviaba en texto claro en la cabecera <code>x-admin-key</code> desde <a href="registro.html">registro.html</a>. Cualquier persona con acceso a DevTools pod&iacute;a ver la credencial administrativa y abusar de las APIs internas de registro/consulta on-chain.</p>
+        <h3>Impacto</h3>
+        <ul>
+          <li>Exposici&oacute;n de credencial administrativa;</li>
+          <li>Posibilidad de llamadas indebidas a endpoints privilegiados;</li>
+          <li>Riesgo de registro indebido de boletos on-chain;</li>
+          <li>Riesgo cr&iacute;tico para la integridad y el control operacional del sistema.</li>
+        </ul>
+        <h3>Correcci&oacute;n aplicada</h3>
+        <ul>
+          <li>Eliminaci&oacute;n de <code>ADMIN_API_KEY</code> del frontend;</li>
+          <li>Fin del uso de <code>sessionStorage</code> para secretos administrativos;</li>
+          <li>Eliminaci&oacute;n del env&iacute;o de <code>x-admin-key</code> por el navegador;</li>
+          <li><code>ADMIN_API_KEY</code> solo en el <code>.env</code> del backend;</li>
+          <li>El backend absorbe la autenticaci&oacute;n administrativa internamente;</li>
+          <li>API aislada en red Docker interna, sin tr&aacute;fico de secretos en el cliente.</li>
+        </ul>
+        <p><strong>Referencia:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca-es.html">https://www.boletoguardian.xyz/auditoria-seguranca-es.html</a></p>
+        <p><strong>Informe consolidado:</strong> <a href="https://www.boletoguardian.xyz/auditoria-pentest.html">https://www.boletoguardian.xyz/auditoria-pentest.html</a></p>
+        </div>
+    </article>
     <article class="card">
       <h2>1. Hallazgo cr&iacute;tico</h2>
       <h3>Vulnerabilidad</h3>

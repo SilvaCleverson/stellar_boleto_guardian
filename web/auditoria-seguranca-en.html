@@ -80,6 +80,10 @@
     .evidence figcaption { padding: 10px 12px; font-size: 0.82rem; color: #64748b; background: #f8fafc; }
     .commit-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 14px; margin: 12px 0; }
     .form-box { background: #fefce8; border: 1px solid #fde047; border-radius: 8px; padding: 14px; font-size: 0.9rem; line-height: 1.5; }
+    .relato-box { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 18px 20px; font-size: 0.95rem; line-height: 1.65; }
+    .relato-box .relato-lead { font-weight: 600; color: #0B1F3A; margin-bottom: 12px; }
+    .relato-box h3 { font-size: 0.95rem; color: #0B1F3A; margin: 14px 0 8px; border: none; padding: 0; }
+    .relato-box ul { margin-bottom: 12px; }
     footer { text-align: center; margin-top: 24px; font-size: 0.85rem; color: #94a3b8; }
 </style>
 </head>
@@ -102,6 +106,31 @@
       <p>Public report on the critical vulnerability identified in Sprint 3 (Stellar 37 Degrees) and the implemented fix.</p>
       <p class="meta"><strong>Project: Boleto Guardian · Fix: Sergio Artero (CTO) · Date: 20/05/2026</strong></p>
     </header>
+    <article class="card">
+      <h2>Detailed report &mdash; what was done</h2>
+      <div class="relato-box">
+        <p class="relato-lead">Critical vulnerability identified in the Boleto Guardian administrative flow:</p>
+        <p>The <code>ADMIN_API_KEY</code> was stored in browser <code>sessionStorage</code> and sent in plain text in the <code>x-admin-key</code> header from <a href="registro.html">registro.html</a>. Anyone with DevTools access could view the administrative credential and potentially abuse internal on-chain registration/query APIs.</p>
+        <h3>Impact</h3>
+        <ul>
+          <li>Exposure of administrative credentials;</li>
+          <li>Possible unauthorized calls to privileged endpoints;</li>
+          <li>Risk of fraudulent on-chain slip registration;</li>
+          <li>Critical risk to system integrity and operational control.</li>
+        </ul>
+        <h3>Fix applied</h3>
+        <ul>
+          <li>Removed <code>ADMIN_API_KEY</code> from the front end;</li>
+          <li>Stopped using <code>sessionStorage</code> for administrative secrets;</li>
+          <li>Eliminated <code>x-admin-key</code> sent by the browser;</li>
+          <li><code>ADMIN_API_KEY</code> kept only in backend <code>.env</code>;</li>
+          <li>Backend now handles admin authentication internally;</li>
+          <li>API isolated on internal Docker network so secrets never travel via the client.</li>
+        </ul>
+        <p><strong>Reference:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca-en.html">https://www.boletoguardian.xyz/auditoria-seguranca-en.html</a></p>
+        <p><strong>Consolidated report:</strong> <a href="https://www.boletoguardian.xyz/auditoria-pentest.html">https://www.boletoguardian.xyz/auditoria-pentest.html</a></p>
+        </div>
+    </article>
     <article class="card">
       <h2>1. Critical finding</h2>
       <h3>Vulnerability</h3>
