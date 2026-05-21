@@ -29,6 +29,13 @@
 | Infraestructura para varios instrumentos | Boletos en Stellar hoy |
 | Pitch: empresa + roadmap | Experiencia: registrar y validar boletos |
 
+## Equipo Guardian Labs
+
+| Rol | Nombre |
+|-----|--------|
+| **CEO** | Cleverson Silva |
+| **CTO** | Sergio Artero |
+| **CMO** | Demetrio De Los Rios |
 
 ---
 
@@ -239,7 +246,7 @@ MIT - use, modifique y distribuya libremente.
 
 <div align="center">
 
-**Hecho por Equipe Guardian**
+**Guardian Labs** — Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO)
 
 **Sitio:** [boletoguardian.xyz](https://boletoguardian.xyz)
 

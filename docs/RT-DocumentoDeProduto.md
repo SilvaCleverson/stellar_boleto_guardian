@@ -4,9 +4,9 @@
 
 **Programa:** Stellar 37 Degrees (NearX × Stellar Development Foundation)
 
-**Mantido por:** Equipe Guardian
+**Mantido por:** Guardian Labs — Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO)
 
-**Última atualização:** 19/05/2026 (v1.18)
+**Última atualização:** 19/05/2026 (v1.19)
 
 ---
 
@@ -19,6 +19,17 @@ Este é o **Documento de Produto** (RT — *Registro do raciocínio*) do Boleto 
 > **Princípio:** decisões são registradas com a justificativa que as motivou no momento. Quando uma decisão é revertida, a anterior **não é apagada** — é marcada como obsoleta com a nova decisão abaixo. Isso preserva a memória do raciocínio e permite revisitar suposições.
 
 > **Status operacional (19/05/2026):** A equipe está **realizando testes locais** do MVP (API em `Stellar/`, persistência via **Manage Data** na Testnet, validação pública, fluxos SEP-10, integração Protheus em `Integracao/Protheus/`, integração Asaas em `Integracao/ASAAS/` (**D-020**)). **Segurança (Sprint 3):** identificada exposição da **ADMIN_API_KEY** em `web/registro.html` via **DevTools** do navegador (`sessionStorage` + cabeçalho `x-admin-key`) — ver **D-021**; correção em andamento por **Sergio Artero**. Ambiente de referência: desenvolvimento local / Testnet, não mainnet.
+
+---
+## Equipe Guardian Labs
+
+| Papel | Nome |
+|-------|------|
+| **CEO** | Cleverson Silva |
+| **CTO** | Sergio Artero |
+| **CMO** | Demetrio De Los Rios |
+
+O **Boleto Guardian** (este repositório) é o primeiro produto da Guardian Labs; decisões técnicas de segurança e integrações citam responsáveis por nome quando aplicável (ex.: **D-021** — Sergio Artero, CTO).
 
 ---
 
@@ -669,6 +680,7 @@ Até concluir essa rodada, o produto deve ser tratado como **em homologação lo
 
 | v1.14 | 16/05/2026 | Diagrama fluxo x402 Testnet (TEST_PAYER_PUBLIC → COMPANY_ACCOUNT → validação) em D-019 |
 
+| v1.19 | 19/05/2026 | Equipe Guardian Labs: Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO) |
 | v1.18 | 19/05/2026 | Narrativa Guardian Labs (marca-mãe vs primeiro produto); Seção 1 reestruturada |
 | v1.17 | 19/05/2026 | **D-021:** vulnerabilidade — `ADMIN_API_KEY` exposta via DevTools em `registro.html`; correção Sergio Artero; READMEs alinhados (`Integracao/`, Asaas) |
 | v1.16 | 19/05/2026 | **D-020:** Asaas + diretório `Integracao/` (`Protheus/`, `ASAAS/`); endpoints webhook e admin/tenants |

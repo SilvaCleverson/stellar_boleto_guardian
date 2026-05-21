@@ -29,6 +29,13 @@
 | Infrastructure for multiple instruments | Bank slips on Stellar today |
 | Pitch: company + roadmap | Experience: register and validate slips |
 
+## Guardian Labs team
+
+| Role | Name |
+|------|------|
+| **CEO** | Cleverson Silva |
+| **CTO** | Sergio Artero |
+| **CMO** | Demetrio De Los Rios |
 
 ---
 
@@ -245,7 +252,7 @@ MIT - use, modify and distribute freely.
 
 <div align="center">
 
-**Built by Equipe Guardian** · **Website:** [boletoguardian.xyz](https://boletoguardian.xyz)
+**Guardian Labs** — Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · **Website:** [boletoguardian.xyz](https://boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/)
 

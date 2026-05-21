@@ -8,7 +8,7 @@
 
 *Transformando a seguranca de transacoes financeiras no Brasil*
 
-**Autor:** Equipe Guardian
+**Autor:** Guardian Labs — Cleverson Silva (CEO), Sergio Artero (CTO), Demetrio De Los Rios (CMO)
 **Data:** Marco de 2026
 **Versao:** 1.0
 

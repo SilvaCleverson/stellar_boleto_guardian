@@ -31,6 +31,13 @@ A **Guardian Labs** é a **marca do projeto** (marca-mãe) que desenvolve camada
 | Infraestrutura para vários instrumentos | Boletos na blockchain Stellar hoje |
 | Pitch: empresa + roadmap | Experiência: registrar e validar boleto |
 
+## Equipe Guardian Labs
+
+| Papel | Nome |
+|-------|------|
+| **CEO** | Cleverson Silva |
+| **CTO** | Sergio Artero |
+| **CMO** | Demetrio De Los Rios |
 
 ---
 
@@ -281,7 +288,7 @@ Resposta:
 
 <div align="center">
 
-**Feito por Equipe Guardian** · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
+**Guardian Labs** — Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · **Site:** [boletoguardian.xyz](https://www.boletoguardian.xyz)
 
 Powered by [Stellar](https://stellar.org/) · Hospedado no [Vercel](https://vercel.com/)
 
