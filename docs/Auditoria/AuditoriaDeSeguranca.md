@@ -5,7 +5,13 @@
 **Responsável pela correção:** Sergio Artero (CTO)  
 **Data da correção:** 20/05/2026  
 
-**Relatório público (avaliadores):** https://www.boletoguardian.xyz/auditoria-seguranca.html
+**Relatório público (avaliadores):**
+
+| Idioma | URL |
+|--------|-----|
+| Português | https://www.boletoguardian.xyz/auditoria-seguranca.html |
+| English | https://www.boletoguardian.xyz/auditoria-seguranca-en.html |
+| Español | https://www.boletoguardian.xyz/auditoria-seguranca-es.html |
 
 ---
 

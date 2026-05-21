@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Auditoria de Segurança D-021 — Boleto Guardian. Exposição de ADMIN_API_KEY no navegador e correção por Sergio Artero (CTO).">
-  <title>Auditoria de Segurança D-021 | Guardian Labs · Boleto Guardian</title>
+  <meta name="description" content="Auditoría de Seguridad D-021 — Boleto Guardian. Exposición de ADMIN_API_KEY en el navegador; corrección por Sergio Artero (CTO).">
+  <title>Auditoría de Seguridad D-021 | Guardian Labs · Boleto Guardian</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -86,71 +86,71 @@
 <body>
   <div class="wrap">
     <nav class="nav-top">
-      <a href="index.html">&larr; Whitepaper</a>
-      <a href="validation.html">Validar boleto</a>
+      <a href="index-es.html">&larr; Whitepaper</a>
+      <a href="validation-es.html">Validar boleto</a>
       <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
       <div class="lang-switch">
-        <a href="auditoria-seguranca.html" class="active">PT</a>
+        <a href="auditoria-seguranca.html">PT</a>
         <a href="auditoria-seguranca-en.html">EN</a>
-        <a href="auditoria-seguranca-es.html">ES</a>
+        <a href="auditoria-seguranca-es.html" class="active">ES</a>
       </div>
     </nav>
     <header class="hero">
       <p class="hero-labs">Guardian Labs</p>
-      <h1>Auditoria de Segurança — D-021</h1>
-      <p>Relatório público da vulnerabilidade crítica identificada na Sprint 3 (Stellar 37 Degrees) e da correção implementada.</p>
-      <p class="meta"><strong>Projeto: Boleto Guardian · Correção: Sergio Artero (CTO) · Data: 20/05/2026</strong></p>
+      <h1>Auditoría de Seguridad — D-021</h1>
+      <p>Informe público de la vulnerabilidad crítica identificada en la Sprint 3 (Stellar 37 Degrees) y la corrección implementada.</p>
+      <p class="meta"><strong>Proyecto: Boleto Guardian · Corrección: Sergio Artero (CTO) · Fecha: 20/05/2026</strong></p>
     </header>
     <article class="card">
-      <h2>1. Achado cr&iacute;tico</h2>
-      <h3>Vulnerabilidade</h3>
-      <p>Exposi&ccedil;&atilde;o da <code>ADMIN_API_KEY</code> (credencial administrativa secreta da API) no <strong>navegador</strong>, na p&aacute;gina interna <a href="registro.html">registro.html</a>.</p>
-      <h3>Como foi detectada</h3>
-      <p>Revis&atilde;o de seguran&ccedil;a com DevTools do Chrome no fluxo de registro interno:</p>
+      <h2>1. Hallazgo cr&iacute;tico</h2>
+      <h3>Vulnerabilidad</h3>
+      <p>Exposici&oacute;n de <code>ADMIN_API_KEY</code> (credencial administrativa secreta de la API) en el <strong>navegador</strong>, en la p&aacute;gina interna <a href="registro.html">registro.html</a>.</p>
+      <h3>C&oacute;mo se detect&oacute;</h3>
+      <p>Revisi&oacute;n de seguridad con DevTools de Chrome en el flujo de registro interno:</p>
       <ul>
-        <li><strong>Application &rarr; Session Storage:</strong> chave gravada ap&oacute;s &quot;Salvar chave na sess&atilde;o&quot;.</li>
-        <li><strong>Network &rarr; POST /api/blockchain:</strong> cabe&ccedil;alho <code>x-admin-key</code> com o segredo em texto claro.</li>
+        <li><strong>Application &rarr; Session Storage:</strong> clave guardada tras &quot;Guardar clave en la sesi&oacute;n&quot;.</li>
+        <li><strong>Network &rarr; POST /api/blockchain:</strong> cabecera <code>x-admin-key</code> con el secreto en texto claro.</li>
       </ul>
       <figure class="evidence">
         <img src="assets/auditoria/ChaveExposta.jpeg" alt="DevTools x-admin-key" width="1200" height="675" decoding="async">
-        <figcaption>Figura 1 &mdash; Evid&ecirc;ncia: cabe&ccedil;alho <code>x-admin-key</code> vis&iacute;vel no DevTools. A conta Stellar <code>G&hellip;</code> na tela &eacute; dado p&uacute;blico; o achado cr&iacute;tico &eacute; a <strong>chave administrativa secreta</strong>.</figcaption>
+        <figcaption>Figura 1 &mdash; Evidencia: cabecera <code>x-admin-key</code> visible en DevTools. La cuenta Stellar <code>G&hellip;</code> en pantalla es dato p&uacute;blico; el hallazgo cr&iacute;tico es la <strong>clave administrativa secreta</strong>.</figcaption>
       </figure>
-      <h3>Risco</h3>
+      <h3>Riesgo</h3>
       <table>
         <thead><tr><th>Aspecto</th><th>Impacto</th></tr></thead>
         <tbody>
-          <tr><td>Confidencialidade</td><td>C&oacute;pia da chave admin e chamadas a endpoints privilegiados</td></tr>
-          <tr><td>Integridade</td><td>Registro indevido de boletos on-chain</td></tr>
-          <tr><td>Severidade</td><td><strong>Cr&iacute;tica</strong></td></tr>
+          <tr><td>Confidencialidad</td><td>Copia de la clave admin y llamadas a endpoints privilegiados</td></tr>
+          <tr><td>Integridad</td><td>Registro indebido de boletos on-chain</td></tr>
+          <tr><td>Severidad</td><td><strong>Cr&iacute;tica</strong></td></tr>
         </tbody>
       </table>
     </article>
     <article class="card">
-      <h2>2. Corre&ccedil;&atilde;o realizada</h2>
+      <h2>2. Correcci&oacute;n realizada</h2>
       <div class="commit-box">
-        <p><strong>Commit (corre&ccedil;&atilde;o final):</strong></p>
+        <p><strong>Commit (correcci&oacute;n final):</strong></p>
         <p><a href="https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94" target="_blank" rel="noopener">e7da273 &mdash; refactor: backend absorve ADMIN_API_KEY &mdash; nenhum header em tr&acirc;nsito</a></p>
       </div>
       <ul>
-        <li><code>web/registro.html</code> &mdash; removidos <code>sessionStorage</code> e <code>x-admin-key</code> no cliente.</li>
-        <li><code>backend/server.js</code> &mdash; <code>requireAdmin()</code> usa apenas <code>ADMIN_API_KEY</code> no <code>.env</code> do servidor.</li>
-        <li>Docker &mdash; API na rede interna; segredo n&atilde;o trafega no navegador.</li>
+        <li><code>web/registro.html</code> &mdash; eliminados <code>sessionStorage</code> y <code>x-admin-key</code> en el cliente.</li>
+        <li><code>backend/server.js</code> &mdash; <code>requireAdmin()</code> usa solo <code>ADMIN_API_KEY</code> en el <code>.env</code> del servidor.</li>
+        <li>Docker &mdash; API en red interna; el secreto no viaja en el navegador.</li>
       </ul>
     </article>
     <article class="card">
-      <h2>3. Resumo para o formul&aacute;rio</h2>
+      <h2>3. Resumen para el formulario</h2>
       <div class="form-box">
-        <p><strong>Vulnerabilidade:</strong> <code>ADMIN_API_KEY</code> + <code>sessionStorage</code> + <code>x-admin-key</code> (DevTools).</p>
-        <p><strong>Risco:</strong> abuso de APIs administrativas (registro/consulta on-chain).</p>
-        <p><strong>Corre&ccedil;&atilde;o:</strong> chave s&oacute; no servidor; front sem segredo.</p>
+        <p><strong>Vulnerabilidad:</strong> <code>ADMIN_API_KEY</code> + <code>sessionStorage</code> + <code>x-admin-key</code> (DevTools).</p>
+        <p><strong>Riesgo:</strong> abuso de APIs administrativas (registro/consulta on-chain).</p>
+        <p><strong>Correcci&oacute;n:</strong> clave solo en el servidor; front sin secreto.</p>
         <p><strong>Commit:</strong> <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian/commit/e7da273a3366e90addc22bd07a66afec06ecbe94">e7da273</a></p>
-        <p><strong>Relat&oacute;rio:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca.html">www.boletoguardian.xyz/auditoria-seguranca.html</a></p>
+        <p><strong>Informe:</strong> <a href="https://www.boletoguardian.xyz/auditoria-seguranca-es.html">www.boletoguardian.xyz/auditoria-seguranca-es.html</a></p>
       </div>
     </article>
     <article class="card">
-      <h2>4. Refer&ecirc;ncias</h2>
+      <h2>4. Referencias</h2>
       <ul>
-        <li>RT do produto &mdash; decis&atilde;o <strong>D-021</strong></li>
+        <li>RT del producto &mdash; decisi&oacute;n <strong>D-021</strong></li>
         <li><code>docs/Auditoria/AuditoriaDeSeguranca.md</code></li>
       </ul>
     </article>
