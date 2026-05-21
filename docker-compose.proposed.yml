@@ -13,6 +13,11 @@ services:
     container_name: traefik
     image: "traefik:v3.3"
     restart: always
+    environment:
+      # Docker Engine 29.x (API 1.54) exige clientes com API >= 1.40.
+      # Sem esta variável, o SDK negocia com 1.24 e o daemon rejeita.
+      # Com ela, o SDK pula a negociação e usa 1.41 diretamente.
+      - DOCKER_API_VERSION=1.41
     command:
       - --api.dashboard=true
       - --providers.file.filename=/traefik_dynamic.toml
