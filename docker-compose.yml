@@ -1,11 +1,90 @@
+networks:
+  default:
+    external: true
+    name: proxy
+
+volumes:  
+  portainer-data:  
+
 services:
 
-  # ── Container Node.js: API backend ──────────────────────────────────────────
-  api:
+  # Servico para usar o Traefik como proxy reverso
+  traefik:
+    container_name: traefik
+    image: "traefik:v2.10.7"
+    restart: always
+    command:
+      - --api.dashboard=true
+      - --providers.file=true
+      - --providers.file.filename=/traefik_dynamic.toml
+      - --log.level=DEBUG
+      - --log.filePath=/logs/traefik.log
+      - --providers.docker=true
+      - --providers.docker.endpoint=unix:///var/run/docker.sock
+      - --providers.docker.exposedbydefault=false
+      - --providers.docker.watch=true
+      - --providers.docker.network=proxy
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.console.address=:8080
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/root/DockerConfig/traefik/traefik_dynamic.toml:/traefik_dynamic.toml"
+      - "/root/DockerConfig/traefik/certs/:/certs/"
+      - "/root/DockerConfig/traefik/logs:/logs"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.my_dashboard.rule=Host(`traefik.guardian-labs.xyz`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      - "traefik.http.routers.my_dashboard.entrypoints=console"
+      - "traefik.http.routers.my_dashboard.service=api@internal"
+      - "traefik.http.routers.my_dashboard.middlewares=my_admin_auth"
+      - "traefik.http.middlewares.my_admin_auth.basicauth.users=admin:$$2y$$05$$ycUvQJQqlGWFlK4GMLviHOJ5Xqgm9k.VzypJMdoHr5KW4e7Ftn8q6"
+      - "traefik.http.routers.dashboard.rule=Host(`traefik.guardian-labs.xyz`)"
+      - "traefik.http.routers.dashboard.entrypoints=web"
+      - "traefik.http.routers.dashboard.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.dashboard-secure.rule=Host(`traefik.guardian-labs.xyz`) || Host(`traefik.guardian-labs.xyz`)"
+      - "traefik.http.routers.dashboard-secure.entrypoints=websecure"
+      - "traefik.http.routers.dashboard-secure.tls=true"
+      - "traefik.http.routers.dashboard-secure.service=api@internal"
+
+  # Servico para gerenciar containers Docker
+  portainer:
+    image: portainer/portainer-ce
+    container_name: portainer
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.guardian-labs.xyz`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
+    restart: always
+    ports:
+      - "9000:9000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-data:/data
+
+  guardian-labs-api:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: boleto-guardian-api
+    container_name: guardian-labs-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.guardian-labs-api.rule=Host(`api.guardian-labs.xyz`)"
+      - "traefik.http.routers.guardian-labs-api.entrypoints=websecure"
+      - "traefik.http.routers.guardian-labs-api.tls=true"
+      - "traefik.http.services.guardian-labs-api.loadbalancer.server.port=3000"
     expose:
       - "3000"
     env_file:
@@ -22,17 +101,23 @@ services:
       start_period: 10s
       retries: 3
 
-  # ── Container nginx: frontend estático + proxy reverso ─────────────────────
-  # O nginx NÃO conhece nem manipula ADMIN_API_KEY. Toda a autenticação
-  # administrativa é absorvida pelo container `api`, que lê a chave do
-  # próprio backend/.env e a aplica internamente nas rotas protegidas.
-  web:
+  guardian-labs-portal:
     build:
       context: .
       dockerfile: docker/nginx/Dockerfile
-    container_name: boleto-guardian-web
-    ports:
-      - "80:80"
+    container_name: guardian-labs-portal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.guardian-labs-portal.rule=Host(`guardian-labs.xyz`)"
+      - "traefik.http.routers.guardian-labs-portal.entrypoints=web"
+      - "traefik.http.routers.guardian-labs-portal.middlewares=guardian-labs-portal-https"
+      - "traefik.http.middlewares.guardian-labs-portal-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.guardian-labs-portal-secure.rule=Host(`guardian-labs.xyz`)"
+      - "traefik.http.routers.guardian-labs-portal-secure.entrypoints=websecure"
+      - "traefik.http.routers.guardian-labs-portal-secure.tls=true"
+      # (Opcional) especifique a porta caso o serviço não use 80:
+      - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
+    
     depends_on:
       api:
         condition: service_healthy
