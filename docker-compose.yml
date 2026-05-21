@@ -121,7 +121,8 @@ services:
       - "traefik.http.services.guardian-labs-portal.loadbalancer.server.port=8080"
     
     depends_on:
-      - traefik
-      - guardian-labs-api:
-          condition: service_healthy
+      traefik:
+        condition: service_started
+      guardian-labs-api:
+        condition: service_healthy
     restart: unless-stopped
