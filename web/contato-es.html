@@ -213,6 +213,18 @@
       font-size: 0.92rem;
     }
     .form-success.visible { display: block; }
+    .form-error {
+      display: none;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      font-size: 0.92rem;
+    }
+    .form-error.visible { display: block; }
+    .form-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
     .form-grid { display: grid; gap: 16px; }
     .form-field label {
       display: block;
@@ -335,10 +347,8 @@
         <h2 id="form-title">Enviar un mensaje</h2>
         <p class="form-lead">Complete el formulario. El mensaje se enviar&aacute; por correo al equipo de Guardian Labs.</p>
         <p id="form-success" class="form-success" role="status">Mensaje enviado con &eacute;xito. Nos pondremos en contacto pronto.</p>
-        <form action="https://formsubmit.co/cleverson-silva@uol.com.br,guardianlabsw3@gmail.com" method="POST">
-          <input type="hidden" name="_subject" value="Contacto Boleto Guardian">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_next" value="https://boletoguardian.xyz/contato-es.html?enviado=1">
+        <p id="form-error" class="form-error" role="alert"></p>
+        <form id="contact-form" method="post" novalidate>
           <input type="text" name="_honey" class="form-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-grid">
             <div class="form-field">
@@ -382,9 +392,56 @@
     </div>
   </footer>
   <script>
-    if (new URLSearchParams(window.location.search).get('enviado') === '1') {
-      document.getElementById('form-success').classList.add('visible');
-    }
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var successEl = document.getElementById('form-success');
+      var errorEl = document.getElementById('form-error');
+      var form = document.getElementById('contact-form');
+      var btn = form.querySelector('.form-submit');
+      var apiBase = window.location.origin;
+
+      if (params.get('enviado') === '1') successEl.classList.add('visible');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        errorEl.classList.remove('visible');
+        successEl.classList.remove('visible');
+        if (form._honey.value) return;
+
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+
+        fetch(apiBase + '/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nome: form.nome.value.trim(),
+            email: form.email.value.trim(),
+            mensagem: form.mensagem.value.trim(),
+            _honey: form._honey.value
+          })
+        })
+          .then(function (res) { return res.json().then(function (data) { return { res: res, data: data }; }); })
+          .then(function (_ref) {
+            if (_ref.res.ok && _ref.data.success) {
+              successEl.classList.add('visible');
+              form.reset();
+              history.replaceState({}, '', window.location.pathname + '?enviado=1');
+              return;
+            }
+            errorEl.textContent = (_ref.data && _ref.data.error) || 'No se pudo enviar. Intente de nuevo.';
+            errorEl.classList.add('visible');
+          })
+          .catch(function () {
+            errorEl.textContent = 'Error de red. Verifique su conexion e intente de nuevo.';
+            errorEl.classList.add('visible');
+          })
+          .finally(function () {
+            btn.disabled = false;
+            btn.textContent = 'Enviar mensaje';
+          });
+      });
+    })();
   </script>
 </body>
 </html>
