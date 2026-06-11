@@ -7,19 +7,10 @@
   <title>Contato | Guardian Labs &middot; Boleto Guardian</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
   <style>
-    :root {
-      --bg: #040d18;
-      --surface: #0B1F3A;
-      --card: #102a4a;
-      --primary: #1A7FD4;
-      --accent: #0d4a82;
-      --gold: #F4C842;
-      --text: #e8eef5;
-      --muted: #94a3b8;
-      --border: rgba(148, 163, 184, 0.12);
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
@@ -35,9 +26,9 @@
       top: 0;
       z-index: 100;
       padding: 16px 0;
-      background: rgba(4, 13, 24, 0.88);
+      background: rgba(10, 31, 68, 0.96);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
     }
     .header-inner {
       display: flex;
@@ -55,21 +46,22 @@
       gap: 10px;
       font-size: 1.25rem;
       font-weight: 700;
-      color: var(--text);
+      color: #fff;
       text-decoration: none;
       letter-spacing: -0.02em;
     }
     .logo .brand-mark img { height: 38px; width: auto; display: block; }
+    .logo .wordmark { color: #fff; }
     .logo .wordmark span { color: var(--gold); }
     nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
     nav a {
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.78);
       text-decoration: none;
       font-weight: 500;
       font-size: 0.9rem;
       transition: color 0.2s;
     }
-    nav a:hover, nav a.active { color: var(--primary); }
+    nav a:hover, nav a.active { color: var(--gold); }
     .lang-switch { display: flex; gap: 8px; align-items: center; }
     .lang-switch a {
       padding: 6px 10px;
@@ -93,10 +85,10 @@
       transition: transform 0.15s, box-shadow 0.15s;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      background: var(--primary);
       color: #fff;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26, 127, 212, 0.4); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(10, 31, 68, 0.28); }
     .hero {
       padding: 56px 0 40px;
       text-align: center;
@@ -125,8 +117,9 @@
       margin-bottom: 40px;
     }
     .team-card {
-      background: var(--card);
+      background: #fff;
       border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(10, 31, 68, 0.06);
       border-radius: 14px;
       padding: 28px 24px;
       display: flex;
@@ -271,12 +264,13 @@
     .form-honey { position: absolute; left: -9999px; opacity: 0; }
     footer {
       padding: 32px 0;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
       text-align: center;
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.75);
       font-size: 0.9rem;
+      background: var(--primary);
     }
-    footer a { color: var(--primary); text-decoration: none; }
+    footer a { color: var(--gold); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
     .footer-links { margin-top: 12px; }
   </style>
@@ -285,7 +279,7 @@
   <header>
     <div class="header-inner">
       <a href="index.html" class="logo">
-        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/boleto_guardian_logo_dark_200px.png" width="120" height="120" alt="" decoding="async"></span>
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async"></span>
         <span class="wordmark">Boleto <span>Guardian</span></span>
       </a>
       <nav>
@@ -304,7 +298,7 @@
   <section class="hero">
     <div class="wrap">
       <p class="hero-labs">Guardian Labs</p>
-      <h1>Contato</h1>
+      <h1 class="seal">Contato</h1>
       <p>Conhe&ccedil;a a equipe por tr&aacute;s do Boleto Guardian &mdash; infraestrutura p&uacute;blica de autenticidade para pagamentos no Brasil.</p>
     </div>
   </section>

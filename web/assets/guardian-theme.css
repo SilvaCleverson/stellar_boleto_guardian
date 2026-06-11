@@ -1,0 +1,38 @@
+/**
+ * Guardian Labs design tokens (guardian-seal-main/design/brand.html)
+ * Boleto Guardian static site
+ */
+:root {
+  --bg: #F7F8FA;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --primary: #0A1F44;
+  --primary-dim: #081833;
+  --accent: #081833;
+  --gold: #D4AF37;
+  --text: #0F172A;
+  --muted: #64748B;
+  --border: rgba(15, 23, 42, 0.12);
+  --prose: 720px;
+  --success: #16A34A;
+  --warning: #D97706;
+  --danger: #DC2626;
+}
+
+.seal {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', 'Inconsolata', monospace;
+}
+
+.hero-cta .btn-outline {
+  color: var(--primary);
+  border-color: var(--border);
+}
+.hero-cta .btn-outline:hover {
+  border-color: var(--gold);
+  color: var(--primary);
+  background: rgba(212, 175, 55, 0.08);
+}

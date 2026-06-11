@@ -8,21 +8,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inconsolata:wght@500&display=swap" rel="stylesheet">
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
   <style>
-    :root {
-      --bg: #040d18;
-      --surface: #0B1F3A;
-      --card: #102a4a;
-      --primary: #1A7FD4;
-      --primary-dim: #1568b8;
-      --accent: #0d4a82;
-      --gold: #F4C842;
-      --text: #e8eef5;
-      --muted: #94a3b8;
-      --border: rgba(148, 163, 184, 0.12);
-      --prose: 720px;
-    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
     body {
@@ -41,9 +30,9 @@
       top: 0;
       z-index: 100;
       padding: 16px 0;
-      background: rgba(4, 13, 24, 0.88);
+      background: rgba(10, 31, 68, 0.96);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
     }
     .header-inner {
       display: flex;
@@ -61,23 +50,23 @@
       gap: 10px;
       font-size: 1.25rem;
       font-weight: 700;
-      color: var(--text);
+      color: #fff;
       text-decoration: none;
       letter-spacing: -0.02em;
     }
     .logo .brand-mark { flex-shrink: 0; display: inline-flex; align-items: center; }
     .logo .brand-mark img { height: 38px; width: auto; display: block; }
-    .logo .wordmark { font-weight: 700; color: var(--text); }
+    .logo .wordmark { font-weight: 700; color: #fff; }
     .logo .wordmark span { color: var(--gold); }
     nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
     nav a {
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.78);
       text-decoration: none;
       font-weight: 500;
       font-size: 0.9rem;
       transition: color 0.2s;
     }
-    nav a:hover { color: var(--primary); }
+    nav a:hover { color: var(--gold); }
     .lang-switch {
       display: flex;
       gap: 8px;
@@ -89,14 +78,14 @@
       gap: 4px;
       padding: 6px 10px;
       border-radius: 8px;
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.78);
       text-decoration: none;
       font-size: 0.85rem;
       transition: background 0.2s, color 0.2s;
       font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Inter', system-ui, sans-serif;
     }
-    .lang-switch a:hover { background: var(--card); color: var(--primary); }
-    .lang-switch a.active { background: var(--card); color: var(--primary); font-weight: 600; }
+    .lang-switch a:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+    .lang-switch a.active { background: rgba(212, 175, 55, 0.2); color: var(--gold); font-weight: 600; }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -110,16 +99,27 @@
       font-family: inherit;
     }
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      background: var(--primary);
       color: #fff;
+      border: 1px solid transparent;
     }
-    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(26, 127, 212, 0.4); }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(10, 31, 68, 0.28); background: var(--primary-dim); }
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+    .btn-outline:hover { border-color: var(--gold); color: var(--gold); box-shadow: none; }
 
     .hero {
       padding: 64px 0 56px;
       text-align: center;
       border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
     }
+    .hero-logo { margin-bottom: 12px; }
+    .hero-logo .brand-mark-hero img { height: 88px; width: auto; vertical-align: middle; }
+    .hero-logo .brand-sub img { height: 56px; width: auto; margin-top: 8px; opacity: 0.95; }
     .hero h1 {
       font-size: clamp(2rem, 4.5vw, 2.75rem);
       font-weight: 700;
@@ -318,12 +318,14 @@
 
     footer {
       padding: 40px 0;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
       text-align: center;
-      color: var(--muted);
+      color: rgba(255, 255, 255, 0.75);
       font-size: 0.9rem;
+      background: var(--primary);
     }
-    footer a { color: var(--primary); text-decoration: none; }
+    footer strong { color: #fff; }
+    footer a { color: var(--gold); text-decoration: none; }
     footer a:hover { text-decoration: underline; }
     .footer-links { margin-top: 12px; }
   </style>
@@ -332,7 +334,7 @@
   <header>
     <div class="header-inner">
       <a href="index-en.html" class="logo">
-        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/boleto_guardian_logo_dark_200px.png" width="120" height="120" alt="" decoding="async" /></span>
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async" /></span>
         <span class="wordmark">Boleto <span>Guardian</span></span>
       </a>
       <nav>
@@ -356,16 +358,19 @@
 
   <section class="hero">
     <div class="wrap">
-      <p class="hero-logo"><span class="brand-mark-hero"><img src="assets/brand/boleto_guardian_logo_dark_200px.png" width="160" height="160" alt="Boleto Guardian logo" decoding="async" /></span></p>
+      <p class="hero-logo">
+        <span class="brand-mark-hero"><img src="assets/brand/guardian-labs-mark.svg" width="96" height="96" alt="Guardian Labs" decoding="async" /></span>
+        <span class="brand-sub"><img src="assets/brand/boleto_guardian_logo_light_200px.png" width="120" height="120" alt="Boleto Guardian" decoding="async" /></span>
+      </p>
       <p class="hero-labs">Guardian Labs</p>
-      <h1>Boleto Guardian</h1>
+      <h1 class="seal">Boleto <span style="color:var(--gold);font-style:italic">Guardian</span></h1>
       <p class="version">Whitepaper v1.0</p>
       <p class="tagline">Guardian Labs: public authenticity for payments in Brazil. Boleto Guardian: first product — bank slips on Stellar, 44 to 48 digits.</p>
       <p class="meta"><strong>Guardian Labs:</strong> Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · <strong>Date:</strong> March 2026</p>
       <div class="hero-cta">
         <a href="validation-en.html" class="btn btn-primary">Validate slip</a>
-        <a href="contato-en.html" class="btn btn-primary" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">Contact</a>
-        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-primary" target="_blank" rel="noopener" style="background: var(--card); color: var(--text); border: 1px solid var(--border);">GitHub</a>
+        <a href="contato-en.html" class="btn btn-outline">Contact</a>
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" class="btn btn-outline" target="_blank" rel="noopener">GitHub</a>
       </div>
       <div class="badges">
         <span class="badge">Guardian Labs</span>
