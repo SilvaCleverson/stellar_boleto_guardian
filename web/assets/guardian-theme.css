@@ -30,9 +30,24 @@
 .hero-cta .btn-outline {
   color: var(--primary);
   border-color: var(--border);
+  background: transparent;
 }
 .hero-cta .btn-outline:hover {
   border-color: var(--gold);
   color: var(--primary);
   background: rgba(212, 175, 55, 0.08);
+}
+
+/* Destaque discreto: Contato entre Validar (primário) e GitHub (neutro) */
+.hero-cta .btn-outline.btn-contact {
+  background: rgba(212, 175, 55, 0.14);
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  color: var(--primary);
+  box-shadow: 0 1px 0 rgba(212, 175, 55, 0.12);
+}
+.hero-cta .btn-outline.btn-contact:hover {
+  background: rgba(212, 175, 55, 0.22);
+  border-color: var(--gold);
+  color: var(--primary-dim);
+  box-shadow: 0 4px 14px rgba(212, 175, 55, 0.18);
 }
