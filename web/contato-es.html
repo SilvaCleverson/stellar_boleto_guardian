@@ -345,11 +345,10 @@
 
       <section class="contact-form" aria-labelledby="form-title">
         <h2 id="form-title">Enviar un mensaje</h2>
-        <p class="form-lead">Complete el formulario. El mensaje se enviar&aacute; por correo al equipo de Guardian Labs.</p>
-        <p id="form-success" class="form-success" role="status">Mensaje enviado con &eacute;xito. Nos pondremos en contacto pronto.</p>
+        <p class="form-lead">Complete los campos. El mensaje se enviar&aacute; al equipo de Guardian Labs.</p>
+        <p id="form-success" class="form-success" role="status">Mensaje enviado. Nos pondremos en contacto pronto.</p>
         <p id="form-error" class="form-error" role="alert"></p>
         <form id="contact-form" method="post" novalidate>
-          <input type="text" name="_honey" class="form-honey" tabindex="-1" autocomplete="off" aria-hidden="true">
           <div class="form-grid">
             <div class="form-field">
               <label for="nome">Nombre</label>
@@ -370,8 +369,9 @@
 
       <div class="info-box">
         <h2>Guardian Labs &middot; Boleto Guardian</h2>
-        <p>Para alianzas, integraciones o consultas, use el formulario, LinkedIn o visite el sitio del proyecto.</p>
+        <p>Para alianzas, integraciones o consultas, use el formulario, LinkedIn o escr&iacute;banos:</p>
         <p>
+          <a href="mailto:guardianlabsw3@gmail.com">guardianlabsw3@gmail.com</a> &middot;
           <a href="https://boletoguardian.xyz">boletoguardian.xyz</a> &middot;
           <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
         </p>
@@ -391,57 +391,7 @@
       <p style="margin-top: 12px; font-size: 0.85rem;">&copy; 2026 Guardian Labs &middot; MIT</p>
     </div>
   </footer>
-  <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var successEl = document.getElementById('form-success');
-      var errorEl = document.getElementById('form-error');
-      var form = document.getElementById('contact-form');
-      var btn = form.querySelector('.form-submit');
-      var apiBase = window.location.origin;
-
-      if (params.get('enviado') === '1') successEl.classList.add('visible');
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        errorEl.classList.remove('visible');
-        successEl.classList.remove('visible');
-        if (form._honey.value) return;
-
-        btn.disabled = true;
-        btn.textContent = 'Enviando...';
-
-        fetch(apiBase + '/api/contact', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nome: form.nome.value.trim(),
-            email: form.email.value.trim(),
-            mensagem: form.mensagem.value.trim(),
-            _honey: form._honey.value
-          })
-        })
-          .then(function (res) { return res.json().then(function (data) { return { res: res, data: data }; }); })
-          .then(function (_ref) {
-            if (_ref.res.ok && _ref.data.success) {
-              successEl.classList.add('visible');
-              form.reset();
-              history.replaceState({}, '', window.location.pathname + '?enviado=1');
-              return;
-            }
-            errorEl.textContent = (_ref.data && _ref.data.error) || 'No se pudo enviar. Intente de nuevo.';
-            errorEl.classList.add('visible');
-          })
-          .catch(function () {
-            errorEl.textContent = 'Error de red. Verifique su conexion e intente de nuevo.';
-            errorEl.classList.add('visible');
-          })
-          .finally(function () {
-            btn.disabled = false;
-            btn.textContent = 'Enviar mensaje';
-          });
-      });
-    })();
-  </script>
+  <script src="js/contact-config.js"></script>
+  <script src="js/contact-form.js"></script>
 </body>
 </html>
