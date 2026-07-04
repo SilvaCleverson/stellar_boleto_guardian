@@ -53,10 +53,32 @@ jobs:
     name: Deploy landing to VPS
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      COMPOSE_FILE: docker-compose.landing.prod.yml
 
     steps:
       - name: Checkout deployment files
         uses: actions/checkout@v4
+
+      - name: Prepare VPS workspace
+        uses: appleboy/ssh-action@v1
+        env:
+          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          envs: DEPLOY_PATH
+          script: |
+            set -eu
+            : "${DEPLOY_PATH:?VPS_DEPLOY_PATH is required}"
+            case "$DEPLOY_PATH" in
+              /*) ;;
+              *) echo "VPS_DEPLOY_PATH must be an absolute Linux directory"; exit 1 ;;
+            esac
+            mkdir -p "$DEPLOY_PATH/docker/traefik"
+            test -w "$DEPLOY_PATH"
 
       - name: Copy Compose and Traefik route to VPS workspace
         uses: appleboy/scp-action@v1
@@ -65,7 +87,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
-          source: "docker-compose.landing.prod.yml,docker/traefik/traefik_dynamic.landing.toml"
+          source: "${{ env.COMPOSE_FILE }},docker/traefik/traefik_dynamic.landing.toml"
           target: ${{ secrets.VPS_DEPLOY_PATH }}
 
       - name: Start container and publish route
@@ -80,23 +102,37 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
-          envs: DOCKERHUB_USERNAME,IMAGE_TAG,DEPLOY_PATH,TRAEFIK_DYNAMIC_PATH
+          envs: COMPOSE_FILE,DOCKERHUB_USERNAME,IMAGE_TAG,DEPLOY_PATH,TRAEFIK_DYNAMIC_PATH
           script: |
             set -eu
+            : "${COMPOSE_FILE:?COMPOSE_FILE is required}"
             : "${DEPLOY_PATH:?VPS_DEPLOY_PATH is required}"
             : "${TRAEFIK_DYNAMIC_PATH:?VPS_TRAEFIK_DYNAMIC_PATH is required}"
             test -d "$TRAEFIK_DYNAMIC_PATH"
+            test -w "$TRAEFIK_DYNAMIC_PATH"
+
+            if [ ! -f "$DEPLOY_PATH/$COMPOSE_FILE" ]; then
+              echo "Missing deployment file: $DEPLOY_PATH/$COMPOSE_FILE"
+              find "$DEPLOY_PATH" -maxdepth 3 -type f -print
+              exit 1
+            fi
+
+            if [ ! -f "$DEPLOY_PATH/docker/traefik/traefik_dynamic.landing.toml" ]; then
+              echo "Missing Traefik route after SCP upload"
+              find "$DEPLOY_PATH" -maxdepth 3 -type f -print
+              exit 1
+            fi
 
             cd "$DEPLOY_PATH"
             export DOCKERHUB_USERNAME IMAGE_TAG
 
-            docker compose -f docker-compose.landing.prod.yml config --quiet
-            docker compose -f docker-compose.landing.prod.yml pull
-            docker compose -f docker-compose.landing.prod.yml up -d --remove-orphans --wait --wait-timeout 60
+            docker compose -f "$COMPOSE_FILE" config --quiet
+            docker compose -f "$COMPOSE_FILE" pull
+            docker compose -f "$COMPOSE_FILE" up -d --remove-orphans --wait --wait-timeout 60
 
             install -m 0644 \
               docker/traefik/traefik_dynamic.landing.toml \
               "$TRAEFIK_DYNAMIC_PATH/guardian-labs-landing.toml"
 
             docker image prune -f
-            docker compose -f docker-compose.landing.prod.yml ps
+            docker compose -f "$COMPOSE_FILE" ps

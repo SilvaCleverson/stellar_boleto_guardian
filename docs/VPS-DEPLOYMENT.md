@@ -81,3 +81,24 @@ Expected results:
 
 This deployment intentionally does not route `/api`. Any API or product
 application must remain on its own service and hostname.
+
+## Troubleshooting: Compose file not found
+
+The production file is named `docker-compose.landing.prod.yml`. If a workflow
+log still mentions the old `docker-compose.prod.yml` name, that run belongs to
+an older commit. Do not use "Re-run failed jobs" on that historical run because
+GitHub reuses its original workflow definition. Push the corrected workflow or
+start a new run from the latest `main` branch:
+
+```bash
+gh workflow run deploy.yml --ref main
+gh run watch
+```
+
+The workflow creates `VPS_DEPLOY_PATH` before uploading files and verifies the
+Compose and Traefik files after SCP. `VPS_DEPLOY_PATH` must be an absolute Linux
+directory, for example:
+
+```text
+/home/artero/workspace/stellar_boleto_guardian
+```
