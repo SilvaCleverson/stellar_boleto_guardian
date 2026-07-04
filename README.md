@@ -115,7 +115,7 @@ stellar_boleto_guardian/
 |-- docker/
 |   |-- nginx/              # Single landing-page container
 |   `-- traefik/            # Route snippet for the shared VPS proxy
-|-- docker-compose.prod.yml # One-service VPS deployment
+|-- docker-compose.landing.prod.yml # One-service VPS deployment
 |-- vercel.json             # Vercel config
 `-- package.json            # Serverless function dependencies
 ```

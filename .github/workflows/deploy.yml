@@ -65,7 +65,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT || '22' }}
-          source: "docker-compose.prod.yml,docker/traefik/traefik_dynamic.landing.toml"
+          source: "docker-compose.landing.prod.yml,docker/traefik/traefik_dynamic.landing.toml"
           target: ${{ secrets.VPS_DEPLOY_PATH }}
 
       - name: Start container and publish route
@@ -90,13 +90,13 @@ jobs:
             cd "$DEPLOY_PATH"
             export DOCKERHUB_USERNAME IMAGE_TAG
 
-            docker compose -f docker-compose.prod.yml config --quiet
-            docker compose -f docker-compose.prod.yml pull
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans --wait --wait-timeout 60
+            docker compose -f docker-compose.landing.prod.yml config --quiet
+            docker compose -f docker-compose.landing.prod.yml pull
+            docker compose -f docker-compose.landing.prod.yml up -d --remove-orphans --wait --wait-timeout 60
 
             install -m 0644 \
               docker/traefik/traefik_dynamic.landing.toml \
               "$TRAEFIK_DYNAMIC_PATH/guardian-labs-landing.toml"
 
             docker image prune -f
-            docker compose -f docker-compose.prod.yml ps
+            docker compose -f docker-compose.landing.prod.yml ps

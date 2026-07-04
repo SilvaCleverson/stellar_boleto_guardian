@@ -51,9 +51,9 @@ From a checkout on the VPS:
 export DOCKERHUB_USERNAME=your-dockerhub-user
 export IMAGE_TAG=latest
 
-docker compose -f docker-compose.prod.yml config --quiet
-docker compose -f docker-compose.prod.yml pull
-docker compose -f docker-compose.prod.yml up -d --wait
+docker compose -f docker-compose.landing.prod.yml config --quiet
+docker compose -f docker-compose.landing.prod.yml pull
+docker compose -f docker-compose.landing.prod.yml up -d --wait
 
 install -m 0644 \
   docker/traefik/traefik_dynamic.landing.toml \
@@ -66,7 +66,7 @@ without restarting Traefik.
 ## Verification
 
 ```bash
-docker compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.landing.prod.yml ps
 docker exec guardian-labs-landing wget -qO- http://127.0.0.1:8080/healthz
 curl -I http://guardian-labs.xyz
 curl -I https://guardian-labs.xyz
