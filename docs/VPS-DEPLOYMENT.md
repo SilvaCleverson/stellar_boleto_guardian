@@ -23,7 +23,7 @@ named `proxy`; it does not publish a host port.
 3. Create the deployment workspace:
 
    ```bash
-   mkdir -p /home/artero/workspace/stellar_boleto_guardian
+   mkdir -p /home/artero/workspace/guardian-landing
    ```
 
 4. Add these GitHub Actions secrets:
@@ -36,7 +36,7 @@ named `proxy`; it does not publish a host port.
    | `SSH_USER` | `artero` |
    | `SSH_PRIVATE_KEY` | Private deployment key |
    | `SSH_PORT` | `22` |
-   | `VPS_DEPLOY_PATH` | `/home/artero/workspace/stellar_boleto_guardian` |
+   | `VPS_DEPLOY_PATH` | `/home/artero/workspace/guardian-landing` |
    | `VPS_TRAEFIK_DYNAMIC_PATH` | `/home/artero/DockerConfig/traefik/dynamic` |
 
 The workflow copies the production Compose file and the landing-specific
@@ -100,5 +100,5 @@ Compose and Traefik files after SCP. `VPS_DEPLOY_PATH` must be an absolute Linux
 directory, for example:
 
 ```text
-/home/artero/workspace/stellar_boleto_guardian
+/home/artero/workspace/guardian-landing
 ```

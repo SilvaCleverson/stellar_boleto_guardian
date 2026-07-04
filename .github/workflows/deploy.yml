@@ -73,12 +73,22 @@ jobs:
           script: |
             set -eu
             : "${DEPLOY_PATH:?VPS_DEPLOY_PATH is required}"
+            echo "Preparing VPS workspace: $DEPLOY_PATH"
             case "$DEPLOY_PATH" in
               /*) ;;
               *) echo "VPS_DEPLOY_PATH must be an absolute Linux directory"; exit 1 ;;
             esac
-            mkdir -p "$DEPLOY_PATH/docker/traefik"
-            test -w "$DEPLOY_PATH"
+            if ! mkdir -p "$DEPLOY_PATH/docker/traefik"; then
+              echo "Cannot create the deployment workspace as user $(id -un)"
+              ls -ld "$(dirname "$DEPLOY_PATH")" 2>/dev/null || true
+              exit 1
+            fi
+            if [ ! -w "$DEPLOY_PATH" ]; then
+              echo "Deployment workspace is not writable as user $(id -un)"
+              ls -ld "$DEPLOY_PATH"
+              exit 1
+            fi
+            echo "VPS workspace is ready"
 
       - name: Copy Compose and Traefik route to VPS workspace
         uses: appleboy/scp-action@v1
@@ -108,8 +118,19 @@ jobs:
             : "${COMPOSE_FILE:?COMPOSE_FILE is required}"
             : "${DEPLOY_PATH:?VPS_DEPLOY_PATH is required}"
             : "${TRAEFIK_DYNAMIC_PATH:?VPS_TRAEFIK_DYNAMIC_PATH is required}"
-            test -d "$TRAEFIK_DYNAMIC_PATH"
-            test -w "$TRAEFIK_DYNAMIC_PATH"
+
+            echo "Validating Traefik directory: $TRAEFIK_DYNAMIC_PATH"
+            if [ ! -d "$TRAEFIK_DYNAMIC_PATH" ]; then
+              echo "Traefik dynamic directory does not exist"
+              ls -ld "$(dirname "$TRAEFIK_DYNAMIC_PATH")" 2>/dev/null || true
+              exit 1
+            fi
+            if [ ! -w "$TRAEFIK_DYNAMIC_PATH" ]; then
+              echo "Traefik dynamic directory is not writable as user $(id -un)"
+              ls -ld "$TRAEFIK_DYNAMIC_PATH"
+              exit 1
+            fi
+            echo "Traefik directory is ready"
 
             if [ ! -f "$DEPLOY_PATH/$COMPOSE_FILE" ]; then
               echo "Missing deployment file: $DEPLOY_PATH/$COMPOSE_FILE"
