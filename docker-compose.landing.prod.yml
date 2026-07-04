@@ -1,0 +1,34 @@
+name: guardian-labs-landing
+
+# Production deployment for the Guardian Labs landing page.
+#
+# This compose file intentionally starts exactly one container. Traefik,
+# Portainer, APIs, databases, and certificate management belong to the existing
+# Guardian Seal VPS stack.
+#
+# Required:
+#   DOCKERHUB_USERNAME  Docker Hub namespace that owns the landing image
+#
+# Optional:
+#   IMAGE_TAG           immutable image tag to deploy (default: latest)
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+
+services:
+  landing:
+    image: ${DOCKERHUB_USERNAME:?DOCKERHUB_USERNAME is required}/guardian-labs-landing:${IMAGE_TAG:-latest}
+    container_name: guardian-labs-landing
+    restart: unless-stopped
+    expose:
+      - "8080"
+    networks:
+      - proxy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      start_period: 5s
+      retries: 3

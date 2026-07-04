@@ -82,6 +82,16 @@ vercel dev
 
 Open `http://localhost:3000`.
 
+## Guardian Labs landing deployment
+
+The VPS deployment runs the static site as a single Nginx container named
+`guardian-labs-landing`. It joins the existing `proxy` network and is routed by
+the shared Traefik instance at [guardian-labs.xyz](https://guardian-labs.xyz).
+It does not start another Traefik, Portainer, API, or database container.
+
+See [docs/VPS-DEPLOYMENT.md](docs/VPS-DEPLOYMENT.md) for the deployment
+workflow, required secrets, and verification commands.
+
 ## Project structure
 
 ```
@@ -102,6 +112,10 @@ stellar_boleto_guardian/
 |-- Integracao/
 |   |-- Protheus/           # ADVPL (TOTVS)
 |   `-- ASAAS/              # Asaas webhook
+|-- docker/
+|   |-- nginx/              # Single landing-page container
+|   `-- traefik/            # Route snippet for the shared VPS proxy
+|-- docker-compose.prod.yml # One-service VPS deployment
 |-- vercel.json             # Vercel config
 `-- package.json            # Serverless function dependencies
 ```

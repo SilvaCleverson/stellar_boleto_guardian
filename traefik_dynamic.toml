@@ -1,3 +1,0 @@
-[[tls.certificates]]
-  certFile = "/certs/cloudflare_atmsolutions.crt"
-  keyFile = "/certs/cloudflare_atmsolutions.key"

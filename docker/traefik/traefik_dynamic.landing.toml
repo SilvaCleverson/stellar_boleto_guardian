@@ -1,0 +1,37 @@
+# =============================================================================
+# Guardian Labs landing-page routes for the shared VPS Traefik instance.
+#
+# Install as:
+#   /home/artero/DockerConfig/traefik/dynamic/guardian-labs-landing.toml
+#
+# The Guardian Seal stack owns Traefik and loads every TOML file from /dynamic.
+# Its testnet configuration also defines the shared `https-redirect` middleware.
+# =============================================================================
+
+[http]
+
+  [http.routers]
+
+    [http.routers.guardian-labs-landing-secure]
+      rule = "Host(`guardian-labs.xyz`)"
+      entryPoints = ["websecure"]
+      service = "guardian-labs-landing"
+      [http.routers.guardian-labs-landing-secure.tls]
+        certResolver = "le"
+
+    [http.routers.guardian-labs-landing-http]
+      rule = "Host(`guardian-labs.xyz`)"
+      entryPoints = ["web"]
+      middlewares = ["https-redirect"]
+      service = "guardian-labs-landing"
+
+  [http.services]
+
+    [http.services.guardian-labs-landing.loadBalancer]
+      passHostHeader = true
+      [[http.services.guardian-labs-landing.loadBalancer.servers]]
+        url = "http://guardian-labs-landing:8080"
+      [http.services.guardian-labs-landing.loadBalancer.healthCheck]
+        path = "/healthz"
+        interval = "30s"
+        timeout = "5s"

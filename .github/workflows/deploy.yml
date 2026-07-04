@@ -1,0 +1,102 @@
+name: Build, Push & Deploy Landing
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: guardian-labs-landing-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-push:
+    name: Build and push landing image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      sha-short: ${{ steps.meta.outputs.sha-short }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute image tag
+        id: meta
+        shell: bash
+        run: echo "sha-short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push landing image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/nginx/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/guardian-labs-landing:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/guardian-labs-landing:${{ steps.meta.outputs.sha-short }}
+          cache-from: type=gha,scope=landing
+          cache-to: type=gha,mode=max,scope=landing
+
+  deploy:
+    name: Deploy landing to VPS
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout deployment files
+        uses: actions/checkout@v4
+
+      - name: Copy Compose and Traefik route to VPS workspace
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          source: "docker-compose.prod.yml,docker/traefik/traefik_dynamic.landing.toml"
+          target: ${{ secrets.VPS_DEPLOY_PATH }}
+
+      - name: Start container and publish route
+        uses: appleboy/ssh-action@v1
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.sha-short }}
+          DEPLOY_PATH: ${{ secrets.VPS_DEPLOY_PATH }}
+          TRAEFIK_DYNAMIC_PATH: ${{ secrets.VPS_TRAEFIK_DYNAMIC_PATH }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          envs: DOCKERHUB_USERNAME,IMAGE_TAG,DEPLOY_PATH,TRAEFIK_DYNAMIC_PATH
+          script: |
+            set -eu
+            : "${DEPLOY_PATH:?VPS_DEPLOY_PATH is required}"
+            : "${TRAEFIK_DYNAMIC_PATH:?VPS_TRAEFIK_DYNAMIC_PATH is required}"
+            test -d "$TRAEFIK_DYNAMIC_PATH"
+
+            cd "$DEPLOY_PATH"
+            export DOCKERHUB_USERNAME IMAGE_TAG
+
+            docker compose -f docker-compose.prod.yml config --quiet
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d --remove-orphans --wait --wait-timeout 60
+
+            install -m 0644 \
+              docker/traefik/traefik_dynamic.landing.toml \
+              "$TRAEFIK_DYNAMIC_PATH/guardian-labs-landing.toml"
+
+            docker image prune -f
+            docker compose -f docker-compose.prod.yml ps

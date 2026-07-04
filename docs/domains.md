@@ -1,9 +1,10 @@
-# Domínios — Boleto Guardian
+# Domains
 
-Registro dos domínios oficiais do projeto.
+Official domains used by the Guardian Labs ecosystem.
 
-| Domínio            | Uso                    | Status   |
-|--------------------|------------------------|----------|
-| **boletoguardian.xyz** | Site oficial do projeto | Adquirido |
+| Domain | Use | Deployment |
+|---|---|---|
+| **guardian-labs.xyz** | Guardian Labs landing page | VPS: `guardian-labs-landing` behind shared Traefik |
+| **boletoguardian.xyz** | Boleto Guardian product site | Product deployment |
 
-*Última atualização: março 2026*
+Last updated: July 2026.
