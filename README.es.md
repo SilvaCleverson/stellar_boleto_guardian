@@ -17,11 +17,11 @@
 
 > **Parte del ecosistema Guardian Labs**
 
-> **Guardian Labs** construye **infraestructura pública de autenticidad** para las claves que mueven dinero en Brasil — pruebas inmutables y auditables de que un instrumento de pago es legítimo, sin depender solo del emisor o del banco. **Boleto Guardian** es el **primer producto** de Guardian Labs (autenticidad de boletos en Stellar; validación con 44 a 48 dígitos del código de barras). Otros instrumentos de pago brasileños están en la hoja de ruta.
+> **Guardian Labs** construye **infraestructura pública de autenticidad** para las claves que mueven dinero — pruebas inmutables y auditables de que un instrumento de pago es legítimo, sin depender solo del emisor o del banco. **Boleto Guardian** es el **primer producto** de Guardian Labs (autenticidad de boletos en Stellar; validación con 44 a 48 dígitos del código de barras). Otros instrumentos de pago están en la hoja de ruta.
 
 ## Qué es Guardian Labs
 
-**Guardian Labs** es la **marca del proyecto** (marca madre) que desarrolla capas públicas de confianza sobre identificadores de pago en Brasil. No es banco, fintech de pagos ni ancla Stellar — es la capa de **autenticidad** que emisores y pagadores usan vía API, integrada a cualquier ERP.
+**Guardian Labs** es la **marca del proyecto** (marca madre) que desarrolla capas públicas de confianza sobre identificadores de pago. No es banco, fintech de pagos ni ancla Stellar — es la capa de **autenticidad** que emisores y pagadores usan vía API, integrada a cualquier ERP.
 
 | Guardian Labs | Boleto Guardian |
 |---------------|-----------------|
@@ -246,7 +246,7 @@ MIT - use, modifique y distribuya libremente.
 
 <div align="center">
 
-**Guardian Labs** � Cleverson Silva (CEO) � Sergio Artero (CTO) � Demetrio De Los Rios (CMO)
+**Guardian Labs** � Cleverson Silva (CEO) � Sergio Artero (CTO) � Demetrio De Los Rios (CMO)
 
 **Sitio:** [boletoguardian.xyz](https://boletoguardian.xyz)
 

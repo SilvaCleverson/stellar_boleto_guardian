@@ -463,7 +463,7 @@ Extend validation to digital contracts, creating an immutable record of terms, s
 
 Establish the platform as **Brazil's digital validation layer**, with public APIs for verification of government and private documents, recognized by regulatory bodies.
 
-> *"In 5 years, the Boleto Guardian will be synonymous with digital trust in Brazil, just as the SSL padlock represents security on the web. Each validated document strengthens the trust network, creating a positive viral effect."*
+> *"In 5 years, the Boleto Guardian will be synonymous with digital trust, just as the SSL padlock represents security on the web. Each validated document strengthens the trust network, creating a positive viral effect."*
 
 ---
 
