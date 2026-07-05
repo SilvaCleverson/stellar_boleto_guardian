@@ -33,4 +33,4 @@ A página **validation.html** chama a API em `GET /api/validate/:codebar`. Por p
 | `validation.html` | Validador de boleto (44 a 48 dígitos) |
 | `vercel.json` | Configuração mínima para o Vercel |
 
-> Cada página tem versões PT/EN/ES (ex.: `index-en.html`, `payorder-w3-es.html`). O botão **Acessar PayOrder W3** aponta para `https://pow3.guardian-labs.xyz/`
+> Cada página tem versões PT/EN/ES (ex.: `index-en.html`, `payorder-w3-es.html`). O botão **Acessar PayOrder W3** aponta para `https://pow3.guardian-labs.xyz/admin`
