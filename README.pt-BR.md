@@ -19,11 +19,11 @@
 
 > **Parte do ecossistema Guardian Labs**
 
-> A **Guardian Labs** constrói **infraestrutura pública de autenticidade** para as chaves que movem dinheiro no Brasil — provas imutáveis e auditáveis de que um instrumento de pagamento é legítimo, sem depender só do emissor ou do banco. **Boleto Guardian** é o **primeiro produto** da Guardian Labs (autenticidade de boletos na Stellar; validação pelos 44 a 48 dígitos do código de barras). Outros instrumentos de pagamento brasileiros estão no roadmap.
+> A **Guardian Labs** constrói **infraestrutura pública de autenticidade** para as chaves que movem dinheiro — provas imutáveis e auditáveis de que um instrumento de pagamento é legítimo, sem depender só do emissor ou do banco. **Boleto Guardian** é o **primeiro produto** da Guardian Labs (autenticidade de boletos na Stellar; validação pelos 44 a 48 dígitos do código de barras). Outros instrumentos de pagamento estão no roadmap.
 
 ## O que é a Guardian Labs
 
-A **Guardian Labs** é a **marca do projeto** (marca-mãe) que desenvolve camadas públicas de confiança sobre identificadores de pagamento no Brasil. Não é banco, fintech de pagamento nem âncora Stellar — é a camada de **autenticidade** que emissores e pagadores usam via API, integrada a qualquer ERP.
+A **Guardian Labs** é a **marca do projeto** (marca-mãe) que desenvolve camadas públicas de confiança sobre identificadores de pagamento. Não é banco, fintech de pagamento nem âncora Stellar — é a camada de **autenticidade** que emissores e pagadores usam via API, integrada a qualquer ERP.
 
 | Guardian Labs | Boleto Guardian |
 |---------------|-----------------|

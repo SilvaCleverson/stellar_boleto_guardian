@@ -461,9 +461,9 @@ Estender a validacao para contratos digitais, criando registro imutavel de termo
 
 ### Fase 4: Infraestrutura Nacional de Confianca
 
-Consolidar-se como a **camada de validacao digital do Brasil**, com APIs publicas para verificacao de documentos governamentais e privados, reconhecida por orgaos reguladores.
+Consolidar-se como a **camada de validacao digital**, com APIs publicas para verificacao de documentos governamentais e privados, reconhecida por orgaos reguladores.
 
-> *"Em 5 anos, o Boleto Guardian sera sinonimo de confianca digital no Brasil, da mesma forma que o cadeado SSL representa seguranca na web. Cada documento validado fortalece a rede de confianca, criando um efeito viral positivo."*
+> *"Em 5 anos, o Boleto Guardian sera sinonimo de confianca digital, da mesma forma que o cadeado SSL representa seguranca na web. Cada documento validado fortalece a rede de confianca, criando um efeito viral positivo."*
 
 ---
 

@@ -27,6 +27,10 @@ A página **validation.html** chama a API em `GET /api/validate/:codebar`. Por p
 
 | Arquivo | Descrição |
 |---------|-----------|
-| `index.html` | Landing page |
+| `index.html` | Landing page da Guardian Labs (hub com os produtos) |
+| `boleto-guardian.html` | Whitepaper do Boleto Guardian (antigo `index.html`) |
+| `payorder-w3.html` | Página do produto PayOrder W3 Guardian |
 | `validation.html` | Validador de boleto (44 a 48 dígitos) |
 | `vercel.json` | Configuração mínima para o Vercel |
+
+> Cada página tem versões PT/EN/ES (ex.: `index-en.html`, `payorder-w3-es.html`). O botão **Acessar PayOrder W3** aponta para `https://pow3.guardian-labs.xyz/admin`
