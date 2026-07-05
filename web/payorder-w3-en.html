@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PayOrder W3 Guardian — a Web3 billing rail (DDA) that turns digital charges into payment orders verifiable on-chain. Non-custodial, no typing the destination wallet.">
+  <title>PayOrder W3 Guardian — Web3 billing, verifiable on-chain | Guardian Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      min-height: 100vh;
+      font-size: 1.05rem;
+    }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    .wrap-narrow { max-width: var(--prose); margin: 0 auto; padding: 0 24px; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(10, 31, 68, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo .brand-mark img { height: 38px; width: auto; display: block; }
+    .logo .wordmark { color: #fff; }
+    .logo .wordmark span { color: var(--gold); }
+    nav { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+    nav a {
+      color: rgba(255, 255, 255, 0.78);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: var(--gold); }
+    .lang-switch { display: flex; gap: 8px; align-items: center; }
+    .lang-switch a {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.78);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: background 0.2s, color 0.2s;
+      font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Inter', system-ui, sans-serif;
+    }
+    .lang-switch a:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+    .lang-switch a.active { background: rgba(212, 175, 55, 0.2); color: var(--gold); font-weight: 600; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 22px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s, background 0.2s, border-color 0.2s, color 0.2s;
+      font-family: inherit;
+    }
+    .btn-primary { background: var(--primary); color: #fff; border: 1px solid transparent; }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(10, 31, 68, 0.28); background: var(--primary-dim); }
+    .btn-gold { background: var(--gold); color: var(--primary-dim); border: 1px solid transparent; }
+    .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(212, 175, 55, 0.35); }
+    .btn-outline { background: transparent; color: var(--primary); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--gold); color: var(--primary-dim); background: rgba(212, 175, 55, 0.08); }
+    .btn-ghost { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, 0.35); }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .hero {
+      padding: 64px 0 56px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+    }
+    .hero-labs {
+      font-size: 0.82rem; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 4.5vw, 2.75rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .hero h1 em { color: var(--gold); font-style: italic; }
+    .hero .tagline {
+      font-size: 1.12rem; color: var(--muted);
+      max-width: 620px; margin: 0 auto 26px;
+    }
+    .hero .tag-new {
+      display: inline-block;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; margin-bottom: 16px;
+      background: rgba(212, 175, 55, 0.16); color: #9a7d1e; border: 1px solid rgba(212, 175, 55, 0.45);
+    }
+    .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+    .hero .badge { padding: 6px 12px; border-radius: 6px; background: var(--card); color: var(--muted); font-size: 0.8rem; border: 1px solid var(--border); }
+
+    main { padding: 56px 0 64px; }
+    .sec { margin-bottom: 56px; scroll-margin-top: 80px; }
+    .sec > h2 {
+      font-size: 1.65rem; font-weight: 700; letter-spacing: -0.02em;
+      margin-bottom: 20px; color: var(--text);
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .sec h3 { font-size: 1.2rem; font-weight: 600; margin: 28px 0 12px; color: var(--primary); }
+    .sec p { margin-bottom: 16px; color: var(--text); }
+    .sec strong { color: var(--text); }
+    .blockquote {
+      border-left: 4px solid var(--gold);
+      padding: 16px 20px; margin: 24px 0;
+      background: rgba(212, 175, 55, 0.08);
+      border-radius: 0 10px 10px 0; font-size: 1.05rem;
+    }
+    .blockquote p:last-child { margin-bottom: 0; }
+    .diagram {
+      font-family: 'JetBrains Mono', 'Inconsolata', monospace;
+      font-size: 0.75rem; line-height: 1.5;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 20px; overflow-x: auto; margin: 20px 0; color: var(--muted);
+    }
+    .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin: 8px 0 4px; }
+    .feature {
+      background: #fff; border: 1px solid var(--border); border-radius: 14px;
+      padding: 22px 20px; transition: border-color 0.2s, transform 0.15s;
+    }
+    .feature:hover { border-color: rgba(212, 175, 55, 0.45); transform: translateY(-2px); }
+    .feature .f-icon { width: 40px; height: 40px; border-radius: 10px; display: inline-flex; align-items: center; justify-content: center; background: rgba(10, 31, 68, 0.06); color: var(--primary); margin-bottom: 12px; }
+    .feature .f-icon svg { width: 22px; height: 22px; }
+    .feature h4 { font-size: 1.02rem; font-weight: 700; margin-bottom: 6px; }
+    .feature p { font-size: 0.92rem; color: var(--muted); margin: 0; }
+
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; }
+    .step { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; }
+    .step .num { width: 30px; height: 30px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+    .step h4 { font-size: 0.98rem; font-weight: 700; color: var(--primary); margin-bottom: 4px; }
+    .step p { font-size: 0.88rem; color: var(--muted); margin: 0; }
+
+    .cta-band {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      border-radius: 20px; padding: 44px 40px; text-align: center; color: #fff; margin-top: 8px;
+    }
+    .cta-band h2 { font-size: clamp(1.5rem, 3vw, 1.9rem); font-weight: 700; margin-bottom: 12px; color: #fff; border: none; padding: 0; }
+    .cta-band p { color: rgba(255, 255, 255, 0.82); max-width: 560px; margin: 0 auto 24px; }
+    .cta-band .hero-cta { justify-content: center; }
+
+    footer {
+      padding: 40px 0; border-top: 1px solid rgba(212, 175, 55, 0.2);
+      text-align: center; color: rgba(255, 255, 255, 0.75); font-size: 0.9rem; background: var(--primary);
+    }
+    footer strong { color: #fff; }
+    footer a { color: var(--gold); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-links { margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <a href="payorder-w3-en.html" class="logo">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async"></span>
+        <span class="wordmark">PayOrder <span>W3</span></span>
+      </a>
+      <nav>
+        <div class="lang-switch">
+          <a href="payorder-w3.html" title="Português">🇧🇷 PT</a>
+          <a href="payorder-w3-en.html" class="active" title="English">🇺🇸 EN</a>
+          <a href="payorder-w3-es.html" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="index-en.html">Guardian Labs</a>
+        <a href="#problema">Problem</a>
+        <a href="#solucao">Solution</a>
+        <a href="#como-funciona">How it works</a>
+        <a href="contato-en.html">Contact</a>
+        <!-- TODO: replace "#" with the PayOrder W3 app URL -->
+        <a href="#" class="btn btn-gold">Open PayOrder W3</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero-labs">Guardian Labs</p>
+      <span class="tag-new">New product</span>
+      <h1>PayOrder <em>W3</em> Guardian</h1>
+      <p class="tagline">A Web3 billing rail (DDA) that turns digital charges from any source into payment orders verifiable on-chain — without typing the destination wallet and without custody of your seed.</p>
+      <div class="hero-cta">
+        <!-- TODO: replace "#" with the PayOrder W3 app URL -->
+        <a href="#" class="btn btn-gold">Open PayOrder W3</a>
+        <a href="#solucao" class="btn btn-outline">How it works</a>
+      </div>
+      <div class="badges">
+        <span class="badge">Web3 billing (DDA)</span>
+        <span class="badge">On-chain proof</span>
+        <span class="badge">Non-custodial</span>
+        <span class="badge">ERP / API integration</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <section class="sec" id="problema">
+        <h2>The problem</h2>
+        <p>Traditional digital charges — such as payment links and invoices — suffer from a serious problem: a <strong>lack of trust and opacity</strong>. The payer rarely knows for sure <strong>who is actually receiving the money</strong>.</p>
+        <p>On top of that, data can be <strong>tampered with along the way</strong> by fraud such as phishing or man-in-the-middle, and <strong>human errors</strong> are common when destination wallets have to be typed manually. There is no <strong>public, immutable proof</strong> that the charge is legitimate.</p>
+        <div class="blockquote">
+          <p>The payer receives a charge and has to trust blindly. There is no way to verify, publicly and independently, that the destination is correct.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>
+            <h4>Opaque destination</h4>
+            <p>The payer doesn't really know where the money goes.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.5 3.5 7.5 8 8 4.5-.5 8-3.5 8-8V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h4>Tampering in transit</h4>
+            <p>Phishing and man-in-the-middle swap the charge data.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 3 18 18"/><path d="M10 5h4l1 4H9z"/><path d="M6 21h12"/></svg></span>
+            <h4>Human error</h4>
+            <p>Typing the destination wallet by hand causes costly mistakes.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <h4>No public proof</h4>
+            <p>There is no immutable record that the charge is legitimate.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>The solution: PayOrder W3 Guardian</h2>
+        <p>We built <strong>PayOrder W3 Guardian</strong>: a <strong>Web3 billing rail (DDA)</strong> that turns digital charges from any source (ERPs, APIs) into <strong>payment orders verifiable on-chain</strong>.</p>
+        <p>Our key differentiator is that the <strong>destination wallet is never typed</strong> when the charge is created; it is pulled automatically from the payee's record (tenant), <strong>eliminating errors and fraud</strong>. Before paying, the user sees exactly <strong>who will receive</strong>, the <strong>amount</strong> and the <strong>on-chain proof</strong>.</p>
+        <div class="blockquote">
+          <p>And best of all: the payment is <strong>non-custodial</strong> — the user's seed <strong>never</strong> touches our backend.</p>
+        </div>
+
+        <h3>Why it is different</h3>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <h4>Wallet from the record, not typed</h4>
+            <p>The destination wallet comes from the payee's record (tenant), not from typing.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <h4>Transparency before paying</h4>
+            <p>Who receives, amount and on-chain proof visible before confirmation.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg></span>
+            <h4>Verifiable on-chain</h4>
+            <p>Each charge becomes a payment order with public, immutable proof.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.5 3.5 7.5 8 8 4.5-.5 8-3.5 8-8V6z"/></svg></span>
+            <h4>Non-custodial</h4>
+            <p>The user's seed never passes through the PayOrder W3 backend.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="como-funciona">
+        <h2>How it works</h2>
+        <p>From the charge source (ERP or API) to the non-custodial payment, with on-chain proof at every step:</p>
+        <div class="steps">
+          <div class="step"><div class="num">1</div><h4>Source</h4><p>An ERP or API creates the charge; the payee already has a registered wallet (tenant).</p></div>
+          <div class="step"><div class="num">2</div><h4>On-chain order</h4><p>PayOrder W3 generates a verifiable payment order on the blockchain.</p></div>
+          <div class="step"><div class="num">3</div><h4>Verification</h4><p>Before paying, the user sees who receives, the amount and the on-chain proof.</p></div>
+          <div class="step"><div class="num">4</div><h4>Payment</h4><p>Non-custodial signature: the seed never touches the backend.</p></div>
+        </div>
+        <pre class="diagram">  SOURCE (ERP / API)        PAYORDER W3 (DDA)          BLOCKCHAIN
+  +-------------------+     +--------------------+     +-------------------+
+  | Creates charge    |     | Pulls wallet from  | TX  | Payment order     |
+  | (payee already    |---->| the record (tenant)|---->| verifiable and    |
+  |  has a wallet)    |     | builds the order   |     | immutable on-chain|
+  +-------------------+     +---------^----------+     +-------------------+
+                                      | sees who receives, amount and proof
+                            +---------+----------+
+                            |      PAYER         |
+                            | Signs (non-        |
+                            | custodial)         |
+                            +--------------------+</pre>
+      </section>
+
+      <div class="cta-band">
+        <h2>Charge with proof. Pay with certainty.</h2>
+        <p>Turn your charges into payment orders verifiable on-chain, without typing wallets and without seed custody.</p>
+        <div class="hero-cta">
+          <!-- TODO: replace "#" with the PayOrder W3 app URL -->
+          <a href="#" class="btn btn-gold">Open PayOrder W3</a>
+          <a href="contato-en.html" class="btn btn-ghost">Talk to the team</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>PayOrder W3 Guardian</strong> — a Web3 billing rail (DDA), a <strong>Guardian Labs</strong> product.</p>
+      <p class="footer-links">
+        <a href="index-en.html">Guardian Labs</a> ·
+        <a href="boleto-guardian-en.html">Boleto Guardian</a> ·
+        <a href="contato-en.html">Contact</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a> ·
+        <a href="https://github.com/SilvaCleverson/stellar_boleto_guardian" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Guardian Labs · Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>
