@@ -25,17 +25,30 @@
 
 > **Part of the Guardian Labs ecosystem**
 
-> **Guardian Labs** builds **public authenticity infrastructure** for the keys that move money — immutable, auditable proof that a payment instrument is legitimate, without relying only on the issuer or the bank. **Boleto Guardian** is the **first product** of Guardian Labs (bank slip authenticity on Stellar; validation via 44 to 48 barcode digits). Other payment instruments are on the roadmap.
+> **Guardian Labs** builds **public authenticity infrastructure** for the keys that move money — immutable, auditable proof that a payment instrument is legitimate, without relying only on the issuer or the bank. **Boleto Guardian** is the **first product** of Guardian Labs (bank slip authenticity on Stellar; validation via 44 to 48 barcode digits). Under the hood it uses **Guardian Seal** — the trust-seal engine that signs, registers on-chain proof, and exposes public verification. Other payment instruments are on the roadmap.
 
 ## What is Guardian Labs
 
 **Guardian Labs** is the **project brand** (parent brand) developing public trust layers over payment identifiers. It is not a bank, payment fintech, or Stellar Anchor — it is the **authenticity layer** issuers and payers use via API, integrated with any ERP.
 
-| Guardian Labs | Boleto Guardian |
-|---------------|-----------------|
-| Brand and long-term thesis | First product in production (MVP) |
-| Infrastructure for multiple instruments | Bank slips on Stellar today |
-| Pitch: company + roadmap | Experience: register and validate slips |
+| Guardian Labs | Boleto Guardian | Guardian Seal |
+|---------------|-----------------|---------------|
+| Brand and long-term thesis | Product: bank slip authenticity | Tool used by Boleto Guardian |
+| Infrastructure for multiple instruments | Experience: register and validate slips | Creates the seal, signs (Ed25519), posts proof on Stellar (Soroban), public verify / QR |
+| Pitch: company + roadmap | First product in production | Platform behind the product (private repo) |
+
+In practice, Boleto Guardian and Guardian Seal ship as one experience for the end user. In the docs, **Seal** is the trust-seal tool; **Boleto Guardian** is the product built on top of it.
+
+## Guardian Seal
+
+**Guardian Seal** is the SaaS trust-seal platform from Guardian Labs. For Boleto Guardian it:
+
+1. Builds a canonical digital record of the boleto
+2. Signs it with the tenant Ed25519 key
+3. Anchors an integrity proof on Stellar (Soroban smart contract)
+4. Exposes a public Guardian Seal (link + QR Code) anyone can verify
+
+Implementation lives in the private Guardian Seal codebase (local copy under `guardian-seal-main/`).
 
 ## Guardian Labs team
 
@@ -50,20 +63,19 @@
 ## How it works
 
 ```
- ISSUER (Integracao/)            SERVERLESS API (Vercel)        STELLAR (Blockchain)
- +---------------------------+   +----------------------+      +--------------------+
- | Protheus: POST /blockchain|   | Sign with COMPANY_   |----> | Manage Data        |
- | Asaas: webhook PAYMENT_   |-->| SECRET (server only) |      | key  = codebar     |
- |   CREATED                 |   |                      |      | value = payload    |
- | Web: SEP-10 + dashboard   |   +----------------------+      +--------------------+
- +---------------------------+                                        |
- PAYER (validation.html)                                                v
- +---------------------------+   +----------------------+      +--------------------+
- | Type barcode (44-48 dig.) |-->| GET /api/validate/   |----> | Authentic?         |
- +---------------------------+   +----------------------+      +--------------------+
+ ISSUER (Integracao/)            BOLETO GUARDIAN + GUARDIAN SEAL     STELLAR (Blockchain)
+ +---------------------------+   +-------------------------------+   +--------------------+
+ | Protheus / Asaas / portal |-->| Seal: hash + Ed25519 sign     |-->| Soroban registry   |
+ | Issues boleto             |   | Persist record + public seal  |   | Integrity proof    |
+ +---------------------------+   +-------------------------------+   +--------------------+
+ PAYER / ANYONE                                                          |
+ +---------------------------+   +-------------------------------+       v
+ | Barcode, link or QR Code  |-->| Public verify (Seal)          |-->| Authentic?         |
+ +---------------------------+   +-------------------------------+   +--------------------+
 ```
 
-**Integrations:** [Integracao/README.md](Integracao/README.md) - `Protheus/` (ERP) and `ASAAS/` (payment gateway webhook).
+**Integrations:** [Integracao/README.md](Integracao/README.md) - `Protheus/` (ERP) and `ASAAS/` (payment gateway webhook).  
+**Seal platform:** local copy under `guardian-seal-main/`.
 
 ## Quick start (local)
 

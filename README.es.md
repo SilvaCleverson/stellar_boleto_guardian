@@ -17,17 +17,30 @@
 
 > **Parte del ecosistema Guardian Labs**
 
-> **Guardian Labs** construye **infraestructura pública de autenticidad** para las claves que mueven dinero — pruebas inmutables y auditables de que un instrumento de pago es legítimo, sin depender solo del emisor o del banco. **Boleto Guardian** es el **primer producto** de Guardian Labs (autenticidad de boletos en Stellar; validación con 44 a 48 dígitos del código de barras). Otros instrumentos de pago están en la hoja de ruta.
+> **Guardian Labs** construye **infraestructura pública de autenticidad** para las claves que mueven dinero — pruebas inmutables y auditables de que un instrumento de pago es legítimo, sin depender solo del emisor o del banco. **Boleto Guardian** es el **primer producto** de Guardian Labs (autenticidad de boletos en Stellar; validación con 44 a 48 dígitos del código de barras). Por debajo usa **Guardian Seal** — la herramienta de sello de confianza que firma, registra la prueba on-chain y expone la verificación pública. Otros instrumentos de pago están en la hoja de ruta.
 
 ## Qué es Guardian Labs
 
 **Guardian Labs** es la **marca del proyecto** (marca madre) que desarrolla capas públicas de confianza sobre identificadores de pago. No es banco, fintech de pagos ni ancla Stellar — es la capa de **autenticidad** que emisores y pagadores usan vía API, integrada a cualquier ERP.
 
-| Guardian Labs | Boleto Guardian |
-|---------------|-----------------|
-| Marca y tesis de largo plazo | Primer producto en producción (MVP) |
-| Infraestructura para varios instrumentos | Boletos en Stellar hoy |
-| Pitch: empresa + roadmap | Experiencia: registrar y validar boletos |
+| Guardian Labs | Boleto Guardian | Guardian Seal |
+|---------------|-----------------|---------------|
+| Marca y tesis de largo plazo | Producto: autenticidad de boletos | Herramienta usada por Boleto Guardian |
+| Infraestructura para varios instrumentos | Experiencia: registrar y validar boletos | Crea el sello, firma (Ed25519), graba prueba en Stellar (Soroban), verificación pública / QR |
+| Pitch: empresa + roadmap | Primer producto en producción | Plataforma detrás del producto (repositorio privado) |
+
+En la práctica, Boleto Guardian y Guardian Seal son la misma experiencia para el usuario final. En la documentación, **Seal** es la herramienta de sello de confianza; **Boleto Guardian** es el producto construido sobre ella.
+
+## Guardian Seal
+
+**Guardian Seal** es la plataforma SaaS de sellos de confianza de Guardian Labs. En Boleto Guardian:
+
+1. Monta el registro digital canónico del boleto
+2. Firma con la clave Ed25519 del tenant
+3. Ancla la prueba de integridad en Stellar (contrato Soroban)
+4. Expone un Guardian Seal público (enlace + QR Code) verificable por cualquiera
+
+Implementación en el código privado de Guardian Seal (copia local en `guardian-seal-main/`).
 
 ## Equipo Guardian Labs
 
@@ -45,11 +58,11 @@
 
 Conoce a **DS2U**, una empresa que usa Protheus ERP y emite cientos de boletos diarios para sus clientes. Un dia, un boleto es interceptado y su codigo de barras es adulterado. El pagador paga, pero el dinero va a otro lugar. Fraude clasico.
 
-**Stellar Boleto Guardian lo resuelve de forma simple:**
+**Stellar Boleto Guardian lo resuelve de forma simple** (con Guardian Seal por debajo):
 
-1. Al emitir el boleto, Protheus envia el **codigo de barras** (44 a 48 digitos) a la API
-2. La API graba esos numeros en la blockchain Stellar -- inmutable, publico, permanente
-3. El pagador digita los numeros en cualquier navegador y ve al instante: autentico o fraude
+1. Al emitir el boleto, el emisor lo registra; Seal firma y ancla la prueba en Stellar
+2. El pagador digita el **codigo de barras** (44 a 48 digitos) — o abre el enlace/QR del Seal — en cualquier navegador
+3. El sistema verifica el sello en Stellar y responde al instante: autentico o no encontrado
 
 ### Por que importa?
 
@@ -246,7 +259,7 @@ MIT - use, modifique y distribuya libremente.
 
 <div align="center">
 
-**Guardian Labs** � Cleverson Silva (CEO) � Sergio Artero (CTO) � Demetrio De Los Rios (CMO)
+**Guardian Labs** — Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO)
 
 **Sitio:** [boletoguardian.xyz](https://boletoguardian.xyz)
 

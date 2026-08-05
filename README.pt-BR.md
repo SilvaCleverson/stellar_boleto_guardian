@@ -19,17 +19,30 @@
 
 > **Parte do ecossistema Guardian Labs**
 
-> A **Guardian Labs** constrói **infraestrutura pública de autenticidade** para as chaves que movem dinheiro — provas imutáveis e auditáveis de que um instrumento de pagamento é legítimo, sem depender só do emissor ou do banco. **Boleto Guardian** é o **primeiro produto** da Guardian Labs (autenticidade de boletos na Stellar; validação pelos 44 a 48 dígitos do código de barras). Outros instrumentos de pagamento estão no roadmap.
+> A **Guardian Labs** constrói **infraestrutura pública de autenticidade** para as chaves que movem dinheiro — provas imutáveis e auditáveis de que um instrumento de pagamento é legítimo, sem depender só do emissor ou do banco. **Boleto Guardian** é o **primeiro produto** da Guardian Labs (autenticidade de boletos na Stellar; validação pelos 44 a 48 dígitos do código de barras). Por baixo dos panos, ele usa o **Guardian Seal** — a ferramenta de selo de confiança que assina, grava prova on-chain e disponibiliza verificação pública. Outros instrumentos de pagamento estão no roadmap.
 
 ## O que é a Guardian Labs
 
 A **Guardian Labs** é a **marca do projeto** (marca-mãe) que desenvolve camadas públicas de confiança sobre identificadores de pagamento. Não é banco, fintech de pagamento nem âncora Stellar — é a camada de **autenticidade** que emissores e pagadores usam via API, integrada a qualquer ERP.
 
-| Guardian Labs | Boleto Guardian |
-|---------------|-----------------|
-| Marca e tese de longo prazo | Primeiro produto em produção (MVP) |
-| Infraestrutura para vários instrumentos | Boletos na blockchain Stellar hoje |
-| Pitch: empresa + roadmap | Experiência: registrar e validar boleto |
+| Guardian Labs | Boleto Guardian | Guardian Seal |
+|---------------|-----------------|---------------|
+| Marca e tese de longo prazo | Produto: autenticidade de boletos | Ferramenta usada pelo Boleto Guardian |
+| Infraestrutura para vários instrumentos | Experiência: registrar e validar boleto | Cria o selo, assina (Ed25519), grava prova na Stellar (Soroban), verificação pública / QR |
+| Pitch: empresa + roadmap | Primeiro produto em produção | Plataforma por trás do produto (repositório privado) |
+
+Na prática, Boleto Guardian e Guardian Seal são a mesma experiência para o usuário final. Na documentação, o **Seal** é a ferramenta de selo de confiança; o **Boleto Guardian** é o produto construído sobre ela.
+
+## Guardian Seal
+
+O **Guardian Seal** é a plataforma SaaS de selos de confiança da Guardian Labs. No Boleto Guardian, ele:
+
+1. Monta o registro digital canônico do boleto
+2. Assina com a chave Ed25519 do tenant
+3. Ancora a prova de integridade na Stellar (contrato Soroban)
+4. Gera o Guardian Seal público (link + QR Code) verificável por qualquer pessoa
+
+Implementação no código privado do Guardian Seal (cópia local em `guardian-seal-main/`).
 
 ## Equipe Guardian Labs
 
@@ -47,13 +60,13 @@ A **Guardian Labs** é a **marca do projeto** (marca-mãe) que desenvolve camada
 
 Boleto adulterado e uma fraude classica no Brasil: o codigo de barras e alterado e o dinheiro vai para o lugar errado. O pagador perde. A empresa perde o cliente.
 
-**O Boleto Guardian resolve isso de forma simples:**
+**O Boleto Guardian resolve isso de forma simples** (com o Guardian Seal por baixo):
 
-1. A empresa registra o codigo de barras (44 a 48 digitos) na blockchain Stellar ao emitir o boleto
-2. O pagador digita os mesmos 44 a 48 numeros em qualquer navegador
-3. O sistema consulta a Stellar e responde na hora: autentico ou nao encontrado
+1. A empresa registra o boleto; o Seal assina e grava a prova na blockchain Stellar
+2. O pagador digita os 44 a 48 digitos do codigo de barras (ou usa o link/QR do Seal) em qualquer navegador
+3. O sistema verifica o selo na Stellar e responde na hora: autentico ou nao encontrado
 
-Nenhum app. Nenhum cadastro. So os numeros do boleto.
+Nenhum app. Nenhum cadastro. So os numeros do boleto (ou o selo publico).
 
 ### Por que isso importa?
 
@@ -70,18 +83,18 @@ Nenhum app. Nenhum cadastro. So os numeros do boleto.
 ## Arquitetura
 
 ```
- EMISSOR (Integracao/)             API SERVERLESS (Vercel)      STELLAR (Blockchain)
- +-----------------------------+   +----------------------+     +--------------------+
- | Protheus: POST /blockchain  |   | Assina com COMPANY_  |---->| Manage Data        |
- | Asaas: webhook PAYMENT_     |-->| SECRET (so servidor) |     | key  = codebar     |
- |   CREATED                   |   |                      |     | value = payload    |
- | Web: SEP-10 + dashboard     |   +----------------------+     +--------------------+
- +-----------------------------+                                        |
- PAGADOR (validation.html)                                              v
- +-----------------------------+   +----------------------+     +--------------------+
- | Digita codebar (44-48 dig.) |-->| GET /api/validate/   |---->| Autentico?         |
- +-----------------------------+   +----------------------+     +--------------------+
+ EMISSOR (Integracao/)             BOLETO GUARDIAN + GUARDIAN SEAL   STELLAR (Blockchain)
+ +-----------------------------+   +-----------------------------+   +--------------------+
+ | Protheus / Asaas / portal   |-->| Seal: hash + assinatura     |-->| Registro Soroban   |
+ | Emite o boleto              |   | Ed25519 + selo publico      |   | Prova de integridade|
+ +-----------------------------+   +-----------------------------+   +--------------------+
+ PAGADOR / QUALQUER PESSOA                                                 |
+ +-----------------------------+   +-----------------------------+         v
+ | Codebar, link ou QR Code    |-->| Verificacao publica (Seal)  |---->| Autentico?       |
+ +-----------------------------+   +-----------------------------+   +--------------------+
 ```
+
+**Plataforma de selo:** pasta local `guardian-seal-main/`.
 
 **Conta Stellar da empresa (Testnet):**
 `GDBLQV…YYBQ6` (conta Testnet; chave completa em `COMPANY_ACCOUNT` no ambiente)

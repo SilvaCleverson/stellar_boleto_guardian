@@ -17,17 +17,30 @@
 
 > **Part of the Guardian Labs ecosystem**
 
-> **Guardian Labs** builds **public authenticity infrastructure** for the keys that move money — immutable, auditable proof that a payment instrument is legitimate, without relying only on the issuer or the bank. **Boleto Guardian** is the **first product** of Guardian Labs (bank slip authenticity on Stellar; validation via 44 to 48 barcode digits). Other payment instruments are on the roadmap.
+> **Guardian Labs** builds **public authenticity infrastructure** for the keys that move money — immutable, auditable proof that a payment instrument is legitimate, without relying only on the issuer or the bank. **Boleto Guardian** is the **first product** of Guardian Labs (bank slip authenticity on Stellar; validation via 44 to 48 barcode digits). Under the hood it uses **Guardian Seal** — the trust-seal engine that signs, registers on-chain proof, and exposes public verification. Other payment instruments are on the roadmap.
 
 ## What is Guardian Labs
 
 **Guardian Labs** is the **project brand** (parent brand) developing public trust layers over payment identifiers. It is not a bank, payment fintech, or Stellar Anchor — it is the **authenticity layer** issuers and payers use via API, integrated with any ERP.
 
-| Guardian Labs | Boleto Guardian |
-|---------------|-----------------|
-| Brand and long-term thesis | First product in production (MVP) |
-| Infrastructure for multiple instruments | Bank slips on Stellar today |
-| Pitch: company + roadmap | Experience: register and validate slips |
+| Guardian Labs | Boleto Guardian | Guardian Seal |
+|---------------|-----------------|---------------|
+| Brand and long-term thesis | Product: bank slip authenticity | Tool used by Boleto Guardian |
+| Infrastructure for multiple instruments | Experience: register and validate slips | Creates the seal, signs (Ed25519), posts proof on Stellar (Soroban), public verify / QR |
+| Pitch: company + roadmap | First product in production | Platform behind the product (private repo) |
+
+In practice, Boleto Guardian and Guardian Seal ship as one experience for the end user. In the docs, **Seal** is the trust-seal tool; **Boleto Guardian** is the product built on top of it.
+
+## Guardian Seal
+
+**Guardian Seal** is the SaaS trust-seal platform from Guardian Labs. For Boleto Guardian it:
+
+1. Builds a canonical digital record of the boleto
+2. Signs it with the tenant Ed25519 key
+3. Anchors an integrity proof on Stellar (Soroban smart contract)
+4. Exposes a public Guardian Seal (link + QR Code) anyone can verify
+
+Implementation lives in the private Guardian Seal codebase (local copy under `guardian-seal-main/`).
 
 ## Guardian Labs team
 
@@ -45,11 +58,11 @@
 
 Meet **DS2U**, a company that uses Protheus ERP and issues hundreds of bank slips daily. One day, a slip is intercepted and its barcode is tampered with. The payer pays, but the money goes elsewhere. Classic fraud.
 
-**Stellar Boleto Guardian solves this simply:**
+**Stellar Boleto Guardian solves this simply** (with Guardian Seal underneath):
 
-1. When issuing the slip, Protheus sends the **barcode** (44 to 48 digits) to the API
-2. The API records those numbers on the Stellar blockchain -- immutable, public, permanent
-3. The payer types the digits in any browser and sees instantly: authentic or fraud
+1. When issuing the slip, the issuer registers it; Seal signs and anchors the proof on Stellar
+2. The payer types the **barcode** (44 to 48 digits) — or opens the Seal link/QR — in any browser
+3. The system verifies the seal on Stellar and responds instantly: authentic or not found
 
 ### Why does this matter?
 
