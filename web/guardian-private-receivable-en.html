@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guardian PrivateReceivable — an enterprise receivable tokenized as a permissioned RWA on Stellar Testnet. Identity and compliance contracts decide who may receive, hold or transfer it.">
+  <title>Guardian PrivateReceivable — Permissioned RWA on Stellar | Guardian Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
+  <link rel="stylesheet" href="assets/product-page.css">
+</head>
+<body class="theme-teal">
+  <header>
+    <div class="header-inner">
+      <a href="guardian-private-receivable-en.html" class="logo">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async"></span>
+        <span class="wordmark">Private<span>Receivable</span></span>
+      </a>
+      <nav>
+        <div class="lang-switch">
+          <a href="guardian-private-receivable.html" title="Português">🇧🇷 PT</a>
+          <a href="guardian-private-receivable-en.html" class="active" title="English">🇺🇸 EN</a>
+          <a href="guardian-private-receivable-es.html" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="index-en.html">Guardian Labs</a>
+        <a href="#problema">Problem</a>
+        <a href="#solucao">Solution</a>
+        <a href="#como-funciona">How it works</a>
+        <a href="contato-en.html">Contact</a>
+        <a href="https://guardian-private-receivable.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian Private Receivable</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero-labs">Guardian Labs · Enterprise, Compliance &amp; RWA</p>
+      <span class="tag-status">Proof of concept on Stellar Testnet</span>
+      <h1>Guardian <em>PrivateReceivable</em></h1>
+      <p class="tagline">Who is allowed to hold this receivable? An enterprise receivable tokenized as a permissioned RWA token on Stellar Testnet — identity and compliance contracts decide who may receive, hold or transfer it.</p>
+      <div class="hero-cta">
+        <a href="https://guardian-private-receivable.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian Private Receivable</a>
+        <a href="#como-funciona" class="btn btn-outline">How it works</a>
+      </div>
+      <div class="badges">
+        <span class="badge">Permissioned RWA</span>
+        <span class="badge">Soroban</span>
+        <span class="badge">Identity &amp; compliance</span>
+        <span class="badge">Stellar Testnet</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <section class="sec" id="problema">
+        <h2>The problem</h2>
+        <p>Companies hold <strong>receivables</strong> — invoices, duplicatas, contracted payments — that can be financed, assigned or represented digitally. In enterprise and regulated environments, though, they need <strong>control over who may receive, hold or transfer</strong> the associated economic rights.</p>
+        <p>A standard public token does not solve this: it allows unrestricted transfers and can expose information that should stay private. What is missing is the layer that decides, <strong>before the operation settles</strong>, whether that wallet is allowed.</p>
+        <div class="blockquote">
+          <p>Tokenizing the receivable is not enough. The rule about who may hold it has to live in the asset itself.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/></svg></span>
+            <h4>Unrestricted transfer</h4>
+            <p>A standard public token goes to any wallet, verified or not.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><path d="m3 3 18 18"/></svg></span>
+            <h4>Unwanted exposure</h4>
+            <p>Economic information that should stay restricted ends up public.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
+            <h4>Lifecycle with no lock</h4>
+            <p>Once settled, the receivable stays transferable unless something stops it.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.5 3.5 7.5 8 8 4.5-.5 8-3.5 8-8V6z"/><path d="M12 9v3"/><path d="M12 15h.01"/></svg></span>
+            <h4>Compliance off-chain</h4>
+            <p>A rule in a spreadsheet or an external system does not block the on-chain transaction.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>The solution: Guardian PrivateReceivable</h2>
+        <p><strong>Guardian PrivateReceivable</strong> tokenizes an enterprise receivable as a <strong>permissioned RWA token</strong> on Stellar Testnet. <strong>Identity</strong> and <strong>compliance policy</strong> contracts decide who may receive, hold or transfer it — and the <strong>compliance officer</strong> verifies wallets, freezes accounts, pauses the asset and settles the receivable on demand.</p>
+        <p>The rule is not a recommendation: <strong>every mint and every transfer</strong> is routed through the same enforcement chain before it settles on-chain. If any condition fails, the operation is rejected.</p>
+        <div class="blockquote">
+          <p>Permission lives in the contracts. If the wallet is not eligible, the transfer does not happen.</p>
+        </div>
+
+        <h3>Why it is different</h3>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <h4>Only a verified wallet operates</h4>
+            <p>The identity-verifier contract must mark the wallet as <em>Verified</em>.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <h4>Compliance policy in the asset</h4>
+            <p>The compliance-policy contract evaluates <code>can_transfer</code> and <code>can_create</code> for both parties.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></span>
+            <h4>Freeze and pause</h4>
+            <p>A frozen wallet can neither send nor receive; a paused token blocks every operation.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+            <h4>Settlement closes the cycle</h4>
+            <p>A receivable in <em>Settled</em> status rejects any mint or transfer from then on.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="como-funciona">
+        <h2>How compliance is enforced</h2>
+        <p>Every mint and transfer of the token runs through the same enforcement chain before it settles on-chain:</p>
+        <ol class="chain">
+          <li>Rejected while the token is <strong>paused</strong>.</li>
+          <li>Rejected if either wallet is <strong>frozen</strong> — frozen wallets can neither send nor receive.</li>
+          <li>Checked against the <strong>identity-verifier</strong> contract — the operation fails unless the wallet is <em>Verified</em>.</li>
+          <li>Checked against the <strong>compliance-policy</strong> contract (<code>can_transfer</code> / <code>can_create</code>) for both sender and recipient.</li>
+          <li>Rejected once the receivable status is <strong>Settled</strong>.</li>
+        </ol>
+        <pre class="diagram">  MINT / TRANSFER
+        |
+        v
+  [ token paused?       ] -- yes --> REJECT
+        |  no
+  [ wallet frozen?      ] -- yes --> REJECT
+        |  no
+  [ identity-verifier   ] -- not Verified --> REJECT
+        |  Verified
+  [ compliance-policy   ] -- not allowed --> REJECT
+        |  allowed
+  [ receivable Settled? ] -- yes --> REJECT
+        |  no
+        v
+     SETTLES ON-CHAIN (Stellar Testnet)</pre>
+
+        <h3>Demonstration flow</h3>
+        <p>Four minutes, end to end, through the web UI:</p>
+        <div class="steps">
+          <div class="step"><div class="num">1</div><h4>Verify</h4><p>The compliance officer verifies Investor A; Investor B stays unverified.</p></div>
+          <div class="step"><div class="num">2</div><h4>Mint</h4><p>The issuer mints to Investor A — confirmed Testnet transaction.</p></div>
+          <div class="step"><div class="num">3</div><h4>Reject</h4><p>Mint or transfer to Investor B is rejected: recipient not verified.</p></div>
+          <div class="step"><div class="num">4</div><h4>Allow</h4><p>Investor B is verified; transfer A → B succeeds.</p></div>
+          <div class="step"><div class="num">5</div><h4>Freeze</h4><p>Freeze Investor B — transfer rejected, wallet frozen — then unfreeze.</p></div>
+          <div class="step"><div class="num">6</div><h4>Pause</h4><p>Pause the token — transfer rejected, token paused — then unpause.</p></div>
+          <div class="step"><div class="num">7</div><h4>Settle</h4><p>Settle the receivable — further mint and transfer are rejected for good.</p></div>
+        </div>
+      </section>
+
+      <section class="sec" id="estados">
+        <h2>Identity &amp; receivable states</h2>
+        <div class="states">
+          <div class="state"><code>Verified</code><span>Wallet passed compliance verification and may receive or transfer the token.</span></div>
+          <div class="state"><code>Unverified</code><span>Wallet has not been verified — mint and transfer are rejected.</span></div>
+          <div class="state"><code>Revoked</code><span>Wallet was verified, then revoked — mint and transfer are rejected.</span></div>
+          <div class="state"><code>Active</code><span>Receivable is open — mint and transfer are allowed when compliant.</span></div>
+          <div class="state"><code>Settled</code><span>Receivable lifecycle is closed — mint and transfer are rejected permanently.</span></div>
+        </div>
+      </section>
+
+      <section class="sec" id="dados">
+        <h2>Environment facts</h2>
+        <div class="facts">
+          <div class="fact"><p class="k">Network</p><p class="v">Stellar Testnet</p></div>
+          <div class="fact"><p class="k">Token</p><p class="v">PRCV · 7 decimals</p></div>
+          <div class="fact"><p class="k">Receivable</p><p class="v">RCV-2026-0001</p></div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">identity-verifier</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CCJ52CC6HZJEEL67XLRKSHY4YMFPHV57HWONI2CXLLWIRXNI722ZKASX" target="_blank" rel="noopener">CCJ52CC6HZJEEL67XLRKSHY4YMFPHV57HWONI2CXLLWIRXNI722ZKASX</a></p>
+          </div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">compliance-policy</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CCPUMFWSLIW5XPO7OOIDXXQBYBAGA7FEAN6C657MFNIPRYZ2FCDAKWFV" target="_blank" rel="noopener">CCPUMFWSLIW5XPO7OOIDXXQBYBAGA7FEAN6C657MFNIPRYZ2FCDAKWFV</a></p>
+          </div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">receivable-rwa</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CATSFC2TS3ZTWEIHRNH6R3UHVYHQTA4RHFSZ36E2464N5N7MAPWFUWD5" target="_blank" rel="noopener">CATSFC2TS3ZTWEIHRNH6R3UHVYHQTA4RHFSZ36E2464N5N7MAPWFUWD5</a></p>
+          </div>
+          <div class="fact"><p class="k">Code</p><p class="v"><a href="https://github.com/guardianlabsw3-lang/private-receivable" target="_blank" rel="noopener">GitHub repository</a></p></div>
+          <div class="fact"><p class="k">Specifications</p><p class="v"><a href="https://github.com/guardianlabsw3-lang/private-receivable/tree/main/specs" target="_blank" rel="noopener">specs/</a></p></div>
+        </div>
+        <div class="note">
+          <p>Hackathon proof of concept — the receivable represented is fictional. It is <strong>not</strong> a regulated securities platform, a real investment product, a KYC/AML provider, or a system approved for Mainnet.</p>
+        </div>
+      </section>
+
+      <div class="cta-band">
+        <h2>Tokenize the receivable. Keep permission in the asset.</h2>
+        <p>Watch the enforcement chain run: verify, mint, reject, freeze, pause and settle.</p>
+        <div class="hero-cta">
+          <a href="https://guardian-private-receivable.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian Private Receivable</a>
+          <a href="contato-en.html" class="btn btn-ghost">Talk to the team</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Guardian PrivateReceivable</strong> — permissioned RWA on Stellar, a <strong>Guardian Labs</strong> product.</p>
+      <p class="footer-links">
+        <a href="index-en.html">Guardian Labs</a> ·
+        <a href="boleto-guardian-en.html">Boleto Guardian</a> ·
+        <a href="payorder-w3-en.html">PayOrder W3</a> ·
+        <a href="guardian402-en.html">Guardian402</a> ·
+        <a href="contato-en.html">Contact</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Guardian Labs · Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -17,7 +17,57 @@
   --success: #16A34A;
   --warning: #D97706;
   --danger: #DC2626;
+
+  /* Acentos por produto (Guardian402 / PrivateReceivable) */
+  --lime: #D6FF3C;
+  --lime-ink: #55700A;
+  --lime-deep: #101300;
+  --teal: #14B8A6;
+  --teal-soft: #5EEAD4;
+  --teal-ink: #0F766E;
 }
+
+/* Variacoes de tag de status por produto */
+.tag-lab {
+  background: rgba(214, 255, 60, 0.22);
+  color: var(--lime-ink);
+  border: 1px solid rgba(85, 112, 10, 0.35);
+}
+.tag-poc {
+  background: rgba(20, 184, 166, 0.14);
+  color: var(--teal-ink);
+  border: 1px solid rgba(20, 184, 166, 0.4);
+}
+
+/* Icone do card com acento do produto */
+.product-icon.icon-lime {
+  background: linear-gradient(135deg, var(--lime-deep) 0%, #1d2400 100%);
+  color: var(--lime);
+}
+.product-icon.icon-teal {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--teal-ink) 100%);
+  color: var(--teal-soft);
+}
+
+/* Hover do card seguindo o acento do produto */
+.product.accent-lime:hover { border-color: rgba(85, 112, 10, 0.45); }
+.product.accent-lime li::before {
+  background: rgba(214, 255, 60, 0.28);
+  box-shadow: inset 0 0 0 3px var(--lime-ink);
+}
+.product.accent-lime .subtitle { color: var(--lime-ink); }
+.product.accent-teal:hover { border-color: rgba(20, 184, 166, 0.5); }
+.product.accent-teal li::before {
+  background: rgba(20, 184, 166, 0.2);
+  box-shadow: inset 0 0 0 3px var(--teal-ink);
+}
+.product.accent-teal .subtitle { color: var(--teal-ink); }
+
+/* Botoes de acento por produto */
+.btn-lime { background: var(--lime); color: var(--lime-deep); border: 1px solid transparent; }
+.btn-lime:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(214, 255, 60, 0.45); }
+.btn-teal { background: var(--teal-ink); color: #fff; border: 1px solid transparent; }
+.btn-teal:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(15, 118, 110, 0.35); background: #0d5f59; }
 
 .seal {
   font-family: 'Cormorant Garamond', Georgia, serif;
@@ -38,7 +88,7 @@
   background: rgba(212, 175, 55, 0.08);
 }
 
-/* Destaque discreto: Contato entre Validar (primário) e GitHub (neutro) */
+/* Destaque discreto: Contato entre Validar (primï¿½rio) e GitHub (neutro) */
 .hero-cta .btn-outline.btn-contact {
   background: rgba(212, 175, 55, 0.14);
   border: 1px solid rgba(212, 175, 55, 0.5);

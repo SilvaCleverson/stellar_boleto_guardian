@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guardian402 — pay-per-use API that checks whether boleto data matches a Soroban integrity proof. 0.01 USDC per call via x402, no API key and no subscription.">
+  <title>Guardian402 — Pay-per-use boleto verification (x402) | Guardian Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
+  <link rel="stylesheet" href="assets/product-page.css">
+</head>
+<body class="theme-lime">
+  <header>
+    <div class="header-inner">
+      <a href="guardian402-en.html" class="logo">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async"></span>
+        <span class="wordmark">Guardian<span>402</span></span>
+      </a>
+      <nav>
+        <div class="lang-switch">
+          <a href="guardian402.html" title="Português">🇧🇷 PT</a>
+          <a href="guardian402-en.html" class="active" title="English">🇺🇸 EN</a>
+          <a href="guardian402-es.html" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="index-en.html">Guardian Labs</a>
+        <a href="#problema">Problem</a>
+        <a href="#solucao">Solution</a>
+        <a href="#como-funciona">How it works</a>
+        <a href="contato-en.html">Contact</a>
+        <a href="https://guardian402-summit.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian402</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero-labs">Guardian Labs · Agentic Payments (x402)</p>
+      <span class="tag-status">Live on Stellar Testnet</span>
+      <h1>Guardian<em>402</em></h1>
+      <p class="tagline">Is that boleto the real one? A pay-per-use API that checks whether boleto data — from any ERP, billing system or AI agent — matches an integrity proof registered on Soroban.</p>
+      <div class="hero-cta">
+        <a href="https://guardian402-summit.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian402</a>
+        <a href="#como-funciona" class="btn btn-outline">How it works</a>
+      </div>
+      <div class="badges">
+        <span class="badge">x402</span>
+        <span class="badge">0.01 USDC per call</span>
+        <span class="badge">Soroban</span>
+        <span class="badge">No API key</span>
+        <span class="badge">ERP-agnostic</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <section class="sec" id="problema">
+        <h2>The problem</h2>
+        <p>Companies and automated agents receive boleto data all the time — from an ERP, a billing system, an email, another agent. Before trusting or paying, they need an <strong>independent integrity check</strong>: is the data that arrived the same data the issuer registered?</p>
+        <p>Today that check is expensive to set up: it takes a commercial agreement, credentials, an API key, a monthly plan. For an agent making <strong>one</strong> lookup, that is far too much friction — and the practical result is that the check simply never happens.</p>
+        <div class="blockquote">
+          <p>A verification should cost the price of a verification. No contract, no subscription, no onboarding.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg></span>
+            <h4>Data without provenance</h4>
+            <p>The boleto reaches the ERP with no proof it was not altered along the way.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <h4>Credential friction</h4>
+            <p>An API key and a monthly plan for someone who only needs one lookup.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M8 4v16"/></svg></span>
+            <h4>Cost you cannot measure</h4>
+            <p>With no price per call, the cost of verifying cannot be attributed to the process that asked for it.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 0 6h-1v1a4 4 0 0 1-8 0v-1H7a3 3 0 0 1 0-6h1V6a4 4 0 0 1 4-4Z"/><path d="M9 20h6"/></svg></span>
+            <h4>Agents with no way to pay</h4>
+            <p>An AI agent does not open an account, sign a contract, or hold a credit card.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>The solution: Guardian402</h2>
+        <p><strong>Guardian402</strong> is a <strong>pay-per-use</strong> API: each verification call costs <strong>0.01 USDC</strong>, charged through the <strong>x402</strong> protocol on Stellar. No API key, no subscription, no sign-up. The client calls, receives an <strong>HTTP 402</strong> with payment instructions, settles, and gets the answer.</p>
+        <p>Verification is <strong>hash-based</strong>: the service recomputes the fingerprint of the boleto fields it received and compares it against the <strong>integrity proof registered in a Soroban contract</strong>. Nothing beyond the hash needs to be on-chain.</p>
+        <div class="blockquote">
+          <p>One verification — from any ERP or agent — is one measurable USDC payment.</p>
+        </div>
+
+        <h3>Why it is different</h3>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+            <h4>Priced per call, not per contract</h4>
+            <p>0.01 USDC per verification, settled on the spot through x402.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17V7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 9h8M8 13h5"/></svg></span>
+            <h4>ERP-agnostic</h4>
+            <p>Works with any source that sends the expected fields. TOTVS Protheus is the reference case, not a requirement.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.5 3.5 7.5 8 8 4.5-.5 8-3.5 8-8V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+            <h4>On-chain proof, not a database</h4>
+            <p>The integrity reference lives in a public, auditable Soroban contract.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h4M7 13h7"/></svg></span>
+            <h4>Agent-ready</h4>
+            <p>An AI agent pays for and consumes the endpoint on its own — no human onboarding.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="como-funciona">
+        <h2>How it works</h2>
+        <p>From the ERP or agent call to the answer read from Soroban, in four steps:</p>
+        <div class="steps">
+          <div class="step"><div class="num">1</div><h4>Call</h4><p><code>POST /v1/verify</code> with boleto fields, as an ERP or agent would send them.</p></div>
+          <div class="step"><div class="num">2</div><h4>HTTP 402</h4><p>The response carries the x402 payment instructions.</p></div>
+          <div class="step"><div class="num">3</div><h4>Settlement</h4><p>The client authorizes and settles 0.01 USDC on Stellar Testnet.</p></div>
+          <div class="step"><div class="num">4</div><h4>Answer</h4><p>Returns AUTHENTIC, MISMATCH, NOT_FOUND or REVOKED, read from Soroban.</p></div>
+        </div>
+        <pre class="diagram">  ERP / AGENT               GUARDIAN402                SOROBAN (Stellar)
+  +-------------------+     +--------------------+     +-------------------+
+  | POST /v1/verify   |---->| 402 + x402 payment |     | Integrity proof   |
+  | (boleto fields)   |     | instructions       |     | (registered hash) |
+  +-------------------+     +---------+----------+     +---------+---------+
+           ^                          |                          |
+           |                0.01 USDC | settlement               |
+           |                          v                          |
+           |                +--------------------+   compares    |
+           +----------------| AUTHENTIC /        |&lt;--------------+
+             result         | MISMATCH /         |
+                            | NOT_FOUND /REVOKED |
+                            +--------------------+</pre>
+
+        <h3>Possible outcomes</h3>
+        <div class="states">
+          <div class="state"><code>AUTHENTIC</code><span>Data matches the active integrity proof registered on-chain.</span></div>
+          <div class="state"><code>MISMATCH</code><span>The identifier exists, but the supplied boleto data diverges.</span></div>
+          <div class="state"><code>NOT_FOUND</code><span>No proof is registered for that boleto identifier.</span></div>
+          <div class="state"><code>REVOKED</code><span>The proof existed and was revoked by the issuer admin.</span></div>
+        </div>
+        <div class="note">
+          <p>Guardian402 verifies whether supplied data matches a previously registered integrity proof. It does <strong>not</strong> confirm bank settlement or payment status.</p>
+        </div>
+      </section>
+
+      <section class="sec" id="protheus">
+        <h2>Why Protheus shows up in the examples</h2>
+        <p>TOTVS is Brazil's largest business-software company, and Protheus is the ERP where a large share of Brazilian companies issue and manage boletos (bank payment slips). In the latest FGV-Eaesp IT survey, TOTVS holds about <strong>34%</strong> of Brazil's overall ERP market (tied with SAP) and about <strong>50%</strong> among smaller deployments (up to ~180 users).</p>
+        <p>That makes Protheus the natural reference case for demos in Brazil. Guardian402 itself, however, <strong>does not require Protheus</strong>: the same hash-based check works for boleto data from any ERP, billing system or agent that sends the expected fields.</p>
+        <div class="note">
+          <p>Source: FGV-Eaesp Annual IT Use Survey (Brazil ERP market share).</p>
+        </div>
+      </section>
+
+      <section class="sec" id="dados">
+        <h2>Environment facts</h2>
+        <div class="facts">
+          <div class="fact"><p class="k">Price per call</p><p class="v">$0.01 USDC</p></div>
+          <div class="fact"><p class="k">Network</p><p class="v">Stellar Testnet</p></div>
+          <div class="fact"><p class="k">Payment protocol</p><p class="v">x402</p></div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">Contract ID</p>
+            <p class="v mono"><a href="https://lab.stellar.org/r/testnet/contract/CARQCD7G3S7WNWA37NZS2DW4CCP2V3J4U4T4NG3FXVEW4XNALM65NHAO" target="_blank" rel="noopener">CARQCD7G3S7WNWA37NZS2DW4CCP2V3J4U4T4NG3FXVEW4XNALM65NHAO</a></p>
+          </div>
+          <div class="fact"><p class="k">Documentation</p><p class="v"><a href="https://guardian402-summit.vercel.app/docs" target="_blank" rel="noopener">Swagger</a> · <a href="https://guardian402-summit.vercel.app/redoc" target="_blank" rel="noopener">ReDoc</a></p></div>
+          <div class="fact"><p class="k">Code</p><p class="v"><a href="https://github.com/SilvaCleverson/guardian402" target="_blank" rel="noopener">GitHub repository</a></p></div>
+        </div>
+      </section>
+
+      <div class="cta-band">
+        <h2>One verification. One payment. No contract.</h2>
+        <p>Let your ERP or your agent check a boleto's integrity paying only for what it looked up.</p>
+        <div class="hero-cta">
+          <a href="https://guardian402-summit.vercel.app/en" target="_blank" rel="noopener" class="btn btn-accent">View Guardian402</a>
+          <a href="contato-en.html" class="btn btn-ghost">Talk to the team</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Guardian402</strong> — pay-per-use boleto verification, a <strong>Guardian Labs</strong> product.</p>
+      <p class="footer-links">
+        <a href="index-en.html">Guardian Labs</a> ·
+        <a href="boleto-guardian-en.html">Boleto Guardian</a> ·
+        <a href="payorder-w3-en.html">PayOrder W3</a> ·
+        <a href="guardian-private-receivable-en.html">PrivateReceivable</a> ·
+        <a href="contato-en.html">Contact</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Guardian Labs · Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>

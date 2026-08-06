@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Guardian Labs — public authenticity infrastructure for the keys that move money. Meet Boleto Guardian and PayOrder W3 Guardian.">
+    <meta name="description" content="Guardian Labs — public authenticity infrastructure for the keys that move money. Meet Boleto Guardian, PayOrder W3 Guardian, Guardian402 and Guardian PrivateReceivable.">
   <title>Guardian Labs — Public authenticity for payments</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -279,6 +279,8 @@
         <a href="#produtos">Products</a>
         <a href="boleto-guardian-en.html">Boleto Guardian</a>
         <a href="payorder-w3-en.html">PayOrder W3</a>
+        <a href="guardian402-en.html">Guardian402</a>
+        <a href="guardian-private-receivable-en.html">PrivateReceivable</a>
         <a href="contato-en.html">Contact</a>
       </nav>
     </div>
@@ -308,7 +310,7 @@
     <div class="wrap">
       <div class="section-head" id="produtos">
         <p class="kicker">Products</p>
-        <h2>Two products, one thesis: prove the origin</h2>
+        <h2>Four products, one thesis: prove the origin</h2>
         <p>Each Guardian Labs product makes a payment instrument verifiable before money moves. Choose where to start.</p>
       </div>
 
@@ -359,11 +361,57 @@
             <a href="payorder-w3-en.html" class="btn btn-outline">Learn more</a>
           </div>
         </article>
+
+        <!-- Guardian402 -->
+        <article class="product accent-lime">
+          <div class="product-top">
+            <span class="product-icon icon-lime" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/><circle cx="18" cy="18" r="3.2" fill="currentColor" stroke="none"/></svg>
+            </span>
+            <span class="tag tag-lab">Testnet PoC</span>
+          </div>
+          <h3>Guardian402</h3>
+          <p class="subtitle">Pay-per-use boleto verification</p>
+          <p class="desc">A pay-per-use API that checks whether boleto data — from any ERP, billing system or AI agent — matches an integrity proof registered on Soroban. The caller pays 0.01 USDC per call via x402. No API key, no subscription.</p>
+          <ul>
+            <li>Pay-per-use through x402: HTTP 402, 0.01 USDC per verification</li>
+            <li>ERP-agnostic — TOTVS Protheus is only the reference case</li>
+            <li>Four unambiguous outcomes: AUTHENTIC, MISMATCH, NOT_FOUND, REVOKED</li>
+            <li>Integrity proof held in a Soroban contract on Stellar Testnet</li>
+          </ul>
+          <div class="product-cta">
+            <a href="https://guardian402-summit.vercel.app/en" target="_blank" rel="noopener" class="btn btn-lime">View Guardian402</a>
+            <a href="guardian402-en.html" class="btn btn-outline">Learn more</a>
+          </div>
+        </article>
+
+        <!-- Guardian PrivateReceivable -->
+        <article class="product accent-teal">
+          <div class="product-top">
+            <span class="product-icon icon-teal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V7a4 4 0 0 1 8 0v2"/><rect x="3" y="9" width="12" height="11" rx="2"/><path d="M9 13v3"/><path d="M17 5h4v4"/><path d="M21 5l-5 5"/></svg>
+            </span>
+            <span class="tag tag-poc">Testnet PoC</span>
+          </div>
+          <h3>Guardian PrivateReceivable</h3>
+          <p class="subtitle">Permissioned tokenized receivable</p>
+          <p class="desc">Tokenizes an enterprise receivable as a permissioned RWA token on Stellar Testnet. Identity and compliance contracts decide who may receive, hold or transfer it — the compliance officer verifies wallets, freezes accounts, pauses the asset and settles on demand.</p>
+          <ul>
+            <li>Every mint and transfer runs through the same enforcement chain</li>
+            <li>A wallet only operates once it is <em>Verified</em> in the identity-verifier contract</li>
+            <li>Freezing a wallet, pausing the token or settling the receivable blocks the operation</li>
+            <li>Three Soroban contracts: identity-verifier, compliance-policy, receivable-rwa</li>
+          </ul>
+          <div class="product-cta">
+            <a href="https://guardian-private-receivable.vercel.app/en" target="_blank" rel="noopener" class="btn btn-teal">View Guardian Private Receivable</a>
+            <a href="guardian-private-receivable-en.html" class="btn btn-outline">Learn more</a>
+          </div>
+        </article>
       </div>
 
       <section class="thesis">
         <p class="kicker">The Guardian Labs thesis</p>
-        <p><em>Before money moves, the payment request proves its origin.</em> Boleto Guardian and PayOrder W3 apply this thesis to different payment instruments through public, auditable verification.</p>
+        <p><em>Before money moves, the payment request proves its origin.</em> Boleto Guardian, PayOrder W3, Guardian402 and PrivateReceivable apply this thesis to different payment instruments — from the bank slip to the tokenized receivable — through public, auditable verification.</p>
         <p class="thesis-meta"><strong>Guardian Labs:</strong> Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO)</p>
       </section>
     </div>
@@ -375,6 +423,8 @@
       <p class="footer-links">
         <a href="boleto-guardian-en.html">Boleto Guardian</a> ·
         <a href="payorder-w3-en.html">PayOrder W3</a> ·
+        <a href="guardian402-en.html">Guardian402</a> ·
+        <a href="guardian-private-receivable-en.html">PrivateReceivable</a> ·
         <a href="contato-en.html">Contact</a> ·
         <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
       </p>
