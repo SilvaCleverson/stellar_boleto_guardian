@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Guardian Labs — infraestrutura pública de autenticidade para as chaves que movem dinheiro. Conheça o Boleto Guardian e o PayOrder W3 Guardian.">
+  <meta name="description" content="Guardian Labs — infraestrutura pública de autenticidade para as chaves que movem dinheiro. Conheça o Boleto Guardian, o PayOrder W3 Guardian, o Guardian402 e o Guardian PrivateReceivable.">
   <title>Guardian Labs — Autenticidade pública para pagamentos</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -282,6 +282,8 @@
         <a href="#produtos">Produtos</a>
         <a href="boleto-guardian.html">Boleto Guardian</a>
         <a href="payorder-w3.html">PayOrder W3</a>
+        <a href="guardian402.html">Guardian402</a>
+        <a href="guardian-private-receivable.html">PrivateReceivable</a>
         <a href="contato.html">Contato</a>
       </nav>
     </div>
@@ -311,7 +313,7 @@
     <div class="wrap">
       <div class="section-head" id="produtos">
         <p class="kicker">Produtos</p>
-        <h2>Dois produtos, uma mesma tese: provar a origem</h2>
+        <h2>Quatro produtos, uma mesma tese: provar a origem</h2>
         <p>Cada produto Guardian Labs torna um instrumento de pagamento verificável antes que o dinheiro se mova. Escolha por onde começar.</p>
       </div>
 
@@ -361,11 +363,57 @@
             <a href="payorder-w3.html" class="btn btn-outline">Saber mais</a>
           </div>
         </article>
+
+        <!-- Guardian402 -->
+        <article class="product accent-lime">
+          <div class="product-top">
+            <span class="product-icon icon-lime" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/><circle cx="18" cy="18" r="3.2" fill="currentColor" stroke="none"/></svg>
+            </span>
+            <span class="tag tag-lab">PoC em Testnet</span>
+          </div>
+          <h3>Guardian402</h3>
+          <p class="subtitle">Verificação de boleto por chamada</p>
+          <p class="desc">API pay-per-use que confere se os dados de um boleto — vindos de qualquer ERP, sistema de cobrança ou agente de IA — batem com uma prova de integridade registrada em Soroban. O consumidor paga 0,01 USDC por chamada via x402. Sem API key, sem assinatura.</p>
+          <ul>
+            <li>Pagamento por uso via x402: HTTP 402, 0,01 USDC por verificação</li>
+            <li>Agnóstico de ERP — TOTVS Protheus é apenas o caso de referência</li>
+            <li>Quatro respostas objetivas: AUTHENTIC, MISMATCH, NOT_FOUND, REVOKED</li>
+            <li>Prova de integridade em contrato Soroban na Stellar Testnet</li>
+          </ul>
+          <div class="product-cta">
+            <a href="https://guardian402-summit.vercel.app/pt" target="_blank" rel="noopener" class="btn btn-lime">Ver Guardian402</a>
+            <a href="guardian402.html" class="btn btn-outline">Saber mais</a>
+          </div>
+        </article>
+
+        <!-- Guardian PrivateReceivable -->
+        <article class="product accent-teal">
+          <div class="product-top">
+            <span class="product-icon icon-teal" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9V7a4 4 0 0 1 8 0v2"/><rect x="3" y="9" width="12" height="11" rx="2"/><path d="M9 13v3"/><path d="M17 5h4v4"/><path d="M21 5l-5 5"/></svg>
+            </span>
+            <span class="tag tag-poc">PoC em Testnet</span>
+          </div>
+          <h3>Guardian PrivateReceivable</h3>
+          <p class="subtitle">Recebível tokenizado com permissão</p>
+          <p class="desc">Tokeniza um recebível corporativo como um token RWA permissionado na Stellar Testnet. Contratos de identidade e de compliance decidem quem pode receber, manter ou transferir o ativo — e o oficial de compliance verifica, congela, pausa e liquida sob demanda.</p>
+          <ul>
+            <li>Cada mint e transferência passa pela mesma cadeia de enforcement</li>
+            <li>Carteira só opera se estiver <em>Verified</em> no contrato identity-verifier</li>
+            <li>Congelar carteira, pausar o token e liquidar o recebível bloqueiam a operação</li>
+            <li>Três contratos Soroban: identity-verifier, compliance-policy, receivable-rwa</li>
+          </ul>
+          <div class="product-cta">
+            <a href="https://guardian-private-receivable.vercel.app/pt" target="_blank" rel="noopener" class="btn btn-teal">Ver Guardian Private Receivable</a>
+            <a href="guardian-private-receivable.html" class="btn btn-outline">Saber mais</a>
+          </div>
+        </article>
       </div>
 
       <section class="thesis">
         <p class="kicker">A tese Guardian Labs</p>
-        <p><em>Antes do dinheiro se mover, a cobrança prova sua origem.</em> Boleto Guardian e PayOrder W3 aplicam essa tese a diferentes instrumentos de pagamento, com verificação pública e auditável.</p>
+        <p><em>Antes do dinheiro se mover, a cobrança prova sua origem.</em> Boleto Guardian, PayOrder W3, Guardian402 e PrivateReceivable aplicam essa tese a diferentes instrumentos de pagamento — do boleto ao recebível tokenizado —, com verificação pública e auditável.</p>
         <p class="thesis-meta"><strong>Guardian Labs:</strong> Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO)</p>
       </section>
     </div>
@@ -376,7 +424,9 @@
       <p><strong>Guardian Labs</strong> — prova pública de origem antes que o dinheiro se mova.</p>
       <p class="footer-links">
         <a href="boleto-guardian.html">Boleto Guardian</a> ·
-        <a href="payorder-w3.html">PayOrder W3</a> ·        
+        <a href="payorder-w3.html">PayOrder W3</a> ·
+        <a href="guardian402.html">Guardian402</a> ·
+        <a href="guardian-private-receivable.html">PrivateReceivable</a> ·
         <a href="contato.html">Contato</a> ·
         <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
       </p>

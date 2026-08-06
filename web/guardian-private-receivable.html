@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Guardian PrivateReceivable — recebível corporativo tokenizado como RWA permissionado na Stellar Testnet. Contratos de identidade e compliance decidem quem pode receber, manter ou transferir o ativo.">
+  <title>Guardian PrivateReceivable — RWA permissionado na Stellar | Guardian Labs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/guardian-theme.css">
+  <link rel="stylesheet" href="assets/product-page.css">
+</head>
+<body class="theme-teal">
+  <header>
+    <div class="header-inner">
+      <a href="guardian-private-receivable.html" class="logo">
+        <span class="brand-mark" aria-hidden="true"><img src="assets/brand/guardian-labs-mark.svg" width="40" height="40" alt="" decoding="async"></span>
+        <span class="wordmark">Private<span>Receivable</span></span>
+      </a>
+      <nav>
+        <div class="lang-switch">
+          <a href="guardian-private-receivable.html" class="active" title="Português">🇧🇷 PT</a>
+          <a href="guardian-private-receivable-en.html" title="English">🇺🇸 EN</a>
+          <a href="guardian-private-receivable-es.html" title="Español">🇪🇸 ES</a>
+        </div>
+        <a href="index.html">Guardian Labs</a>
+        <a href="#problema">Problema</a>
+        <a href="#solucao">Solução</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="contato.html">Contato</a>
+        <a href="https://guardian-private-receivable.vercel.app/pt" target="_blank" rel="noopener" class="btn btn-accent">Ver Guardian Private Receivable</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap">
+      <p class="hero-labs">Guardian Labs · Enterprise, Compliance &amp; RWA</p>
+      <span class="tag-status">Prova de conceito na Stellar Testnet</span>
+      <h1>Guardian <em>PrivateReceivable</em></h1>
+      <p class="tagline">Quem pode deter este recebível? Um recebível corporativo tokenizado como RWA permissionado na Stellar Testnet — contratos de identidade e de compliance decidem quem recebe, mantém e transfere.</p>
+      <div class="hero-cta">
+        <a href="https://guardian-private-receivable.vercel.app/pt" target="_blank" rel="noopener" class="btn btn-accent">Ver Guardian Private Receivable</a>
+        <a href="#como-funciona" class="btn btn-outline">Como funciona</a>
+      </div>
+      <div class="badges">
+        <span class="badge">RWA permissionado</span>
+        <span class="badge">Soroban</span>
+        <span class="badge">Identidade e compliance</span>
+        <span class="badge">Stellar Testnet</span>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="wrap wrap-narrow">
+      <section class="sec" id="problema">
+        <h2>O problema</h2>
+        <p>Empresas carregam <strong>recebíveis</strong> — duplicatas, faturas, contratos a receber — que podem ser financiados, cedidos ou representados digitalmente. Em ambientes corporativos e regulados, porém, é preciso <strong>controle sobre quem pode receber, manter ou transferir</strong> os direitos econômicos associados.</p>
+        <p>Um token público comum não resolve: ele permite transferências irrestritas e pode expor informações que deveriam permanecer privadas. Falta a camada que decide, <strong>antes de a operação liquidar</strong>, se aquela carteira tem permissão.</p>
+        <div class="blockquote">
+          <p>Não basta tokenizar o recebível. É preciso que a regra de quem pode detê-lo esteja no próprio ativo.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/></svg></span>
+            <h4>Transferência irrestrita</h4>
+            <p>Um token público padrão vai para qualquer carteira, verificada ou não.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><path d="m3 3 18 18"/></svg></span>
+            <h4>Exposição indevida</h4>
+            <p>Informação econômica que deveria ficar restrita acaba pública.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg></span>
+            <h4>Ciclo de vida sem trava</h4>
+            <p>Depois de liquidado, o recebível continua transferível se nada o impedir.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 4.5 3.5 7.5 8 8 4.5-.5 8-3.5 8-8V6z"/><path d="M12 9v3"/><path d="M12 15h.01"/></svg></span>
+            <h4>Compliance fora da cadeia</h4>
+            <p>Regra em planilha ou sistema externo não bloqueia a transação on-chain.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="solucao">
+        <h2>A solução: Guardian PrivateReceivable</h2>
+        <p>O <strong>Guardian PrivateReceivable</strong> tokeniza um recebível corporativo como um <strong>token RWA permissionado</strong> na Stellar Testnet. Contratos de <strong>identidade</strong> e de <strong>política de compliance</strong> decidem quem pode receber, manter ou transferir o ativo — e o <strong>oficial de compliance</strong> verifica carteiras, congela contas, pausa o ativo e liquida o recebível sob demanda.</p>
+        <p>A regra não é uma recomendação: <strong>todo mint e toda transferência</strong> passam pela mesma cadeia de enforcement antes de liquidar on-chain. Se qualquer condição falhar, a operação é rejeitada.</p>
+        <div class="blockquote">
+          <p>A permissão vive nos contratos. Se a carteira não estiver apta, a transferência não acontece.</p>
+        </div>
+
+        <h3>Por que é diferente</h3>
+        <div class="feature-grid">
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <h4>Só carteira verificada opera</h4>
+            <p>O contrato identity-verifier precisa marcar a carteira como <em>Verified</em>.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+            <h4>Política de compliance no ativo</h4>
+            <p>O contrato compliance-policy avalia <code>can_transfer</code> e <code>can_create</code> para as duas pontas.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg></span>
+            <h4>Congelar e pausar</h4>
+            <p>Carteira congelada não envia nem recebe; token pausado bloqueia todas as operações.</p>
+          </div>
+          <div class="feature">
+            <span class="f-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span>
+            <h4>Liquidação encerra o ciclo</h4>
+            <p>Recebível com status <em>Settled</em> rejeita qualquer mint ou transferência daí em diante.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="sec" id="como-funciona">
+        <h2>Como o compliance é aplicado</h2>
+        <p>Todo mint e toda transferência do token percorrem a mesma cadeia de verificação antes de liquidar on-chain:</p>
+        <ol class="chain">
+          <li>Rejeitado enquanto o token estiver <strong>pausado</strong>.</li>
+          <li>Rejeitado se qualquer uma das carteiras estiver <strong>congelada</strong> — carteira congelada não envia nem recebe.</li>
+          <li>Consultado o contrato <strong>identity-verifier</strong>: a operação falha se a carteira não estiver <em>Verified</em>.</li>
+          <li>Consultado o contrato <strong>compliance-policy</strong> (<code>can_transfer</code> / <code>can_create</code>) para remetente e destinatário.</li>
+          <li>Rejeitado assim que o recebível assume o status <strong>Settled</strong>.</li>
+        </ol>
+        <pre class="diagram">  MINT / TRANSFER
+        |
+        v
+  [ token pausado?      ] -- sim --> REJEITA
+        |  nao
+  [ carteira congelada? ] -- sim --> REJEITA
+        |  nao
+  [ identity-verifier   ] -- nao Verified --> REJEITA
+        |  Verified
+  [ compliance-policy   ] -- nao permite --> REJEITA
+        |  permite
+  [ recebivel Settled?  ] -- sim --> REJEITA
+        |  nao
+        v
+     LIQUIDA ON-CHAIN (Stellar Testnet)</pre>
+
+        <h3>Fluxo da demonstração</h3>
+        <p>Quatro minutos de ponta a ponta, pela interface web:</p>
+        <div class="steps">
+          <div class="step"><div class="num">1</div><h4>Verificar</h4><p>O oficial de compliance verifica o Investidor A; o Investidor B fica sem verificação.</p></div>
+          <div class="step"><div class="num">2</div><h4>Emitir</h4><p>O emissor faz mint para o Investidor A — transação confirmada na Testnet.</p></div>
+          <div class="step"><div class="num">3</div><h4>Rejeitar</h4><p>Mint ou transferência para o Investidor B é rejeitada: destinatário não verificado.</p></div>
+          <div class="step"><div class="num">4</div><h4>Liberar</h4><p>O Investidor B é verificado; a transferência A → B passa.</p></div>
+          <div class="step"><div class="num">5</div><h4>Congelar</h4><p>Congela o Investidor B — transferência rejeitada por carteira congelada — e depois descongela.</p></div>
+          <div class="step"><div class="num">6</div><h4>Pausar</h4><p>Pausa o token — transferência rejeitada por token pausado — e depois despausa.</p></div>
+          <div class="step"><div class="num">7</div><h4>Liquidar</h4><p>Liquida o recebível — mint e transferência passam a ser rejeitados definitivamente.</p></div>
+        </div>
+      </section>
+
+      <section class="sec" id="estados">
+        <h2>Estados de identidade e do recebível</h2>
+        <div class="states">
+          <div class="state"><code>Verified</code><span>Carteira passou pela verificação de compliance e pode receber e transferir o token.</span></div>
+          <div class="state"><code>Unverified</code><span>Carteira não foi verificada — mint e transferência são rejeitados.</span></div>
+          <div class="state"><code>Revoked</code><span>Carteira foi verificada e depois revogada — mint e transferência são rejeitados.</span></div>
+          <div class="state"><code>Active</code><span>Recebível em aberto — mint e transferência permitidos quando em conformidade.</span></div>
+          <div class="state"><code>Settled</code><span>Ciclo de vida encerrado — mint e transferência rejeitados permanentemente.</span></div>
+        </div>
+      </section>
+
+      <section class="sec" id="dados">
+        <h2>Dados do ambiente</h2>
+        <div class="facts">
+          <div class="fact"><p class="k">Rede</p><p class="v">Stellar Testnet</p></div>
+          <div class="fact"><p class="k">Token</p><p class="v">PRCV · 7 casas decimais</p></div>
+          <div class="fact"><p class="k">Recebível</p><p class="v">RCV-2026-0001</p></div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">identity-verifier</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CCJ52CC6HZJEEL67XLRKSHY4YMFPHV57HWONI2CXLLWIRXNI722ZKASX" target="_blank" rel="noopener">CCJ52CC6HZJEEL67XLRKSHY4YMFPHV57HWONI2CXLLWIRXNI722ZKASX</a></p>
+          </div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">compliance-policy</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CCPUMFWSLIW5XPO7OOIDXXQBYBAGA7FEAN6C657MFNIPRYZ2FCDAKWFV" target="_blank" rel="noopener">CCPUMFWSLIW5XPO7OOIDXXQBYBAGA7FEAN6C657MFNIPRYZ2FCDAKWFV</a></p>
+          </div>
+          <div class="fact" style="grid-column: 1 / -1;">
+            <p class="k">receivable-rwa</p>
+            <p class="v mono"><a href="https://stellar.expert/explorer/testnet/contract/CATSFC2TS3ZTWEIHRNH6R3UHVYHQTA4RHFSZ36E2464N5N7MAPWFUWD5" target="_blank" rel="noopener">CATSFC2TS3ZTWEIHRNH6R3UHVYHQTA4RHFSZ36E2464N5N7MAPWFUWD5</a></p>
+          </div>
+          <div class="fact"><p class="k">Código</p><p class="v"><a href="https://github.com/guardianlabsw3-lang/private-receivable" target="_blank" rel="noopener">Repositório no GitHub</a></p></div>
+          <div class="fact"><p class="k">Especificações</p><p class="v"><a href="https://github.com/guardianlabsw3-lang/private-receivable/tree/main/specs" target="_blank" rel="noopener">specs/</a></p></div>
+        </div>
+        <div class="note">
+          <p>Prova de conceito de hackathon — o recebível representado é fictício. <strong>Não</strong> é uma plataforma regulada de valores mobiliários, um produto de investimento real, um provedor de KYC/AML nem um sistema aprovado para Mainnet.</p>
+        </div>
+      </section>
+
+      <div class="cta-band">
+        <h2>Tokenize o recebível. Mantenha a permissão no ativo.</h2>
+        <p>Veja a cadeia de enforcement rodando: verificar, emitir, rejeitar, congelar, pausar e liquidar.</p>
+        <div class="hero-cta">
+          <a href="https://guardian-private-receivable.vercel.app/pt" target="_blank" rel="noopener" class="btn btn-accent">Ver Guardian Private Receivable</a>
+          <a href="contato.html" class="btn btn-ghost">Falar com a equipe</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <p><strong>Guardian PrivateReceivable</strong> — RWA permissionado na Stellar, um produto da <strong>Guardian Labs</strong>.</p>
+      <p class="footer-links">
+        <a href="index.html">Guardian Labs</a> ·
+        <a href="boleto-guardian.html">Boleto Guardian</a> ·
+        <a href="payorder-w3.html">PayOrder W3</a> ·
+        <a href="guardian402.html">Guardian402</a> ·
+        <a href="contato.html">Contato</a> ·
+        <a href="https://stellar.org" target="_blank" rel="noopener">Stellar</a>
+      </p>
+      <p style="margin-top: 12px; font-size: 0.85rem;">© 2026 Guardian Labs · Cleverson Silva (CEO) · Sergio Artero (CTO) · Demetrio De Los Rios (CMO) · MIT</p>
+    </div>
+  </footer>
+</body>
+</html>
